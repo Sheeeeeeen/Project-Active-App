@@ -1,0 +1,38 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Amper / Kotlin CLI
+.amper/
+
+# Local configuration file (sdk.path, etc.)
+local.properties
+
+# JetBrains / Android Studio / IntelliJ
+.idea/
+*.iml
+
+# Kotlin Multiplatform / Native metadata
+.kotlin/
+*.klib
+
+# Logs and Crash Dumps
+*.log
+hs_err_pid*
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Xcode / iOS
+iosApp/DerivedData/
+iosApp/.idea/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
