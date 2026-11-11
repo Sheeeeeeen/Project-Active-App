@@ -21,29 +21,6 @@ import ph.project.active.domain.TimeSlot
 import ph.project.active.domain.Visibility
 import kotlin.time.Clock
 
-enum class RepeatMode { SPECIFIC_DAYS, EVERY_DAY }
-
-sealed interface SlotError {
-    data object InvalidSlot : SlotError
-}
-
-data class CreateClassUiState(
-    val name: String,
-    val repeat: RepeatMode,
-    val selectedDays: Set<DayOfWeek>,
-    val visibility: Visibility,
-    val endDate: LocalDate?,
-    val daysLocked: Boolean,
-    val slotsByWeekday: Map<DayOfWeek, List<TimeSlot>>,
-    val slotError: SlotError?,
-    val canSave: Boolean,
-    val previewDateCount: Int?,
-    val savedClassId: String?,
-    val error: UiError?,
-    val connection: ConnectionUi,
-    val navigation: Navigation?,
-)
-
 class CreateClassViewModel(
     account: SignedInAccount,
     private val classes: ClassRepository,
@@ -51,6 +28,10 @@ class CreateClassViewModel(
     private val timeZone: TimeZone,
     private val network: NetworkMonitor,
 ) : ViewModel() {
+    init {
+        requireCoach(account)
+    }
+
     private val coachId = account.id
     private val createClass = CreateClass(
         classes = classes,
@@ -62,7 +43,6 @@ class CreateClassViewModel(
     val state: StateFlow<CreateClassUiState> = _state.asStateFlow()
 
     init {
-        requireCoach(account)
         watchConnection(network, _state) { copy(connection = it) }
     }
 
@@ -118,9 +98,9 @@ class CreateClassViewModel(
             )
             _state.update { it.copy(savedClassId = saved.id, error = null) }
         } catch (e: IllegalArgumentException) {
-            if (e.message?.contains("past") == true) {
-                _state.update { it.copy(error = UiError.EndDateInPast, savedClassId = null) }
-            }
+            _state.update { it.copy(error = e.asUiError(), savedClassId = null) }
+        } catch (e: IllegalStateException) {
+            _state.update { it.copy(error = e.asUiError(), savedClassId = null) }
         }
     }
 

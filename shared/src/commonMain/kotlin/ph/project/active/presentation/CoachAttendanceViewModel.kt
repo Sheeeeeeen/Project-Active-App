@@ -24,34 +24,6 @@ import ph.project.active.domain.sessionsOn
 import kotlin.time.Clock
 import kotlin.time.Instant
 
-enum class DayState { DAY_ENDED, IN_PROGRESS }
-
-data class CoachAttendanceStudentRow(
-    val studentId: String,
-    val name: String,
-    val employeeId: String,
-    val status: CoachAttendanceStatus,
-    val chosenClassName: String?,
-    val scannedAt: Instant?,
-)
-
-data class CoachAttendanceSection(
-    val slot: TimeSlot,
-    val cancelled: Boolean,
-    val students: List<CoachAttendanceStudentRow>,
-)
-
-data class CoachAttendanceUiState(
-    val date: LocalDate,
-    val canGoNext: Boolean,
-    val sections: List<CoachAttendanceSection>,
-    val dayState: DayState,
-    val presentCount: Int,
-    val absentCount: Int,
-    val connection: ConnectionUi,
-    val navigation: Navigation?,
-)
-
 class CoachAttendanceViewModel(
     account: SignedInAccount,
     private val classes: ClassRepository,
@@ -62,6 +34,10 @@ class CoachAttendanceViewModel(
     private val timeZone: TimeZone,
     network: NetworkMonitor,
 ) : ViewModel() {
+    init {
+        requireCoach(account)
+    }
+
     private val coachId = account.id
     private val forDate = CoachAttendanceForDate(classes, memberships, attendance, clock, timeZone)
     private val _state = MutableStateFlow(
@@ -70,7 +46,6 @@ class CoachAttendanceViewModel(
     val state: StateFlow<CoachAttendanceUiState> = _state.asStateFlow()
 
     init {
-        requireCoach(account)
         watchConnection(network, _state) { copy(connection = it) }
     }
 

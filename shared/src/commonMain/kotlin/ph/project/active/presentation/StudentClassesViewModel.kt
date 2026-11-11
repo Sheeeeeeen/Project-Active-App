@@ -15,23 +15,6 @@ import ph.project.active.domain.Visibility
 import ph.project.active.domain.activeClassIds
 import ph.project.active.domain.currentStatus
 
-enum class ClassChip { Joined, Invited, Pending }
-
-data class StudentClassItem(
-    val classId: String,
-    val name: String,
-    val chip: ClassChip?,
-)
-
-data class StudentClassesUiState(
-    val studentName: String,
-    val employeeId: String?,
-    val myClasses: List<StudentClassItem>,
-    val publicClasses: List<StudentClassItem>,
-    val connection: ConnectionUi,
-    val navigation: Navigation?,
-)
-
 class StudentClassesViewModel(
     account: SignedInAccount,
     private val classes: ClassRepository,
@@ -39,6 +22,10 @@ class StudentClassesViewModel(
     private val people: PersonRepository,
     network: NetworkMonitor,
 ) : ViewModel() {
+    init {
+        requireStudent(account)
+    }
+
     private val studentId = account.id
     private val _state = MutableStateFlow(
         StudentClassesUiState(
@@ -53,7 +40,6 @@ class StudentClassesViewModel(
     val state: StateFlow<StudentClassesUiState> = _state.asStateFlow()
 
     init {
-        requireStudent(account)
         publish()
         watchConnection(network, _state) { copy(connection = it) }
     }

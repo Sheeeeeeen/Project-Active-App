@@ -117,7 +117,9 @@ class RegistrationViewModel(
                     RegisterResult.Offline -> _state.update { it.copy(error = UiError.Offline) }
                 }
             } catch (e: IllegalArgumentException) {
-                _state.update { it.copy(error = UiError.AuthFailed) }
+                _state.update { it.copy(error = e.asUiError() ?: UiError.AuthFailed) }
+            } catch (e: IllegalStateException) {
+                _state.update { it.copy(error = e.asUiError()) }
             } finally {
                 _state.update { it.copy(isSubmitting = false) }
             }
@@ -149,6 +151,8 @@ class RegistrationViewModel(
                 }
             } catch (e: IllegalArgumentException) {
                 _state.update { it.copy(signInError = UiError.AuthFailed) }
+            } catch (e: IllegalStateException) {
+                _state.update { it.copy(signInError = UiError.AuthFailed, error = e.asUiError()) }
             } finally {
                 _state.update { it.copy(isSubmitting = false) }
             }

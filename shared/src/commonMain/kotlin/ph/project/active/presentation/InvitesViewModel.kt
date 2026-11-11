@@ -18,28 +18,6 @@ import ph.project.active.domain.TimeSlot
 import ph.project.active.domain.Visibility
 import ph.project.active.domain.currentStatus
 
-data class InviteRow(
-    val classId: String,
-    val className: String,
-    val coachName: String,
-    val visibility: Visibility,
-    val slotsByWeekday: Map<DayOfWeek, List<TimeSlot>>,
-)
-
-sealed interface InviteConfirmation {
-    data class InviteAccepted(val className: String) : InviteConfirmation
-}
-
-data class InvitesUiState(
-    val invites: List<InviteRow>,
-    val pendingInviteCount: Int,
-    val isEmpty: Boolean,
-    val confirmation: InviteConfirmation?,
-    val error: UiError?,
-    val connection: ConnectionUi,
-    val navigation: Navigation?,
-)
-
 class InvitesViewModel(
     account: SignedInAccount,
     private val classes: ClassRepository,
@@ -49,6 +27,10 @@ class InvitesViewModel(
     private val declineInvite: DeclineInvite,
     private val network: NetworkMonitor,
 ) : ViewModel() {
+    init {
+        requireStudent(account)
+    }
+
     private val studentId = account.id
     private val _state = MutableStateFlow(
         load(confirmation = null, error = null, navigation = null, connection = network.status.value.toConnection()),
@@ -56,7 +38,6 @@ class InvitesViewModel(
     val state: StateFlow<InvitesUiState> = _state.asStateFlow()
 
     init {
-        requireStudent(account)
         watchConnection(network, _state) { copy(connection = it) }
     }
 
@@ -65,14 +46,20 @@ class InvitesViewModel(
             _state.update { it.copy(error = UiError.Offline) }
             return
         }
-        acceptInvite(classId = classId, studentId = studentId)
-        val name = classes.findClass(classId)?.name.orEmpty()
-        _state.value = load(
-            confirmation = InviteConfirmation.InviteAccepted(name),
-            error = null,
-            navigation = _state.value.navigation,
-            connection = _state.value.connection,
-        )
+        try {
+            acceptInvite(classId = classId, studentId = studentId)
+            val name = classes.findClass(classId)?.name.orEmpty()
+            _state.value = load(
+                confirmation = InviteConfirmation.InviteAccepted(name),
+                error = null,
+                navigation = _state.value.navigation,
+                connection = _state.value.connection,
+            )
+        } catch (e: IllegalStateException) {
+            showFailure(e)
+        } catch (e: IllegalArgumentException) {
+            showFailure(e)
+        }
     }
 
     fun onDecline(classId: String) {
@@ -80,12 +67,32 @@ class InvitesViewModel(
             _state.update { it.copy(error = UiError.Offline) }
             return
         }
-        declineInvite(classId = classId, studentId = studentId)
-        _state.value = load(confirmation = null, error = null, navigation = _state.value.navigation, connection = _state.value.connection)
+        try {
+            declineInvite(classId = classId, studentId = studentId)
+            _state.value = load(
+                confirmation = null,
+                error = null,
+                navigation = _state.value.navigation,
+                connection = _state.value.connection,
+            )
+        } catch (e: IllegalStateException) {
+            showFailure(e)
+        } catch (e: IllegalArgumentException) {
+            showFailure(e)
+        }
     }
 
     fun onNavigationHandled() {
         _state.update { it.copy(navigation = null) }
+    }
+
+    private fun showFailure(error: Throwable) {
+        _state.value = load(
+            confirmation = _state.value.confirmation,
+            error = error.asUiError(),
+            navigation = _state.value.navigation,
+            connection = _state.value.connection,
+        )
     }
 
     private fun load(

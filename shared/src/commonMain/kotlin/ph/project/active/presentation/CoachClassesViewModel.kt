@@ -16,35 +16,21 @@ import ph.project.active.domain.Visibility
 import ph.project.active.domain.activeRoster
 import ph.project.active.domain.currentStatus
 
-data class CoachClassItem(
-    val classId: String,
-    val name: String,
-    val visibility: Visibility,
-    val slotsByWeekday: Map<DayOfWeek, List<TimeSlot>>,
-    val rosterCount: Int,
-    val pendingRequestCount: Int,
-    val isCancelled: Boolean,
-)
-
-data class CoachClassesUiState(
-    val classes: List<CoachClassItem>,
-    val isEmpty: Boolean,
-    val connection: ConnectionUi,
-    val navigation: Navigation?,
-)
-
 class CoachClassesViewModel(
     account: SignedInAccount,
     private val classes: ClassRepository,
     private val memberships: MembershipRepository,
     network: NetworkMonitor,
 ) : ViewModel() {
+    init {
+        requireCoach(account)
+    }
+
     private val coachId = account.id
     private val _state = MutableStateFlow(load(network.status.value.toConnection(), navigation = null))
     val state: StateFlow<CoachClassesUiState> = _state.asStateFlow()
 
     init {
-        requireCoach(account)
         watchConnection(network, _state) { copy(connection = it) }
     }
 

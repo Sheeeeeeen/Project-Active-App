@@ -28,75 +28,6 @@ import ph.project.active.domain.UploadState
 import kotlin.time.Clock
 import kotlin.time.Instant
 
-data class AttendChoice(
-    val sessionId: String,
-    val className: String,
-    val slot: TimeSlot,
-    val coachName: String,
-)
-
-data class RecordingFor(val className: String, val slot: TimeSlot)
-
-data class RecordedTodayRow(
-    val className: String,
-    val sessionNumber: Int,
-    val scannedAt: Instant,
-    val uploadPending: Boolean,
-)
-
-sealed interface ScanResult {
-    data class Present(
-        val className: String,
-        val sessionNumber: Int,
-        val date: LocalDate,
-        val slot: TimeSlot,
-        val scannedAt: Instant,
-    ) : ScanResult
-
-    data class SavedOffline(
-        val className: String,
-        val sessionNumber: Int,
-        val date: LocalDate,
-        val slot: TimeSlot,
-        val scannedAt: Instant,
-        val uploadPending: Boolean,
-    ) : ScanResult
-
-    data class AlreadyRecorded(
-        val className: String,
-        val sessionNumber: Int,
-        val date: LocalDate,
-        val firstScannedAt: Instant,
-    ) : ScanResult
-
-    data class Rejected(val reason: RejectReason) : ScanResult
-}
-
-sealed interface RejectReason {
-    data class WrongDate(val codeDate: LocalDate?) : RejectReason
-    data object WrongCoach : RejectReason
-    data object NotOnRoster : RejectReason
-    data object SessionCancelled : RejectReason
-    data object ClassCancelled : RejectReason
-    data object InvalidCode : RejectReason
-    data object SessionUnknown : RejectReason
-}
-
-data class AttendUiState(
-    val today: LocalDate,
-    val sheetOpen: Boolean,
-    val choices: List<AttendChoice>,
-    val noSessionsToday: Boolean,
-    val canScan: Boolean,
-    val selectedSessionId: String?,
-    val scannerOpen: Boolean,
-    val recordingFor: RecordingFor?,
-    val result: ScanResult?,
-    val recordedToday: List<RecordedTodayRow>,
-    val connection: ConnectionUi,
-    val navigation: Navigation?,
-)
-
 class AttendViewModel(
     account: SignedInAccount,
     private val classes: ClassRepository,
@@ -109,6 +40,10 @@ class AttendViewModel(
     private val timeZone: TimeZone,
     private val network: NetworkMonitor,
 ) : ViewModel() {
+    init {
+        requireStudent(account)
+    }
+
     private val studentId = account.id
     private var chosen: Session? = null
     private val chooser = TodaysChoosableSessions(classes, memberships, clock, timeZone)
@@ -116,7 +51,6 @@ class AttendViewModel(
     val state: StateFlow<AttendUiState> = _state.asStateFlow()
 
     init {
-        requireStudent(account)
         watchConnection(network, _state) { copy(connection = it) }
     }
 

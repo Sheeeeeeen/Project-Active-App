@@ -12,20 +12,6 @@ import ph.project.active.domain.ClassRepository
 import ph.project.active.domain.TimeSlot
 import ph.project.active.domain.Visibility
 
-data class GuestClassItem(
-    val classId: String,
-    val name: String,
-    val coachName: String,
-    val slotsByWeekday: Map<DayOfWeek, List<TimeSlot>>,
-)
-
-data class GuestClassListUiState(
-    val items: List<GuestClassItem>,
-    val isEmpty: Boolean,
-    val connection: ConnectionUi,
-    val navigation: Navigation?,
-)
-
 class GuestClassListViewModel(
     private val classes: ClassRepository,
     private val people: PersonRepository,

@@ -21,32 +21,6 @@ import ph.project.active.domain.TrxClass
 import ph.project.active.domain.Visibility
 import ph.project.active.domain.currentStatus
 
-data class ClassContent(
-    val name: String,
-    val visibility: Visibility,
-    val coachName: String,
-    val slotsByWeekday: Map<DayOfWeek, List<TimeSlot>>,
-    val endDate: LocalDate?,
-)
-
-sealed interface RequestAction {
-    data class RequestToJoin(val opensRegistration: Boolean) : RequestAction
-    data object Pending : RequestAction
-    data object Joined : RequestAction
-    data object Invited : RequestAction
-    data object None : RequestAction
-}
-
-data class ClassDetailUiState(
-    val content: ClassContent?,
-    val unavailable: Boolean,
-    val requestAction: RequestAction,
-    val requestAgain: Boolean,
-    val error: UiError?,
-    val connection: ConnectionUi,
-    val navigation: Navigation?,
-)
-
 class ClassDetailViewModel(
     private val classId: String,
     private val viewer: SignedInAccount?,

@@ -18,24 +18,6 @@ import ph.project.active.domain.TimeSlot
 import ph.project.active.domain.UploadState
 import kotlin.time.Clock
 
-data class StudentSessionUiRow(
-    val className: String,
-    val sessionNumber: Int,
-    val date: LocalDate,
-    val slot: TimeSlot,
-    val status: StudentSessionStatus,
-    val uploadPending: Boolean,
-)
-
-data class StudentSessionsUiState(
-    val upcoming: List<StudentSessionUiRow>,
-    val today: List<StudentSessionUiRow>,
-    val earlier: List<StudentSessionUiRow>,
-    val isEmpty: Boolean,
-    val connection: ConnectionUi,
-    val navigation: Navigation?,
-)
-
 class StudentSessionsViewModel(
     account: SignedInAccount,
     private val classes: ClassRepository,
@@ -45,13 +27,16 @@ class StudentSessionsViewModel(
     private val timeZone: TimeZone,
     network: NetworkMonitor,
 ) : ViewModel() {
+    init {
+        requireStudent(account)
+    }
+
     private val studentId = account.id
     private val sessions = StudentSessions(classes, memberships, attendance, clock, timeZone)
     private val _state = MutableStateFlow(load(network.status.value.toConnection(), navigation = null))
     val state: StateFlow<StudentSessionsUiState> = _state.asStateFlow()
 
     init {
-        requireStudent(account)
         watchConnection(network, _state) { copy(connection = it) }
     }
 

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
@@ -19,23 +20,6 @@ import ph.project.active.domain.TimeSlot
 import ph.project.active.domain.sessionsOn
 import kotlin.time.Clock
 
-data class TodaySessionRow(
-    val className: String,
-    val slot: TimeSlot,
-    val status: SessionStatus,
-)
-
-data class DailyQrUiState(
-    val today: LocalDate,
-    val coachName: String,
-    val validFor: LocalDate,
-    val code: String,
-    val todaysSessions: List<TodaySessionRow>,
-    val classListUnavailable: Boolean,
-    val connection: ConnectionUi,
-    val navigation: Navigation?,
-)
-
 class DailyQrViewModel(
     account: SignedInAccount,
     private val classes: ClassRepository,
@@ -45,6 +29,10 @@ class DailyQrViewModel(
     private val timeZone: TimeZone,
     network: NetworkMonitor,
 ) : ViewModel() {
+    init {
+        requireCoach(account)
+    }
+
     private val coachId = account.id
     private val fallbackName = account.name
     private val generate = GenerateDailyCode(keys)
@@ -52,12 +40,17 @@ class DailyQrViewModel(
     val state: StateFlow<DailyQrUiState> = _state.asStateFlow()
 
     init {
-        requireCoach(account)
         watchConnection(network, _state) { copy(connection = it) }
     }
 
     fun refresh() {
-        _state.value = load(_state.value.connection, _state.value.navigation)
+        try {
+            _state.value = load(_state.value.connection, _state.value.navigation)
+        } catch (e: IllegalStateException) {
+            _state.update { it.copy(error = e.asUiError()) }
+        } catch (e: IllegalArgumentException) {
+            _state.update { it.copy(error = e.asUiError()) }
+        }
     }
 
     fun onNavigationHandled() {
@@ -80,6 +73,7 @@ class DailyQrViewModel(
             code = generate(coachId, today),
             todaysSessions = sessions,
             classListUnavailable = owned.isEmpty(),
+            error = null,
             connection = connection,
             navigation = navigation,
         )

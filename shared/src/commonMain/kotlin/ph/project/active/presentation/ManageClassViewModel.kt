@@ -32,62 +32,6 @@ import ph.project.active.domain.activeRoster
 import ph.project.active.domain.currentStatus
 import kotlin.time.Clock
 
-enum class ManageTab { SCHEDULE, REQUESTS, ROSTER, INVITE }
-
-data class ScheduleRow(
-    val sessionNumber: Int,
-    val date: LocalDate,
-    val slot: TimeSlot,
-    val status: SessionStatus,
-    val isToday: Boolean,
-    val isPast: Boolean,
-    val canCancelDate: Boolean,
-)
-
-data class RequestRow(val studentId: String, val name: String, val employeeId: String)
-
-data class RosterRow(val studentId: String, val name: String, val employeeId: String)
-
-data class ConfirmRemove(val studentId: String, val name: String)
-
-data class InviteMatch(
-    val name: String,
-    val employeeId: String,
-    val currentMembershipStatus: MembershipStatus?,
-)
-
-sealed interface ManageConfirmation {
-    data class DateCancelled(val date: LocalDate) : ManageConfirmation
-    data class InviteSent(val name: String) : ManageConfirmation
-}
-
-data class ManageClassUiState(
-    val name: String,
-    val visibility: Visibility,
-    val endDate: LocalDate?,
-    val sessionCount: Int,
-    val slotsByWeekday: Map<DayOfWeek, List<TimeSlot>>,
-    val pendingRequestCount: Int,
-    val selectedTab: ManageTab,
-    val schedule: List<ScheduleRow>,
-    val confirmCancelDate: LocalDate?,
-    val confirmation: ManageConfirmation?,
-    val requests: List<RequestRow>,
-    val requestsEmpty: Boolean,
-    val roster: List<RosterRow>,
-    val confirmRemove: ConfirmRemove?,
-    val searchText: String,
-    val match: InviteMatch?,
-    val canSendInvite: Boolean,
-    val noMatch: Boolean,
-    val searchedId: String?,
-    val optionsOpen: Boolean,
-    val confirmCancelClass: Boolean,
-    val error: UiError?,
-    val connection: ConnectionUi,
-    val navigation: Navigation?,
-)
-
 class ManageClassViewModel(
     account: SignedInAccount,
     private val classId: String,
@@ -135,20 +79,34 @@ class ManageClassViewModel(
             cancelDate(classId = classId, date = date)
             reload(confirmCancelDate = null, confirmation = ManageConfirmation.DateCancelled(date), error = null)
         } catch (e: IllegalArgumentException) {
-            _state.update { it.copy(error = UiError.PastDate) }
+            reload(error = e.asUiError())
+        } catch (e: IllegalStateException) {
+            reload(error = e.asUiError())
         }
     }
 
     fun onApprove(studentId: String) {
         if (offline()) return
-        approveRequest(classId = classId, studentId = studentId)
-        reload(error = null)
+        try {
+            approveRequest(classId = classId, studentId = studentId)
+            reload(error = null)
+        } catch (e: IllegalStateException) {
+            reload(error = e.asUiError())
+        } catch (e: IllegalArgumentException) {
+            reload(error = e.asUiError())
+        }
     }
 
     fun onDecline(studentId: String) {
         if (offline()) return
-        declineRequest(classId = classId, studentId = studentId)
-        reload(error = null)
+        try {
+            declineRequest(classId = classId, studentId = studentId)
+            reload(error = null)
+        } catch (e: IllegalStateException) {
+            reload(error = e.asUiError())
+        } catch (e: IllegalArgumentException) {
+            reload(error = e.asUiError())
+        }
     }
 
     fun onRemove(studentId: String) {
@@ -163,8 +121,14 @@ class ManageClassViewModel(
     fun onConfirmRemove() {
         if (offline()) return
         val studentId = _state.value.confirmRemove?.studentId ?: return
-        removeFromRoster(classId = classId, studentId = studentId)
-        reload(confirmRemove = null, error = null)
+        try {
+            removeFromRoster(classId = classId, studentId = studentId)
+            reload(confirmRemove = null, error = null)
+        } catch (e: IllegalStateException) {
+            reload(error = e.asUiError())
+        } catch (e: IllegalArgumentException) {
+            reload(error = e.asUiError())
+        }
     }
 
     fun onSearchTextChange(value: String) = _state.update { it.copy(searchText = value) }
@@ -223,8 +187,14 @@ class ManageClassViewModel(
 
     fun onConfirmCancelClass() {
         if (offline()) return
-        cancelClass(classId)
-        reload(confirmCancelClass = false, navigation = Navigation.Back, error = null)
+        try {
+            cancelClass(classId)
+            reload(confirmCancelClass = false, navigation = Navigation.Back, error = null)
+        } catch (e: IllegalArgumentException) {
+            reload(error = e.asUiError())
+        } catch (e: IllegalStateException) {
+            reload(error = e.asUiError())
+        }
     }
 
     fun onNavigationHandled() = _state.update { it.copy(navigation = null) }
