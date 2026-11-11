@@ -32,6 +32,8 @@ kotlin {
             defaultSourceSet {
                 kotlin.setSrcDirs(listOf("src/commonTest/kotlin"))
                 kotlin.include("ph/project/active/**/*.kt")
+                // Phase 1 domain tests stay on the jvmTest classpath (AC85 Class.forName).
+                kotlin.exclude("ph/project/active/domain/**")
                 dependencies {
                     implementation(libs.kotlin.test)
                     implementation(libs.kotlin.testJunit)
@@ -55,7 +57,7 @@ kotlin {
         }
     }
     android {
-       namespace = "ph.com.sheen.projectactive.shared"
+       namespace = "ph.project.active.shared"
        compileSdk = libs.versions.android.compileSdk.get().toInt()
        minSdk = libs.versions.android.minSdk.get().toInt()
        compilerOptions {
@@ -102,7 +104,11 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
         }
         getByName("commonTest") {
-            kotlin.exclude("ph/project/active/**")
+            // JDBC Phase 2 tests compile only in the JVM phase2Test source set.
+            // Domain tests stay here so AC85 can load them from the jvmTest classpath.
+            kotlin.exclude("ph/project/active/data/**")
+            kotlin.exclude("ph/project/active/presentation/**")
+            kotlin.exclude("ph/project/active/testkit/**")
         }
         getByName("androidDeviceTest").dependencies {
             implementation(libs.androidx.testRunner)

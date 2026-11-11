@@ -1,0 +1,11 @@
+package ph.project.active.data
+
+import ph.project.active.domain.Role
+
+data class SignedInAccount(
+    val id: String,
+    val name: String,
+    val email: String,
+    val role: Role,
+    val employeeId: String?,
+)
