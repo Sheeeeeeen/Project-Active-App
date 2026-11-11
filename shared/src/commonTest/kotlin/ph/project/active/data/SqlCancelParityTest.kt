@@ -6,11 +6,11 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlinx.datetime.LocalDate
-import ph.project.active.domain.AttendanceResult
-import ph.project.active.domain.InviteResult
-import ph.project.active.domain.JoinResult
-import ph.project.active.domain.Role
-import ph.project.active.domain.SessionStatus
+import ph.project.active.domain.model.AttendanceResult
+import ph.project.active.domain.model.InviteResult
+import ph.project.active.domain.model.JoinResult
+import ph.project.active.domain.model.Role
+import ph.project.active.domain.model.SessionStatus
 import ph.project.active.testkit.FRI_25_SEP_2026
 import ph.project.active.testkit.MON_28_SEP_2026
 import ph.project.active.testkit.Phase2World

@@ -1,6 +1,6 @@
 package ph.project.active.testkit
 
-import ph.project.active.domain.PasswordHasher
+import ph.project.active.domain.crypto.PasswordHasher
 
 /** Hash is the reversed password, so the plain text is not a substring of the hash. */
 class TestPasswordHasher : PasswordHasher {

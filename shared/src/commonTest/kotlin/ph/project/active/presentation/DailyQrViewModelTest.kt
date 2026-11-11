@@ -5,9 +5,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
-import ph.project.active.domain.DailyCodeCheck
-import ph.project.active.domain.NetworkStatus
-import ph.project.active.domain.SessionStatus
+import ph.project.active.domain.model.DailyCodeCheck
+import ph.project.active.domain.model.NetworkStatus
+import ph.project.active.domain.model.SessionStatus
 import ph.project.active.testkit.EVENING
 import ph.project.active.testkit.MON_28_SEP_2026
 import ph.project.active.testkit.MORNING
@@ -53,7 +53,7 @@ class DailyQrViewModelTest {
             val morning = world.createClass(
                 coachId = coach.id,
                 name = "Morning",
-                visibility = ph.project.active.domain.Visibility.PUBLIC,
+                visibility = ph.project.active.domain.model.Visibility.PUBLIC,
                 slotsByWeekday = mapOf(kotlinx.datetime.DayOfWeek.MONDAY to listOf(MORNING)),
                 endDate = ph.project.active.testkit.SAT_31_OCT_2026,
             )

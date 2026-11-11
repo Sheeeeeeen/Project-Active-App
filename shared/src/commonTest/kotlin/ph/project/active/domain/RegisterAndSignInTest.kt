@@ -7,6 +7,9 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import ph.project.active.domain.model.AuthFailed
+import ph.project.active.domain.model.Role
+import ph.project.active.domain.model.User
 
 class RegisterAndSignInTest {
 

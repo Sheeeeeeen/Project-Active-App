@@ -1,6 +1,6 @@
 package ph.project.active.presentation
 
-import ph.project.active.data.SignedInAccount
+import ph.project.active.data.model.SignedInAccount
 import ph.project.active.testkit.EVENING
 import ph.project.active.testkit.MON_28_SEP_2026
 import ph.project.active.testkit.MORNING

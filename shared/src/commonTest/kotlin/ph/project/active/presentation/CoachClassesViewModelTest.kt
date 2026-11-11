@@ -3,9 +3,10 @@ package ph.project.active.presentation
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import ph.project.active.domain.Visibility
+import ph.project.active.domain.model.Visibility
 import ph.project.active.testkit.Phase2World
 import ph.project.active.testkit.runVm
+import ph.project.active.presentation.common.Navigation
 
 class CoachClassesViewModelTest {
 

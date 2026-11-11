@@ -3,13 +3,14 @@ package ph.project.active.data
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import ph.project.active.domain.InMemoryMembershipRepository
-import ph.project.active.domain.Membership
-import ph.project.active.domain.MembershipStatus
-import ph.project.active.domain.activeClassIds
-import ph.project.active.domain.activeRoster
-import ph.project.active.domain.current
-import ph.project.active.domain.currentStatus
+import ph.project.active.domain.repository.inmemory.InMemoryMembershipRepository
+import ph.project.active.domain.model.Membership
+import ph.project.active.domain.model.MembershipStatus
+import ph.project.active.domain.repository.activeClassIds
+import ph.project.active.domain.repository.activeRoster
+import ph.project.active.domain.repository.current
+import ph.project.active.domain.repository.currentStatus
+import ph.project.active.data.repository.SqlMembershipRepository
 
 class SqlMembershipRepositoryTest {
 

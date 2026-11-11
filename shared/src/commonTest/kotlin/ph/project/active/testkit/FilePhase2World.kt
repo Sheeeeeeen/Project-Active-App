@@ -3,11 +3,11 @@ package ph.project.active.testkit
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
-import ph.project.active.data.InMemorySecretKeyStore
-import ph.project.active.data.MutableNetworkMonitor
+import ph.project.active.data.fake.InMemorySecretKeyStore
+import ph.project.active.data.fake.MutableNetworkMonitor
 import ph.project.active.data.fileDb
-import ph.project.active.domain.InMemoryUserRepository
-import ph.project.active.domain.NetworkStatus
+import ph.project.active.domain.repository.inmemory.InMemoryUserRepository
+import ph.project.active.domain.model.NetworkStatus
 
 fun phase2WorldOnFile(
     path: String,

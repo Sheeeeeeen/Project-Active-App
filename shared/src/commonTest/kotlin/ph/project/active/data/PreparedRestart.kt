@@ -2,7 +2,8 @@ package ph.project.active.data
 
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
-import ph.project.active.domain.SessionStatus
+import ph.project.active.domain.model.SessionStatus
+import ph.project.active.data.model.SignedInAccount
 
 data class PreparedRestart(
     val student: SignedInAccount,

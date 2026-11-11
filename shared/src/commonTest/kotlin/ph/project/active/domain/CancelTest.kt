@@ -8,6 +8,13 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import ph.project.active.domain.model.AttendanceResult
+import ph.project.active.domain.model.InviteResult
+import ph.project.active.domain.model.JoinResult
+import ph.project.active.domain.model.Role
+import ph.project.active.domain.model.SessionStatus
+import ph.project.active.domain.model.TrxClass
+import ph.project.active.domain.model.User
 
 class CancelTest {
 

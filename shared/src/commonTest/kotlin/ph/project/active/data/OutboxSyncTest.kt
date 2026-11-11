@@ -6,9 +6,13 @@ import kotlin.test.assertFails
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 import kotlinx.coroutines.test.runTest
-import ph.project.active.domain.AttendanceRecord
-import ph.project.active.domain.NetworkStatus
-import ph.project.active.domain.UploadState
+import ph.project.active.domain.model.AttendanceRecord
+import ph.project.active.domain.model.NetworkStatus
+import ph.project.active.domain.model.UploadState
+import ph.project.active.data.fake.FakeAttendanceUploader
+import ph.project.active.data.fake.MutableNetworkMonitor
+import ph.project.active.data.sync.OutboxSync
+import ph.project.active.data.repository.SqlAttendanceRepository
 
 class OutboxSyncTest {
 
@@ -82,7 +86,7 @@ class OutboxSyncTest {
             val scannedAt = Instant.parse("2026-09-28T09:40:00Z")
             attendance.add(row("student-1", scannedAt))
             var online = false
-            val flush = ph.project.active.domain.FlushOutbox(attendance) { if (online) NetworkStatus.ONLINE else NetworkStatus.OFFLINE }
+            val flush = ph.project.active.domain.usecase.FlushOutbox(attendance) { if (online) NetworkStatus.ONLINE else NetworkStatus.OFFLINE }
 
             assertEquals(0, flush())
             assertEquals(UploadState.PENDING, attendance.all().single().uploadState)

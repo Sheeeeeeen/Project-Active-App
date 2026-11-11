@@ -6,10 +6,10 @@ import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import ph.project.active.data.RegisterResult
-import ph.project.active.data.SignInResult
-import ph.project.active.domain.NetworkStatus
-import ph.project.active.domain.Role
+import ph.project.active.data.model.RegisterResult
+import ph.project.active.data.model.SignInResult
+import ph.project.active.domain.model.NetworkStatus
+import ph.project.active.domain.model.Role
 
 class FakeAuthRepositoryTest {
 

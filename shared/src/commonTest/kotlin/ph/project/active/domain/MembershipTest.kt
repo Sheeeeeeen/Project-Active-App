@@ -7,6 +7,10 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
+import ph.project.active.domain.model.InviteResult
+import ph.project.active.domain.model.JoinResult
+import ph.project.active.domain.model.MembershipStatus
+import ph.project.active.domain.model.Visibility
 
 class MembershipTest {
 

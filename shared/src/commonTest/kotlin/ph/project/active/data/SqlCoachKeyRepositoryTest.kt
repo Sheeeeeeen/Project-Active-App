@@ -7,15 +7,17 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.datetime.LocalDate
-import ph.project.active.domain.DailyCodeCheck
-import ph.project.active.domain.Ed25519KeyPair
-import ph.project.active.domain.GenerateDailyCode
-import ph.project.active.domain.VerifyDailyCode
+import ph.project.active.domain.model.DailyCodeCheck
+import ph.project.active.domain.crypto.Ed25519KeyPair
+import ph.project.active.domain.usecase.GenerateDailyCode
+import ph.project.active.domain.usecase.VerifyDailyCode
 import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
 import ph.project.active.testkit.FRI_25_SEP_2026
 import ph.project.active.testkit.FakeClock
 import ph.project.active.testkit.PHONE_TZ
+import ph.project.active.data.fake.InMemorySecretKeyStore
+import ph.project.active.data.repository.SqlCoachKeyRepository
 
 class SqlCoachKeyRepositoryTest {
 

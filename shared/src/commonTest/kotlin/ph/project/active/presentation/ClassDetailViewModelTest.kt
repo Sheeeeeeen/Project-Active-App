@@ -6,11 +6,16 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import ph.project.active.testkit.idle
-import ph.project.active.domain.MembershipStatus
-import ph.project.active.domain.Visibility
+import ph.project.active.domain.model.MembershipStatus
+import ph.project.active.domain.model.Visibility
 import ph.project.active.testkit.Phase2World
 import ph.project.active.testkit.runVm
 import ph.project.active.testkit.toAccount
+import ph.project.active.presentation.classdetail.ClassDetailUiState
+import ph.project.active.presentation.common.Navigation
+import ph.project.active.presentation.common.RegistrationOrigin
+import ph.project.active.presentation.manageclass.RequestAction
+import ph.project.active.presentation.common.UiError
 
 class ClassDetailViewModelTest {
 

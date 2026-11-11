@@ -6,10 +6,10 @@ import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
-import ph.project.active.domain.AttendanceResult
-import ph.project.active.domain.NetworkStatus
-import ph.project.active.domain.SessionRef
-import ph.project.active.domain.UploadState
+import ph.project.active.domain.model.AttendanceResult
+import ph.project.active.domain.model.NetworkStatus
+import ph.project.active.domain.model.SessionRef
+import ph.project.active.domain.model.UploadState
 import ph.project.active.testkit.EVENING
 import ph.project.active.testkit.FRI_25_SEP_2026
 import ph.project.active.testkit.MON_28_SEP_2026

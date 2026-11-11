@@ -6,6 +6,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.hours
+import ph.project.active.domain.model.AttendanceResult
+import ph.project.active.domain.model.Session
+import ph.project.active.domain.model.StudentSessionStatus
+import ph.project.active.domain.model.UploadState
+import ph.project.active.domain.model.Visibility
 
 class RecordAttendanceTest {
 

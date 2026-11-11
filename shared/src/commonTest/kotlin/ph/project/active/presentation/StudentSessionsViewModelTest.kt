@@ -7,7 +7,7 @@ import kotlin.test.assertTrue
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
-import ph.project.active.domain.StudentSessionStatus
+import ph.project.active.domain.model.StudentSessionStatus
 import ph.project.active.testkit.EVENING
 import ph.project.active.testkit.FRI_25_SEP_2026
 import ph.project.active.testkit.MON_28_SEP_2026

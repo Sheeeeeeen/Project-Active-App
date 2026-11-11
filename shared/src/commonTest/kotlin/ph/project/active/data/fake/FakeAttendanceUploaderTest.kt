@@ -7,8 +7,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 import kotlinx.coroutines.test.runTest
-import ph.project.active.data.FakeAttendanceUploader
-import ph.project.active.domain.AttendanceRecord
+import ph.project.active.data.fake.FakeAttendanceUploader
+import ph.project.active.domain.model.AttendanceRecord
 
 class FakeAttendanceUploaderTest {
 

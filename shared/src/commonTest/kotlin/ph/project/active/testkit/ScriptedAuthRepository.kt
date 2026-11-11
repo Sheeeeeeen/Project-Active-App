@@ -1,9 +1,9 @@
 package ph.project.active.testkit
 
 import kotlinx.coroutines.CompletableDeferred
-import ph.project.active.data.AuthRepository
-import ph.project.active.data.RegisterResult
-import ph.project.active.data.SignInResult
+import ph.project.active.data.repository.AuthRepository
+import ph.project.active.data.model.RegisterResult
+import ph.project.active.data.model.SignInResult
 
 /** Auth double whose calls suspend until [releaseStudents] when [holdStudents] is set. */
 class ScriptedAuthRepository : AuthRepository {

@@ -4,9 +4,9 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import ph.project.active.domain.CoachAttendanceStatus
-import ph.project.active.domain.SessionStatus
-import ph.project.active.domain.Visibility
+import ph.project.active.domain.model.CoachAttendanceStatus
+import ph.project.active.domain.model.SessionStatus
+import ph.project.active.domain.model.Visibility
 import ph.project.active.testkit.EVENING
 import ph.project.active.testkit.MON_28_SEP_2026
 import ph.project.active.testkit.MORNING
@@ -16,6 +16,7 @@ import ph.project.active.testkit.TUE_29_SEP_2026
 import ph.project.active.testkit.runVm
 import ph.project.active.testkit.toAccount
 import kotlinx.datetime.DayOfWeek
+import ph.project.active.presentation.createclass.DayState
 
 class CoachAttendanceViewModelTest {
 

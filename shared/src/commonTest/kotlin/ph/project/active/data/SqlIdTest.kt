@@ -3,6 +3,9 @@ package ph.project.active.data
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import ph.project.active.testkit.assertUrlSafeId
+import ph.project.active.data.repository.SqlAttendanceRepository
+import ph.project.active.data.repository.SqlClassRepository
+import ph.project.active.data.repository.SqlMembershipRepository
 
 class SqlIdTest {
 

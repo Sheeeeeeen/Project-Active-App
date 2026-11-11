@@ -9,14 +9,16 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.days
 import ph.project.active.testkit.idle
 import kotlinx.datetime.LocalDate
-import ph.project.active.domain.NetworkStatus
-import ph.project.active.domain.UploadState
-import ph.project.active.domain.current
+import ph.project.active.domain.model.NetworkStatus
+import ph.project.active.domain.model.UploadState
+import ph.project.active.domain.repository.current
 import ph.project.active.testkit.EVENING
 import ph.project.active.testkit.MON_28_SEP_2026
 import ph.project.active.testkit.MORNING
 import ph.project.active.testkit.TUE_29_SEP_2026
 import ph.project.active.testkit.runVm
+import ph.project.active.presentation.attend.RejectReason
+import ph.project.active.presentation.attend.ScanResult
 
 class AttendViewModelTest {
 

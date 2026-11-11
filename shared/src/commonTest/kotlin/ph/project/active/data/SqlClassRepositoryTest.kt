@@ -6,12 +6,12 @@ import kotlin.time.Instant
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import ph.project.active.domain.Session
-import ph.project.active.domain.SessionRef
-import ph.project.active.domain.SessionStatus
-import ph.project.active.domain.TimeSlot
-import ph.project.active.domain.TrxClass
-import ph.project.active.domain.Visibility
+import ph.project.active.domain.model.Session
+import ph.project.active.domain.model.SessionRef
+import ph.project.active.domain.model.SessionStatus
+import ph.project.active.domain.model.TimeSlot
+import ph.project.active.domain.model.TrxClass
+import ph.project.active.domain.model.Visibility
 import ph.project.active.testkit.EVENING
 import ph.project.active.testkit.FRI_25_SEP_2026
 import ph.project.active.testkit.MON_28_SEP_2026
@@ -19,6 +19,7 @@ import ph.project.active.testkit.MON_WED_EVENING
 import ph.project.active.testkit.Phase2World
 import ph.project.active.testkit.SAT_31_OCT_2026
 import ph.project.active.testkit.WED_30_SEP_2026
+import ph.project.active.data.repository.SqlClassRepository
 
 class SqlClassRepositoryTest {
 

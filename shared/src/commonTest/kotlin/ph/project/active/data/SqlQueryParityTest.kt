@@ -4,9 +4,9 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.datetime.atTime
-import ph.project.active.domain.CoachAttendanceStatus
-import ph.project.active.domain.StudentSessionStatus
-import ph.project.active.domain.Visibility
+import ph.project.active.domain.model.CoachAttendanceStatus
+import ph.project.active.domain.model.StudentSessionStatus
+import ph.project.active.domain.model.Visibility
 import ph.project.active.testkit.FRI_25_SEP_2026
 import ph.project.active.testkit.MON_28_SEP_2026
 import ph.project.active.testkit.MORNING
@@ -33,7 +33,7 @@ class SqlQueryParityTest {
             world.setLocal(kotlinx.datetime.LocalDate(2026, 10, 5), 12)
             val rows = world.studentSessions(student.id)
             assertEquals(9, rows.size)
-            assertTrue(rows.none { it.session.status == ph.project.active.domain.SessionStatus.CANCELLED })
+            assertTrue(rows.none { it.session.status == ph.project.active.domain.model.SessionStatus.CANCELLED })
             assertTrue(rows.all { it.session.classId == joined.id })
             val byDate = rows.associate { it.session.date to it.status }
             assertEquals(StudentSessionStatus.PRESENT, byDate[MON_28_SEP_2026])
