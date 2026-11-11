@@ -7,9 +7,9 @@ class BuildCriteriaTest {
 
     @Test
     fun AC85_phase1_test_classes_remain_on_the_jvm_test_classpath() {
-        Class.forName("trx.attendance.domain.RegisterAndSignInTest")
-        Class.forName("trx.attendance.domain.SessionGenerationTest")
-        Class.forName("trx.attendance.domain.RecordAttendanceTest")
+        Class.forName("ph.project.active.domain.RegisterAndSignInTest")
+        Class.forName("ph.project.active.domain.SessionGenerationTest")
+        Class.forName("ph.project.active.domain.RecordAttendanceTest")
         Class.forName("ph.com.sheen.projectactive.SharedCommonTest")
     }
 
