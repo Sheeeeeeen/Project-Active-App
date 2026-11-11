@@ -7,6 +7,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import ph.project.active.domain.model.AttendanceResult
+import ph.project.active.domain.model.CoachAttendanceStatus
+import ph.project.active.domain.model.Session
+import ph.project.active.domain.model.SessionStatus
+import ph.project.active.domain.model.StudentSessionStatus
+import ph.project.active.domain.model.Visibility
 
 class AttendanceQueriesTest {
 

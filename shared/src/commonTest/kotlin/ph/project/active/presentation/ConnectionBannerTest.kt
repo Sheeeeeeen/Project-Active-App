@@ -5,10 +5,11 @@ import kotlin.test.Test
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import ph.project.active.testkit.idle
-import ph.project.active.domain.NetworkStatus
+import ph.project.active.domain.model.NetworkStatus
 import ph.project.active.testkit.Phase2World
 import ph.project.active.testkit.assertConnection
 import ph.project.active.testkit.runVm
+import ph.project.active.presentation.common.RegistrationOrigin
 
 class ConnectionBannerTest {
 

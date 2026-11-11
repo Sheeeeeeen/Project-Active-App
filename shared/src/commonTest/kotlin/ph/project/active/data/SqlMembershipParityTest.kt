@@ -5,11 +5,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
-import ph.project.active.domain.InviteResult
-import ph.project.active.domain.JoinResult
-import ph.project.active.domain.MembershipStatus
-import ph.project.active.domain.Visibility
-import ph.project.active.domain.activeRoster
+import ph.project.active.domain.model.InviteResult
+import ph.project.active.domain.model.JoinResult
+import ph.project.active.domain.model.MembershipStatus
+import ph.project.active.domain.model.Visibility
+import ph.project.active.domain.repository.activeRoster
 import ph.project.active.testkit.FRI_25_SEP_2026
 import ph.project.active.testkit.Phase2World
 import kotlinx.datetime.atTime

@@ -7,6 +7,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import ph.project.active.domain.usecase.GenerateDailyCode
+import ph.project.active.domain.model.NetworkStatus
 
 class DailyCodeTest {
 

@@ -7,16 +7,25 @@ import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import ph.project.active.testkit.idle
-import ph.project.active.data.RegisterResult
-import ph.project.active.data.SignInResult
-import ph.project.active.data.SignedInAccount
-import ph.project.active.domain.JoinResult
-import ph.project.active.domain.MembershipStatus
-import ph.project.active.domain.Role
+import ph.project.active.data.model.RegisterResult
+import ph.project.active.data.model.SignInResult
+import ph.project.active.data.model.SignedInAccount
+import ph.project.active.domain.model.JoinResult
+import ph.project.active.domain.model.MembershipStatus
+import ph.project.active.domain.model.Role
 import ph.project.active.testkit.Phase2World
 import ph.project.active.testkit.ScriptedAuthRepository
 import ph.project.active.testkit.runVm
 import ph.project.active.testkit.toAccount
+import ph.project.active.presentation.registration.AuthCompletion
+import ph.project.active.presentation.common.Field
+import ph.project.active.presentation.common.FieldError
+import ph.project.active.presentation.classdetail.JoinOutcome
+import ph.project.active.presentation.common.RegistrationOrigin
+import ph.project.active.presentation.registration.RegistrationViewModel
+import ph.project.active.presentation.manageclass.RequestAction
+import ph.project.active.presentation.root.Root
+import ph.project.active.presentation.common.UiError
 
 class RegistrationViewModelTest {
 

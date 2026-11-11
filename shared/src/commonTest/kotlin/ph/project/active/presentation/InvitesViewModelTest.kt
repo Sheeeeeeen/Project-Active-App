@@ -4,12 +4,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import ph.project.active.domain.MembershipStatus
-import ph.project.active.domain.Visibility
-import ph.project.active.domain.activeRoster
+import ph.project.active.domain.model.MembershipStatus
+import ph.project.active.domain.model.Visibility
+import ph.project.active.domain.repository.activeRoster
 import ph.project.active.testkit.Phase2World
 import ph.project.active.testkit.runVm
 import ph.project.active.testkit.toAccount
+import ph.project.active.presentation.manageclass.InviteConfirmation
 
 class InvitesViewModelTest {
 

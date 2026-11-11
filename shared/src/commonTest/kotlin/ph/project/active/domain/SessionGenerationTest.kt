@@ -11,6 +11,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import ph.project.active.domain.model.AttendanceResult
+import ph.project.active.domain.model.JoinResult
+import ph.project.active.domain.model.SessionStatus
+import ph.project.active.domain.model.Visibility
 
 class SessionGenerationTest {
 

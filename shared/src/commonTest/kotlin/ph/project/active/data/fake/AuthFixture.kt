@@ -1,12 +1,12 @@
 package ph.project.active.data.fake
 
-import ph.project.active.data.FakeAuthRepository
-import ph.project.active.data.MutableNetworkMonitor
-import ph.project.active.data.SqlPersonRepository
-import ph.project.active.data.SqlSessionStore
+import ph.project.active.data.fake.FakeAuthRepository
+import ph.project.active.data.fake.MutableNetworkMonitor
+import ph.project.active.data.repository.SqlPersonRepository
+import ph.project.active.data.repository.SqlSessionStore
 import ph.project.active.data.inMemoryDb
-import ph.project.active.domain.InMemoryUserRepository
-import ph.project.active.domain.NetworkStatus
+import ph.project.active.domain.repository.inmemory.InMemoryUserRepository
+import ph.project.active.domain.model.NetworkStatus
 import ph.project.active.testkit.TestPasswordHasher
 
 class AuthFixture(

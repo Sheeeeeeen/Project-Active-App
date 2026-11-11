@@ -3,7 +3,9 @@ package ph.project.active.data
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
-import ph.project.active.domain.Role
+import ph.project.active.domain.model.Role
+import ph.project.active.data.model.PersonProfile
+import ph.project.active.data.repository.SqlPersonRepository
 
 class SqlPersonRepositoryTest {
 

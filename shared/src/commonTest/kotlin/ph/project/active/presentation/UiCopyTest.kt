@@ -3,7 +3,9 @@ package ph.project.active.presentation
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.datetime.LocalDate
-import ph.project.active.domain.Role
+import ph.project.active.domain.model.Role
+import ph.project.active.presentation.common.RegistrationOrigin
+import ph.project.active.presentation.common.UiCopy
 
 class UiCopyTest {
 

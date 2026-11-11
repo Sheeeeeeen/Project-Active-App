@@ -8,14 +8,16 @@ import kotlin.test.assertTrue
 import ph.project.active.testkit.idle
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
-import ph.project.active.domain.MembershipStatus
-import ph.project.active.domain.NetworkStatus
+import ph.project.active.domain.model.MembershipStatus
+import ph.project.active.domain.model.NetworkStatus
 import ph.project.active.testkit.CountingUserRepository
 import ph.project.active.testkit.MON_28_SEP_2026
 import ph.project.active.testkit.Phase2World
 import ph.project.active.testkit.ScriptedAuthRepository
 import ph.project.active.testkit.runVm
 import ph.project.active.testkit.toAccount
+import ph.project.active.presentation.common.RegistrationOrigin
+import ph.project.active.presentation.common.UiError
 
 class OfflineActionsTest {
 

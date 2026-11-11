@@ -5,7 +5,12 @@ import kotlin.test.assertEquals
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import ph.project.active.domain.TimeSlot
+import ph.project.active.domain.model.TimeSlot
+import ph.project.active.presentation.common.formatDate
+import ph.project.active.presentation.common.formatDays
+import ph.project.active.presentation.common.formatShortDate
+import ph.project.active.presentation.common.formatSlot
+import ph.project.active.presentation.common.formatTime
 
 class FormatTest {
 

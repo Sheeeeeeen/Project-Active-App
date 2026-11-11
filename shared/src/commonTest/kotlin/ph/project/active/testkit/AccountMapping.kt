@@ -1,8 +1,8 @@
 package ph.project.active.testkit
 
-import ph.project.active.data.PersonProfile
-import ph.project.active.data.SignedInAccount
-import ph.project.active.domain.User
+import ph.project.active.data.model.PersonProfile
+import ph.project.active.data.model.SignedInAccount
+import ph.project.active.domain.model.User
 
 fun User.toAccount(): SignedInAccount = SignedInAccount(
     id = id,

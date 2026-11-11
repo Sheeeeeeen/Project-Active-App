@@ -1,7 +1,7 @@
 package ph.project.active.testkit
 
-import ph.project.active.domain.User
-import ph.project.active.domain.UserRepository
+import ph.project.active.domain.model.User
+import ph.project.active.domain.repository.UserRepository
 
 /** Counts employee-id lookups so offline invite search can be shown to touch nothing. */
 class CountingUserRepository(private val inner: UserRepository) : UserRepository {

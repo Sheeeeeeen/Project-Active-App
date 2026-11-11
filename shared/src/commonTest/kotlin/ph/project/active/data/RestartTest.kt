@@ -6,9 +6,9 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import ph.project.active.testkit.idle
 import kotlinx.datetime.atTime
-import ph.project.active.domain.NetworkStatus
-import ph.project.active.domain.SessionStatus
-import ph.project.active.domain.UploadState
+import ph.project.active.domain.model.NetworkStatus
+import ph.project.active.domain.model.SessionStatus
+import ph.project.active.domain.model.UploadState
 import ph.project.active.testkit.MON_28_SEP_2026
 import ph.project.active.testkit.phase2WorldOnFile
 import ph.project.active.testkit.runVm

@@ -9,13 +9,16 @@ import ph.project.active.testkit.idle
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import ph.project.active.domain.Visibility
+import ph.project.active.domain.model.Visibility
 import ph.project.active.testkit.EVENING
 import ph.project.active.testkit.MORNING
 import ph.project.active.testkit.Phase2World
 import ph.project.active.testkit.SAT_31_OCT_2026
 import ph.project.active.testkit.THU_31_DEC_2026
 import ph.project.active.testkit.runVm
+import ph.project.active.presentation.createclass.RepeatMode
+import ph.project.active.presentation.createclass.SlotError
+import ph.project.active.presentation.common.UiError
 
 class CreateClassViewModelTest {
 

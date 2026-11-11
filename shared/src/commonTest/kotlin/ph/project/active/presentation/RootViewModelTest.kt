@@ -6,17 +6,19 @@ import kotlin.test.assertTrue
 import kotlin.time.Instant
 import ph.project.active.testkit.idle
 import kotlinx.datetime.atTime
-import ph.project.active.data.FakeAttendanceUploader
+import ph.project.active.data.fake.FakeAttendanceUploader
 import ph.project.active.data.tempDbPath
-import ph.project.active.domain.AttendanceRecord
-import ph.project.active.domain.NetworkStatus
-import ph.project.active.domain.Role
-import ph.project.active.domain.UploadState
+import ph.project.active.domain.model.AttendanceRecord
+import ph.project.active.domain.model.NetworkStatus
+import ph.project.active.domain.model.Role
+import ph.project.active.domain.model.UploadState
 import ph.project.active.testkit.MON_28_SEP_2026
 import ph.project.active.testkit.Phase2World
 import ph.project.active.testkit.phase2WorldOnFile
 import ph.project.active.testkit.runVm
 import ph.project.active.testkit.toAccount
+import ph.project.active.presentation.root.Root
+import ph.project.active.presentation.root.RootViewModel
 
 class RootViewModelTest {
 
@@ -91,10 +93,10 @@ class RootViewModelTest {
         phase2WorldOnFile(
             path = path,
             start = MON_28_SEP_2026.atTime(9, 0),
-            network = ph.project.active.data.MutableNetworkMonitor(NetworkStatus.ONLINE),
+            network = ph.project.active.data.fake.MutableNetworkMonitor(NetworkStatus.ONLINE),
         ).use { world ->
-            val syncing = ph.project.active.data.OutboxSync(world.attendance, restartUploader, world.network)
-            val root = ph.project.active.presentation.RootViewModel(world.sessionStore, world.network, syncing)
+            val syncing = ph.project.active.data.sync.OutboxSync(world.attendance, restartUploader, world.network)
+            val root = ph.project.active.presentation.root.RootViewModel(world.sessionStore, world.network, syncing)
             idle()
             assertEquals(UploadState.SYNCED, world.attendance.find("session-1", "c")!!.uploadState)
             assertEquals(listOf("c"), restartUploader.uploaded.map { it.id })

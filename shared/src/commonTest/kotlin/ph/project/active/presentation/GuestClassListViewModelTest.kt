@@ -4,10 +4,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import ph.project.active.domain.NetworkStatus
-import ph.project.active.domain.Visibility
+import ph.project.active.domain.model.NetworkStatus
+import ph.project.active.domain.model.Visibility
 import ph.project.active.testkit.Phase2World
 import ph.project.active.testkit.runVm
+import ph.project.active.presentation.common.Navigation
+import ph.project.active.presentation.common.RegistrationOrigin
 
 class GuestClassListViewModelTest {
 

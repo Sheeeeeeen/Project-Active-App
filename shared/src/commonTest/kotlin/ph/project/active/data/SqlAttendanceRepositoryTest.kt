@@ -5,9 +5,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertNull
 import kotlin.time.Instant
-import ph.project.active.domain.AttendanceRecord
-import ph.project.active.domain.AttendanceStatus
-import ph.project.active.domain.UploadState
+import ph.project.active.domain.model.AttendanceRecord
+import ph.project.active.domain.model.AttendanceStatus
+import ph.project.active.domain.model.UploadState
+import ph.project.active.data.repository.SqlAttendanceRepository
 
 class SqlAttendanceRepositoryTest {
 

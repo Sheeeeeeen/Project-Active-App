@@ -6,17 +6,23 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.datetime.LocalDate
-import ph.project.active.domain.AttendanceResult
-import ph.project.active.domain.InviteResult
-import ph.project.active.domain.JoinResult
-import ph.project.active.domain.MembershipStatus
-import ph.project.active.domain.SessionStatus
+import ph.project.active.domain.model.AttendanceResult
+import ph.project.active.domain.model.InviteResult
+import ph.project.active.domain.model.JoinResult
+import ph.project.active.domain.model.MembershipStatus
+import ph.project.active.domain.model.SessionStatus
 import ph.project.active.testkit.MON_28_SEP_2026
 import ph.project.active.testkit.Phase2World
 import ph.project.active.testkit.TUE_29_SEP_2026
 import ph.project.active.testkit.WED_30_SEP_2026
 import ph.project.active.testkit.runVm
 import ph.project.active.testkit.toAccount
+import ph.project.active.presentation.manageclass.ManageConfirmation
+import ph.project.active.presentation.manageclass.ManageTab
+import ph.project.active.presentation.common.Navigation
+import ph.project.active.presentation.attend.RejectReason
+import ph.project.active.presentation.attend.ScanResult
+import ph.project.active.presentation.common.UiError
 
 class ManageClassViewModelTest {
 

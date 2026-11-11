@@ -2,7 +2,8 @@ package ph.project.active.data
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import ph.project.active.domain.NetworkStatus
+import ph.project.active.domain.model.NetworkStatus
+import ph.project.active.data.fake.MutableNetworkMonitor
 
 class MutableNetworkMonitorTest {
 

@@ -2,7 +2,7 @@ package ph.project.active.testkit
 
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import ph.project.active.presentation.ConnectionUi
+import ph.project.active.presentation.common.ConnectionUi
 
 private val URL_SAFE_ID = Regex("[A-Za-z0-9_.~-]+")
 

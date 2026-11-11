@@ -6,6 +6,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.minutes
+import ph.project.active.domain.model.AttendanceResult
+import ph.project.active.domain.model.NetworkStatus
+import ph.project.active.domain.model.SessionRef
+import ph.project.active.domain.model.UploadState
 
 class OutboxTest {
 

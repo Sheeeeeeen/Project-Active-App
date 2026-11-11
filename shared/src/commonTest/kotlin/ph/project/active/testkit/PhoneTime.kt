@@ -4,7 +4,7 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import ph.project.active.domain.TimeSlot
+import ph.project.active.domain.model.TimeSlot
 
 val PHONE_TZ: TimeZone = TimeZone.of("Asia/Manila")
 
