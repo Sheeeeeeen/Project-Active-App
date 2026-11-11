@@ -7,13 +7,20 @@ Tested on Linux in `shared/commonTest`, run as `:shared:jvmTest`, with a JVM SQL
 Baseline: GitHub `main` at `9b553df` (PR #1). The Phase 1 domain (AC1–42 in `SPEC-phase1.md`) is used as-is: Phase 2 calls its use cases and implements its repository interfaces. In this phase the sources move from `trx.attendance.*` to `ph.project.active.*`; behavior does not change.
 
 ## Packages
-- Root package: `ph.project.active` (Kotlin sources, Android `namespace`/`applicationId`, and the iOS bundle identifier).
-- `ph.project.active.domain`: Phase 1 domain, moved from `trx.attendance.domain`. Behavior is unchanged.
-- `ph.project.active.data`: SQLDelight implementations of the Phase 1 repository interfaces, plus the new data contracts below.
-- `ph.project.active.data.db`: generated SQLDelight database `TrxDatabase`. `.sq` files go in `shared/src/commonMain/sqldelight/ph/project/active/data/db/`.
-- `ph.project.active.data.fake`: fakes that stand in for Firebase Auth, Firestore, and upload until a later phase. They live in `commonMain` so Phase 3 can run the app on Android before Firebase exists.
-- `ph.project.active.presentation`: ViewModels, UiState, `UiCopy`, and formatters.
-- Android and iOS host and template sources (`MainActivity`, `App`, `Greeting`, `GreetingUtil`, `Platform*`, `MainViewController`) also use `ph.project.active`. The Android manifest uses a relative `.MainActivity`. The iOS bundle identifier is set as `PRODUCT_BUNDLE_IDENTIFIER=ph.project.active` in `Config.xcconfig`.
+Root package `ph.project.active` (Kotlin sources, Android `namespace`/`applicationId`, iOS `PRODUCT_BUNDLE_IDENTIFIER` in `Config.xcconfig`). Sources moved from `trx.attendance.*`; behavior does not change. Packages are split by role, one public type per file:
+
+- `domain.model`: Phase 1 entities, enums, and result types.
+- `domain.repository`: Phase 1 repository interfaces and helpers (`activeRoster`, `activeClassIds`, `current`, `currentStatus`); in-memory versions in `domain.repository.inmemory`.
+- `domain.usecase`: Phase 1 use cases.
+- `domain.crypto`: Ed25519 key pair and daily-code signing.
+- `data.model`: Phase 2 data contracts (`SignedInAccount`, `PersonProfile`, `RegisterResult`, `SignInResult`, and the like).
+- `data.repository`: SQLDelight implementations (`SqlClassRepository`, `SqlMembershipRepository`, `SqlAttendanceRepository`, `SqlCoachKeyRepository`, `SqlSessionStore`, `SqlPersonRepository`).
+- `data.db`: generated SQLDelight database `TrxDatabase` (AC86). `.sq` files go in `shared/src/commonMain/sqldelight/ph/project/active/data/db/`.
+- `data.fake`: fakes for Firebase Auth, Firestore, and upload (`FakeAuthRepository`, `FakeAttendanceUploader`, `InMemorySecretKeyStore`, `MutableNetworkMonitor`). They live in `commonMain` so Phase 3 can run the app on Android before Firebase exists.
+- `data.sync`: `OutboxSync`.
+- `presentation.common`: shared UI types, `UiCopy`, and formatters.
+- `presentation.<feature>`, one per ViewModel: `root`, `registration`, `guestclasses`, `classdetail`, `studentclasses`, `attend`, `studentsessions`, `invites`, `coachclasses`, `createclass`, `manageclass`, `dailyqr`, `coachattendance`.
+- Android and iOS host and template sources (`MainActivity`, `App`, `Greeting`, `GreetingUtil`, `Platform*`, `MainViewController`) also use `ph.project.active`. The Android manifest uses a relative `.MainActivity`.
 - All of this is in `shared`: `commonMain`/`commonTest`, plus a JVM driver in `jvmMain`/`jvmTest`. Android and iOS drivers are declared but not tested. No `composeApp` work is needed in this phase.
 
 ## Under test
@@ -23,7 +30,7 @@ Baseline: GitHub `main` at `9b553df` (PR #1). The Phase 1 domain (AC1–42 in `S
 
 ## New contracts (exact names)
 ```kotlin
-// ph.project.active.data
+// ph.project.active.data.model (contracts) and data.repository / data.fake (implementations)
 data class SignedInAccount(val id: String, val name: String, val email: String, val role: Role, val employeeId: String?)
 data class PersonProfile(val id: String, val name: String, val role: Role, val employeeId: String?)
 interface SessionStore { val account: StateFlow<SignedInAccount?>; fun save(account: SignedInAccount) }

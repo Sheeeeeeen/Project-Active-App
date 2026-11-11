@@ -3,7 +3,7 @@
 Tested on Linux in `shared/commonTest` with in-memory fakes and an injectable `Clock`.
 No UI, no Firebase, no SQLDelight in this phase. Status: draft until Sheen approves `ARCHITECTURE.md`.
 
-Package: `trx.attendance.domain`.
+Package: originally `trx.attendance.domain`. Since Phase 2 this domain lives under `ph.project.active.domain` (`model`, `repository`, `repository.inmemory`, `usecase`, `crypto`); see `SPEC-phase2.md` Packages. Behavior is unchanged.
 
 ## Use cases under test
 `RegisterStudent`, `RegisterCoach`, `SignIn`, `CreateClass` (session generation), `CancelDate`, `CancelClass`, `RequestToJoin`, `ApproveRequest`, `DeclineRequest`, `InviteByEmployeeId`, `AcceptInvite`, `DeclineInvite`, `RemoveFromRoster`, `GenerateDailyCode`, `RecordAttendance` (includes offline/outbox policy), and queries for public classes, student sessions, today's choosable classes, and coach attendance for a date.
