@@ -1,5 +1,3 @@
-rootProject.name = "ProjectActive"
-
 pluginManagement {
     repositories {
         google {
@@ -14,6 +12,10 @@ pluginManagement {
     }
 }
 
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 dependencyResolutionManagement {
     repositories {
         google {
@@ -26,6 +28,8 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
+rootProject.name = "ProjectActive"
 
 include(":androidApp")
 include(":shared")

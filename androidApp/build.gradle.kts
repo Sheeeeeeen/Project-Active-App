@@ -20,11 +20,11 @@ dependencies {
 }
 
 android {
-    namespace = "ph.com.sheen.projectactive"
+    namespace = "ph.project.active"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "ph.com.sheen.projectactive"
+        applicationId = "ph.project.active"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1

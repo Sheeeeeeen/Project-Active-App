@@ -1,0 +1,44 @@
+package ph.project.active.domain.usecase
+
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
+import ph.project.active.domain.model.CoachAttendanceStatus
+import ph.project.active.domain.repository.AttendanceRepository
+import ph.project.active.domain.repository.MembershipRepository
+import ph.project.active.domain.model.SessionAttendance
+import ph.project.active.domain.model.StudentAttendance
+import ph.project.active.domain.repository.ClassRepository
+import ph.project.active.domain.model.SessionStatus
+import ph.project.active.domain.repository.activeRoster
+import ph.project.active.domain.repository.sessionsOn
+
+/** AC39: per session of the coach's classes on [date], the status of every ACTIVE roster student. */
+class CoachAttendanceForDate(
+    private val classes: ClassRepository,
+    private val memberships: MembershipRepository,
+    private val attendance: AttendanceRepository,
+    private val clock: Clock,
+    private val timeZone: TimeZone,
+) {
+    operator fun invoke(coachId: String, date: LocalDate): List<SessionAttendance> {
+        val dayIsOver = date < clock.todayIn(timeZone)
+        return classes.allClasses()
+            .filter { it.coachId == coachId }
+            .flatMap { classes.sessionsOn(it.id, date) }
+            .filter { it.status == SessionStatus.SCHEDULED }
+            .sortedWith(SESSION_ORDER)
+            .map { session ->
+                val students = memberships.activeRoster(session.classId).map { studentId ->
+                    val status = when {
+                        attendance.find(session.id, studentId) != null -> CoachAttendanceStatus.PRESENT
+                        dayIsOver -> CoachAttendanceStatus.ABSENT
+                        else -> CoachAttendanceStatus.NOT_SCANNED
+                    }
+                    StudentAttendance(studentId, status)
+                }
+                SessionAttendance(session, students)
+            }
+    }
+}

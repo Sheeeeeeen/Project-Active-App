@@ -1,0 +1,255 @@
+CREATE TABLE IF NOT EXISTS signed_in_account (
+  id TEXT NOT NULL PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  role TEXT NOT NULL,
+  employee_id TEXT
+);
+
+CREATE TABLE IF NOT EXISTS person (
+  id TEXT NOT NULL PRIMARY KEY,
+  name TEXT NOT NULL,
+  role TEXT NOT NULL,
+  employee_id TEXT
+);
+
+CREATE TABLE IF NOT EXISTS trx_class (
+  id TEXT NOT NULL PRIMARY KEY,
+  coach_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  visibility TEXT NOT NULL,
+  end_date TEXT,
+  created_on TEXT NOT NULL,
+  cancelled_at TEXT,
+  sort_order INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS class_slot (
+  class_id TEXT NOT NULL,
+  weekday TEXT NOT NULL,
+  start_time TEXT NOT NULL,
+  end_time TEXT NOT NULL,
+  position INTEGER NOT NULL,
+  PRIMARY KEY (class_id, weekday, position)
+);
+
+CREATE TABLE IF NOT EXISTS session (
+  id TEXT NOT NULL PRIMARY KEY,
+  class_id TEXT NOT NULL,
+  date TEXT NOT NULL,
+  start_time TEXT NOT NULL,
+  end_time TEXT NOT NULL,
+  session_number INTEGER NOT NULL,
+  status TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS membership (
+  id TEXT NOT NULL PRIMARY KEY,
+  class_id TEXT NOT NULL,
+  student_id TEXT NOT NULL,
+  status TEXT NOT NULL,
+  sort_order INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS attendance (
+  id TEXT NOT NULL PRIMARY KEY,
+  session_id TEXT NOT NULL,
+  class_id TEXT NOT NULL,
+  student_id TEXT NOT NULL,
+  scanned_at TEXT NOT NULL,
+  status TEXT NOT NULL,
+  upload_state TEXT NOT NULL,
+  UNIQUE (session_id, student_id)
+);
+
+CREATE TABLE IF NOT EXISTS coach_public_key (
+  coach_id TEXT NOT NULL PRIMARY KEY,
+  public_key BLOB NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS id_counter (
+  name TEXT NOT NULL PRIMARY KEY,
+  value INTEGER NOT NULL
+);
+
+selectSignedInAccount:
+SELECT id, name, email, role, employee_id AS employeeId
+FROM signed_in_account
+LIMIT 1;
+
+deleteSignedInAccounts:
+DELETE FROM signed_in_account;
+
+insertSignedInAccount:
+INSERT INTO signed_in_account(id, name, email, role, employee_id)
+VALUES (?, ?, ?, ?, ?);
+
+selectPerson:
+SELECT id, name, role, employee_id AS employeeId
+FROM person
+WHERE id = ?;
+
+upsertPerson:
+INSERT OR REPLACE INTO person(id, name, role, employee_id)
+VALUES (?, ?, ?, ?);
+
+selectClassById:
+SELECT
+  id,
+  coach_id AS coachId,
+  name,
+  visibility,
+  end_date AS endDate,
+  created_on AS createdOn,
+  cancelled_at AS cancelledAt,
+  sort_order AS sortOrder
+FROM trx_class
+WHERE id = ?;
+
+selectAllClasses:
+SELECT
+  id,
+  coach_id AS coachId,
+  name,
+  visibility,
+  end_date AS endDate,
+  created_on AS createdOn,
+  cancelled_at AS cancelledAt,
+  sort_order AS sortOrder
+FROM trx_class
+ORDER BY sort_order;
+
+maxClassSortOrder:
+SELECT COALESCE(MAX(sort_order), 0)
+FROM trx_class;
+
+insertClass:
+INSERT INTO trx_class(id, coach_id, name, visibility, end_date, created_on, cancelled_at, sort_order)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+updateClass:
+UPDATE trx_class
+SET coach_id = ?, name = ?, visibility = ?, end_date = ?, created_on = ?, cancelled_at = ?
+WHERE id = ?;
+
+deleteSlots:
+DELETE FROM class_slot
+WHERE class_id = ?;
+
+insertSlot:
+INSERT INTO class_slot(class_id, weekday, start_time, end_time, position)
+VALUES (?, ?, ?, ?, ?);
+
+selectSlots:
+SELECT weekday, start_time AS startTime, end_time AS endTime, position
+FROM class_slot
+WHERE class_id = ?
+ORDER BY position;
+
+selectSessions:
+SELECT
+  id,
+  class_id AS classId,
+  date,
+  start_time AS startTime,
+  end_time AS endTime,
+  session_number AS sessionNumber,
+  status
+FROM session
+WHERE class_id = ?
+ORDER BY session_number;
+
+selectSessionByRef:
+SELECT
+  id,
+  class_id AS classId,
+  date,
+  start_time AS startTime,
+  end_time AS endTime,
+  session_number AS sessionNumber,
+  status
+FROM session
+WHERE class_id = ? AND date = ? AND start_time = ? AND end_time = ?;
+
+upsertSession:
+INSERT OR REPLACE INTO session(id, class_id, date, start_time, end_time, session_number, status)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+selectMembershipById:
+SELECT id, class_id AS classId, student_id AS studentId, status, sort_order AS sortOrder
+FROM membership
+WHERE id = ?;
+
+selectMembershipsForClass:
+SELECT id, class_id AS classId, student_id AS studentId, status, sort_order AS sortOrder
+FROM membership
+WHERE class_id = ?
+ORDER BY sort_order;
+
+selectAllMemberships:
+SELECT id, class_id AS classId, student_id AS studentId, status, sort_order AS sortOrder
+FROM membership
+ORDER BY sort_order;
+
+maxMembershipSortOrder:
+SELECT COALESCE(MAX(sort_order), 0)
+FROM membership;
+
+insertMembership:
+INSERT INTO membership(id, class_id, student_id, status, sort_order)
+VALUES (?, ?, ?, ?, ?);
+
+updateMembership:
+UPDATE membership
+SET class_id = ?, student_id = ?, status = ?
+WHERE id = ?;
+
+selectAllAttendance:
+SELECT
+  id,
+  session_id AS sessionId,
+  class_id AS classId,
+  student_id AS studentId,
+  scanned_at AS scannedAt,
+  status,
+  upload_state AS uploadState
+FROM attendance;
+
+selectAttendanceByPair:
+SELECT
+  id,
+  session_id AS sessionId,
+  class_id AS classId,
+  student_id AS studentId,
+  scanned_at AS scannedAt,
+  status,
+  upload_state AS uploadState
+FROM attendance
+WHERE session_id = ? AND student_id = ?;
+
+insertAttendance:
+INSERT INTO attendance(id, session_id, class_id, student_id, scanned_at, status, upload_state)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+updateAttendance:
+UPDATE attendance
+SET session_id = ?, class_id = ?, student_id = ?, scanned_at = ?, status = ?, upload_state = ?
+WHERE id = ?;
+
+selectPublicKey:
+SELECT public_key AS publicKey
+FROM coach_public_key
+WHERE coach_id = ?;
+
+upsertPublicKey:
+INSERT OR REPLACE INTO coach_public_key(coach_id, public_key)
+VALUES (?, ?);
+
+selectIdCounter:
+SELECT value
+FROM id_counter
+WHERE name = ?;
+
+upsertIdCounter:
+INSERT OR REPLACE INTO id_counter(name, value)
+VALUES (?, ?);
