@@ -1,12 +1,15 @@
 # shared (KMP)
 
-Sheen's Compose Multiplatform library (`ph.com.sheen.projectactive`) plus the Phase 1 TRX attendance domain (`trx.attendance.domain`).
+Product code for TRX class attendance. Package root is `ph.project.active`.
 
-Domain sources: `src/commonMain/kotlin/trx/attendance/domain/`.
-Tests: `src/commonTest/kotlin/trx/attendance/domain/`. Each test name starts with its acceptance-criterion number from `SPEC-phase1.md` (AC1–AC41).
+- `domain.model`, `domain.repository`, `domain.repository.inmemory`, `domain.usecase`, `domain.crypto`
+- `data.model`, `data.repository`, `data.fake`, `data.sync`, `data.db` (`TrxDatabase`)
+- `presentation.common` and one `presentation.<feature>` folder per ViewModel
 
-Run the domain tests on the JVM (JDK Ed25519). iOS Ed25519 is still the Phase 1 stub and is not built on Linux.
+Phase 1 tests live in `src/commonTest/kotlin/ph/project/active/domain/`. Phase 2 tests live under `src/commonTest/kotlin/ph/project/active/` and run as `phase2JvmTest`, which `:shared:jvmTest` finalizes.
 
 ```
 ./gradlew :shared:jvmTest
 ```
+
+JDK 17 comes from `jvmToolchain(17)`. iOS targets stay declared and are not built on Linux.

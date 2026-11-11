@@ -33,6 +33,7 @@ Thumbs.db
 # Xcode / iOS
 iosApp/DerivedData/
 iosApp/.idea/
+xcuserdata/
 *.xcodeproj/xcuserdata/
 *.xcworkspace/xcuserdata/
 DerivedData/
