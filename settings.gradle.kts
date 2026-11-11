@@ -1,21 +1,31 @@
+rootProject.name = "ProjectActive"
+
 pluginManagement {
     repositories {
-        google()
-        gradlePluginPortal()
+        google {
+            mavenContent {
+                includeGroupAndSubgroups("androidx")
+                includeGroupAndSubgroups("com.android")
+                includeGroupAndSubgroups("com.google")
+            }
+        }
         mavenCentral()
+        gradlePluginPortal()
     }
 }
 
 dependencyResolutionManagement {
     repositories {
-        google()
+        google {
+            mavenContent {
+                includeGroupAndSubgroups("androidx")
+                includeGroupAndSubgroups("com.android")
+                includeGroupAndSubgroups("com.google")
+            }
+        }
         mavenCentral()
     }
 }
 
-rootProject.name = "trx-attendance"
-
-include(":shared")      // domain / data / presentation (Phase 1 tests live here)
-include(":composeApp")  // shared Compose Multiplatform UI (empty in Phase 1)
-include(":androidApp")  // thin Android host (Play Store entry point)
-// iosApp/ is a thin Xcode host, not a Gradle module. It embeds composeApp's ComposeApp framework.
+include(":androidApp")
+include(":shared")

@@ -1,26 +1,70 @@
-// AC42: `./gradlew :shared:jvmTest` must pass on Linux once the Phase 1 domain is implemented.
-// iOS targets are declared so the module shape is right, but they are not built on Linux.
-// Phase 1 deliberately has no Android target here so the tests need no Android SDK; composeApp's
-// Android target consumes the jvm() variant. Add androidTarget() in a later phase if needed.
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    kotlin("multiplatform")
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.androidMultiplatformLibrary)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
 }
 
 kotlin {
-    jvmToolchain(17)
-
+    // Phase 1 domain tests run as :shared:jvmTest (JDK Ed25519). Sheen's Android and iOS
+    // targets stay in place; iOS Ed25519 remains the Phase 1 stub.
     jvm()
-    iosArm64()
-    iosSimulatorArm64()
 
-    sourceSets {
-        commonMain.dependencies {
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-        }
-        commonTest.dependencies {
-            implementation(kotlin("test"))
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    listOf(
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "Shared"
+            isStatic = true
         }
     }
+    android {
+       namespace = "ph.com.sheen.projectactive.shared"
+       compileSdk = libs.versions.android.compileSdk.get().toInt()
+       minSdk = libs.versions.android.minSdk.get().toInt()
+       compilerOptions {
+           jvmTarget = JvmTarget.JVM_11
+       }
+       androidResources {
+           enable = true
+       }
+       withHostTest {
+           isIncludeAndroidResources = true
+       }
+       withDeviceTestBuilder {
+           sourceSetTreeName = "test"
+       }.configure {
+           instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+       }
+    }
+    sourceSets {
+        androidMain.dependencies {
+            implementation(libs.compose.uiToolingPreview)
+            implementation(libs.compose.uiTooling)
+        }
+        commonMain.dependencies {
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.components.resources)
+            implementation(libs.compose.uiToolingPreview)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
+        getByName("androidDeviceTest").dependencies {
+            implementation(libs.androidx.testRunner)
+        }
+    }
+}
+
+dependencies {
+    androidRuntimeClasspath(libs.compose.uiTooling)
 }
