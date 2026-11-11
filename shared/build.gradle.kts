@@ -8,6 +8,10 @@ plugins {
 }
 
 kotlin {
+    // Phase 1 domain tests run as :shared:jvmTest (JDK Ed25519). Sheen's Android and iOS
+    // targets stay in place; iOS Ed25519 remains the Phase 1 stub.
+    jvm()
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -42,6 +46,7 @@ kotlin {
             implementation(libs.compose.uiTooling)
         }
         commonMain.dependencies {
+            implementation(libs.kotlinx.datetime)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
