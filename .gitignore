@@ -1,0 +1,14 @@
+# Gradle
+.gradle/
+gradle-build/
+shared/build/
+.kotlin/
+local.properties
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+
+# Design generator dependencies (the build/ scripts themselves are tracked)
+build/node_modules/
