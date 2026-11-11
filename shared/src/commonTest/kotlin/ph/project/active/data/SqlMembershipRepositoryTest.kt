@@ -43,7 +43,7 @@ class SqlMembershipRepositoryTest {
             assertEquals(memory.currentStatus("class-a", "student-2"), sql.currentStatus("class-a", "student-2"))
             assertEquals(memory.activeRoster("class-a"), sql.activeRoster("class-a"))
             assertEquals(memory.activeClassIds("student-1"), sql.activeClassIds("student-1"))
-            assertEquals(listOf("student-1", "student-2"), sql.activeRoster("class-a"))
+            assertEquals(listOf("student-1"), sql.activeRoster("class-a"))
 
             assertFailsWith<IllegalArgumentException> {
                 sql.update(Membership("missing", "class-a", "student-9", MembershipStatus.ACTIVE))

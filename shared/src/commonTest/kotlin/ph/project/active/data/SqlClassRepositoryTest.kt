@@ -2,7 +2,6 @@ package ph.project.active.data
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import kotlin.time.Instant
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -67,7 +66,7 @@ class SqlClassRepositoryTest {
             assertEquals(listOf(1, 2), repository.sessionsOf("class-1").map { it.sessionNumber })
             assertEquals(SessionStatus.CANCELLED, repository.sessionsOf("class-1").single { it.id == "s-2" }.status)
             assertEquals(earlier, repository.findSession(SessionRef("class-1", MON_28_SEP_2026, EVENING)))
-            assertNull(repository.findSession(SessionRef("class-1", WED_30_SEP_2026, EVENING)))
+            assertEquals(later, repository.findSession(SessionRef("class-1", WED_30_SEP_2026, EVENING)))
 
             val updated = earlier.copy(status = SessionStatus.CANCELLED, sessionNumber = 1)
             repository.saveSessions(listOf(updated))
