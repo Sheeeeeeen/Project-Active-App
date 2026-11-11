@@ -4,14 +4,16 @@ Status: **approved by Sheen, 11 Nov 2026.** The draft decisions below are locked
 
 Tested on Linux in `shared/commonTest`, run as `:shared:jvmTest`, with a JVM SQLDelight driver, fakes, an injectable `Clock` and `TimeZone`, and a switchable network status. No Compose screens, no Firebase SDK, no security rules, no store signing.
 
-Baseline: GitHub `main` at `9b553df` (PR #1). The Phase 1 domain (`trx.attendance.domain`, AC1–42 in `SPEC-phase1.md`) is used as-is: Phase 2 calls its use cases and implements its repository interfaces. It does not change them.
+Baseline: GitHub `main` at `9b553df` (PR #1). The Phase 1 domain (AC1–42 in `SPEC-phase1.md`) is used as-is: Phase 2 calls its use cases and implements its repository interfaces. In this phase the sources move from `trx.attendance.*` to `ph.project.active.*`; behavior does not change.
 
 ## Packages
-- `trx.attendance.domain`: Phase 1, unchanged.
-- `trx.attendance.data`: SQLDelight implementations of the Phase 1 repository interfaces, plus the new data contracts below.
-- `trx.attendance.data.db`: generated SQLDelight database `TrxDatabase`. `.sq` files go in `shared/src/commonMain/sqldelight/trx/attendance/data/db/`.
-- `trx.attendance.data.fake`: fakes that stand in for Firebase Auth, Firestore, and upload until a later phase. They live in `commonMain` so Phase 3 can run the app on Android before Firebase exists.
-- `trx.attendance.presentation`: ViewModels, UiState, `UiCopy`, and formatters.
+- Root package: `ph.project.active` (Kotlin sources, Android `namespace`/`applicationId`, and the iOS bundle identifier).
+- `ph.project.active.domain`: Phase 1 domain, moved from `trx.attendance.domain`. Behavior is unchanged.
+- `ph.project.active.data`: SQLDelight implementations of the Phase 1 repository interfaces, plus the new data contracts below.
+- `ph.project.active.data.db`: generated SQLDelight database `TrxDatabase`. `.sq` files go in `shared/src/commonMain/sqldelight/ph/project/active/data/db/`.
+- `ph.project.active.data.fake`: fakes that stand in for Firebase Auth, Firestore, and upload until a later phase. They live in `commonMain` so Phase 3 can run the app on Android before Firebase exists.
+- `ph.project.active.presentation`: ViewModels, UiState, `UiCopy`, and formatters.
+- Android and iOS host and template sources (`MainActivity`, `App`, `Greeting`, `GreetingUtil`, `Platform*`, `MainViewController`) also use `ph.project.active`. The Android manifest uses a relative `.MainActivity`. The iOS bundle identifier is set as `PRODUCT_BUNDLE_IDENTIFIER=ph.project.active` in `Config.xcconfig`.
 - All of this is in `shared`: `commonMain`/`commonTest`, plus a JVM driver in `jvmMain`/`jvmTest`. Android and iOS drivers are declared but not tested. No `composeApp` work is needed in this phase.
 
 ## Under test
@@ -21,7 +23,7 @@ Baseline: GitHub `main` at `9b553df` (PR #1). The Phase 1 domain (`trx.attendanc
 
 ## New contracts (exact names)
 ```kotlin
-// trx.attendance.data
+// ph.project.active.data
 data class SignedInAccount(val id: String, val name: String, val email: String, val role: Role, val employeeId: String?)
 data class PersonProfile(val id: String, val name: String, val role: Role, val employeeId: String?)
 interface SessionStore { val account: StateFlow<SignedInAccount?>; fun save(account: SignedInAccount) }
@@ -148,9 +150,9 @@ class OutboxSync(attendance: AttendanceRepository, uploader: AttendanceUploader,
 84. `UiCopy` returns exactly the strings in the copy table below for each typed value. Values marked *open* have no string in Phase 2; tests assert only the typed value.
 
 ### Build
-85. `JAVA_HOME=/home/box/tools/jdk17 ./gradlew :shared:jvmTest`, run on a checkout of main, passes every existing test (113 on `9b553df`: 112 Phase 1 domain + 1 template test) and every Phase 2 test, SQLDelight JVM tests included. iOS targets stay declared and are not built.
-86. Adds to `gradle/libs.versions.toml`: the SQLDelight plugin (`app.cash.sqldelight`, database `TrxDatabase`, package `trx.attendance.data.db`), `sqlite-driver` on JVM, `android-driver`/`native-driver` declared and untested, `kotlinx-coroutines-core` in `commonMain`, and `kotlinx-coroutines-test` in `commonTest`. All versions must be compatible with Kotlin 2.4.21 and Gradle 9.5.1.
-87. `git diff 9b553df -- shared/src/*/kotlin/trx/attendance/domain` is empty. No Compose screen and no Firebase dependency is added.
+85. `JAVA_HOME=/home/box/tools/jdk17 ./gradlew :shared:jvmTest`, run on a checkout of main, passes every existing test (113 on `9b553df`: 112 Phase 1 domain + 1 template test) and every Phase 2 test, SQLDelight JVM tests included. After the package rename, those 112 Phase 1 tests live under `ph.project.active.domain`; there should be no leftover `trx.attendance.domain` test classes. iOS targets stay declared and are not built.
+86. Adds to `gradle/libs.versions.toml`: the SQLDelight plugin (`app.cash.sqldelight`, database `TrxDatabase`, package `ph.project.active.data.db`), `sqlite-driver` on JVM, `android-driver`/`native-driver` declared and untested, `kotlinx-coroutines-core` in `commonMain`, and `kotlinx-coroutines-test` in `commonTest`. All versions must be compatible with Kotlin 2.4.21 and Gradle 9.5.1.
+87. Phase 1 domain behavior is unchanged, but all Kotlin and Swift sources and tests move to `ph.project.active`, including `domain`, `data`, `presentation`, and the Android and iOS host and template sources (`MainActivity`, `App`, `Greeting`, `GreetingUtil`, `Platform*`, `MainViewController`). The Android manifest uses a relative `.MainActivity`. Android `namespace` and `applicationId`, and the iOS `PRODUCT_BUNDLE_IDENTIFIER` in `Config.xcconfig`, are `ph.project.active`. No Compose screen and no Firebase dependency is added.
 
 ## Copy table (exact strings; source frame in brackets)
 | Typed value | String |
@@ -192,3 +194,4 @@ Sheen approved the Phase 2 criteria as written. These answers are now locked:
 6. **Sessions order.** Latest first in every group (AC59).
 7. **Create-class defaults.** Starts with Public and no end date (AC62).
 8. **Sign-out and account deletion.** Out of scope for Phase 2. Needed before App Store submission, not in this phase.
+9. **Package name.** The project package is `ph.project.active`. Kotlin sources live under `ph.project.active.domain`, `.data`, and `.presentation`. Android and iOS host and template sources also use `ph.project.active`. Android `namespace`/`applicationId` and the iOS `PRODUCT_BUNDLE_IDENTIFIER` in `Config.xcconfig` are `ph.project.active`. The Android manifest uses a relative `.MainActivity`. Phase 1 behavior stays the same; Builder finishes any remaining host and template moves on this PR.
