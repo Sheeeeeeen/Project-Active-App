@@ -7,7 +7,7 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.runComposeUiTest
+import ph.project.active.ui.testing.runFlow1UiTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -29,7 +29,7 @@ import ph.project.active.ui.theme.TrxThemeModeKey
 @OptIn(ExperimentalTestApi::class)
 class F1CoachRegistrationTest {
     @Test
-    fun F1_AC18_oneShakeShowsCoachRegistrationAndTheNextRestoresStudent() = runComposeUiTest {
+    fun F1_AC18_oneShakeShowsCoachRegistrationAndTheNextRestoresStudent() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val shakes = FakeShakeSource()
             val viewModel = world.registration(RegistrationOrigin.FromClassList)
@@ -53,7 +53,7 @@ class F1CoachRegistrationTest {
     }
 
     @Test
-    fun F1_AC19_shakeKeepsTypedNameEmailPasswordAndRestoresEmployeeId() = runComposeUiTest {
+    fun F1_AC19_shakeKeepsTypedNameEmailPasswordAndRestoresEmployeeId() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val shakes = FakeShakeSource()
             val viewModel = world.registration(RegistrationOrigin.FromClassList)
@@ -77,7 +77,7 @@ class F1CoachRegistrationTest {
     }
 
     @Test
-    fun F1_AC20_neitherModeShowsARoleControlOrTheWordShake() = runComposeUiTest {
+    fun F1_AC20_neitherModeShowsARoleControlOrTheWordShake() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val shakes = FakeShakeSource()
             showRoute(world.registration(RegistrationOrigin.FromClassList), shakes)
@@ -89,7 +89,7 @@ class F1CoachRegistrationTest {
     }
 
     @Test
-    fun F1_AC21_createCoachAccountShowsCoachHome() = runComposeUiTest {
+    fun F1_AC21_createCoachAccountShowsCoachHome() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val shakes = FakeShakeSource()
             mountNav(world, shakeSource = shakes)

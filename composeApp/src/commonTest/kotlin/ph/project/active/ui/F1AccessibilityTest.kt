@@ -9,7 +9,7 @@ import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.runComposeUiTest
+import ph.project.active.ui.testing.runFlow1UiTest
 import androidx.compose.ui.unit.dp
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -25,7 +25,7 @@ import ph.project.active.ui.testing.typeInto
 @OptIn(ExperimentalTestApi::class)
 class F1AccessibilityTest {
     @Test
-    fun F1_AC39_registrationControlsMeetTouchTargets() = runComposeUiTest {
+    fun F1_AC39_registrationControlsMeetTouchTargets() = runFlow1UiTest {
         Flow1Harness().use { world ->
             showBound(world.registration(RegistrationOrigin.FromClassList))
             listOf(
@@ -47,7 +47,7 @@ class F1AccessibilityTest {
     }
 
     @Test
-    fun F1_AC39_guestRegisterButtonIsAtLeast48Dp() = runComposeUiTest {
+    fun F1_AC39_guestRegisterButtonIsAtLeast48Dp() = runFlow1UiTest {
         Flow1Harness().use { world ->
             mountNav(world)
             tag("guest_home_register_button").assertHeightIsAtLeast(48.dp)
@@ -55,7 +55,7 @@ class F1AccessibilityTest {
     }
 
     @Test
-    fun F1_AC40_errorsPairAnIconWithTextAndPasswordTogglesAreNamed() = runComposeUiTest {
+    fun F1_AC40_errorsPairAnIconWithTextAndPasswordTogglesAreNamed() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val viewModel = world.registration(RegistrationOrigin.FromClassList)
             showBound(viewModel)

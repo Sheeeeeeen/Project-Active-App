@@ -7,7 +7,7 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.runComposeUiTest
+import ph.project.active.ui.testing.runFlow1UiTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -23,7 +23,7 @@ import ph.project.active.ui.testing.typeInto
 @OptIn(ExperimentalTestApi::class)
 class F1RegistrationFieldsTest {
     @Test
-    fun F1_AC11_typingUpdatesEachViewModelFieldAndTheFieldShowsIt() = runComposeUiTest {
+    fun F1_AC11_typingUpdatesEachViewModelFieldAndTheFieldShowsIt() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val viewModel = world.registration(RegistrationOrigin.FromClassList)
             showBound(viewModel)
@@ -48,7 +48,7 @@ class F1RegistrationFieldsTest {
     }
 
     @Test
-    fun F1_AC12_passwordTogglesRevealAndHideWithoutChangingViewModelState() = runComposeUiTest {
+    fun F1_AC12_passwordTogglesRevealAndHideWithoutChangingViewModelState() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val viewModel = world.registration(RegistrationOrigin.FromClassList)
             showBound(viewModel)
@@ -73,7 +73,7 @@ class F1RegistrationFieldsTest {
     }
 
     @Test
-    fun F1_AC13_submitFollowsCanSubmitAndSignInStaysEnabled() = runComposeUiTest {
+    fun F1_AC13_submitFollowsCanSubmitAndSignInStaysEnabled() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val viewModel = world.registration(RegistrationOrigin.FromClassList)
             showBound(viewModel)
@@ -91,7 +91,7 @@ class F1RegistrationFieldsTest {
     }
 
     @Test
-    fun F1_AC17_editingAFieldClearsOnlyThatFieldsError() = runComposeUiTest {
+    fun F1_AC17_editingAFieldClearsOnlyThatFieldsError() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val viewModel = world.registration(RegistrationOrigin.FromClassList)
             showBound(viewModel)

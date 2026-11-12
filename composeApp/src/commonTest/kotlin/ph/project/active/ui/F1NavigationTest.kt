@@ -5,7 +5,7 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.runComposeUiTest
+import ph.project.active.ui.testing.runFlow1UiTest
 import java.nio.file.Files
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -29,7 +29,7 @@ import ph.project.active.ui.testing.typeInto
 @OptIn(ExperimentalTestApi::class)
 class F1NavigationTest {
     @Test
-    fun F1_AC32_guestLaunchOpensRegistrationOnce() = runComposeUiTest {
+    fun F1_AC32_guestLaunchOpensRegistrationOnce() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val nav = mountNav(world)
             assertEquals(listOf("GuestHome"), Flow1Compose.screenRoutes(nav))
@@ -42,7 +42,7 @@ class F1NavigationTest {
     }
 
     @Test
-    fun F1_AC32_tappingRegisterTwiceLeavesOneRegistrationEntry() = runComposeUiTest {
+    fun F1_AC32_tappingRegisterTwiceLeavesOneRegistrationEntry() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val nav = mountNav(world)
             val node = tag("guest_home_register_button").fetchSemanticsNode()
@@ -55,7 +55,7 @@ class F1NavigationTest {
     }
 
     @Test
-    fun F1_AC33_studentRegistrationReplacesTheGuestGraph() = runComposeUiTest {
+    fun F1_AC33_studentRegistrationReplacesTheGuestGraph() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val nav = mountNav(world)
             tag("guest_home_register_button").performClick()
@@ -67,7 +67,7 @@ class F1NavigationTest {
     }
 
     @Test
-    fun F1_AC33_coachRegistrationReplacesTheGuestGraph() = runComposeUiTest {
+    fun F1_AC33_coachRegistrationReplacesTheGuestGraph() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val shakes = ph.project.active.ui.testing.FakeShakeSource()
             val nav = mountNav(world, shakeSource = shakes)
@@ -84,7 +84,7 @@ class F1NavigationTest {
     }
 
     @Test
-    fun F1_AC34_requestRegistrationOpensStudentHomeAndSendsOneRequest() = runComposeUiTest {
+    fun F1_AC34_requestRegistrationOpensStudentHomeAndSendsOneRequest() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val trxClass = world.coreBurn()
             val nav = mountNav(world)
@@ -99,7 +99,7 @@ class F1NavigationTest {
     }
 
     @Test
-    fun F1_AC35_successLeavesOneSignedInEntryAfterRecomposition() = runComposeUiTest {
+    fun F1_AC35_successLeavesOneSignedInEntryAfterRecomposition() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val factory = world.factory()
             val tick = mutableStateOf(0)
@@ -131,7 +131,7 @@ class F1NavigationTest {
     }
 
     @Test
-    fun F1_AC36_navBarBackPopsToGuestHomeAndCreatesNoAccount() = runComposeUiTest {
+    fun F1_AC36_navBarBackPopsToGuestHomeAndCreatesNoAccount() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val nav = mountNav(world)
             tag("guest_home_register_button").performClick()
@@ -146,7 +146,7 @@ class F1NavigationTest {
     }
 
     @Test
-    fun F1_AC37_cachedStudentOrCoachSkipsTheGuestGraph() = runComposeUiTest {
+    fun F1_AC37_cachedStudentOrCoachSkipsTheGuestGraph() = runFlow1UiTest {
         Flow1Harness().use { world ->
             world.session.save(SignedInAccount("s", "Ella Navarro", "ella.navarro@acme.test", Role.STUDENT, "EMP-20417"))
             val nav = mountNav(world)
@@ -169,13 +169,13 @@ class F1NavigationTest {
         val account = SignedInAccount("s", "Ella Navarro", "ella.navarro@acme.test", Role.STUDENT, "EMP-20417")
         Flow1Harness(path = path, createSchema = true).use { first ->
             first.session.save(account)
-            runComposeUiTest {
+            runFlow1UiTest {
                 showApp(first)
                 tag("student_home").assertTextContains("Ella Navarro")
             }
         }
         Flow1Harness(path = path, createSchema = false).use { second ->
-            runComposeUiTest {
+            runFlow1UiTest {
                 showApp(second)
                 tag("student_home").assertTextContains("Ella Navarro")
             }

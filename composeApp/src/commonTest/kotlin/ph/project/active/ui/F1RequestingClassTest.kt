@@ -2,7 +2,7 @@ package ph.project.active.ui
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.runComposeUiTest
+import ph.project.active.ui.testing.runFlow1UiTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import ph.project.active.domain.model.Role
@@ -18,7 +18,7 @@ import ph.project.active.ui.testing.tag
 @OptIn(ExperimentalTestApi::class)
 class F1RequestingClassTest {
     @Test
-    fun F1_AC23_requestToJoinShowsTheClassCardNoteAndBackLabel() = runComposeUiTest {
+    fun F1_AC23_requestToJoinShowsTheClassCardNoteAndBackLabel() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val trxClass = world.coreBurn()
             val nav = mountNav(world)
@@ -34,7 +34,7 @@ class F1RequestingClassTest {
     }
 
     @Test
-    fun F1_AC24_shakeOnRequestToJoinChangesNothing() = runComposeUiTest {
+    fun F1_AC24_shakeOnRequestToJoinChangesNothing() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val trxClass = world.coreBurn()
             val shakes = FakeShakeSource()
@@ -52,7 +52,7 @@ class F1RequestingClassTest {
     }
 
     @Test
-    fun F1_AC25_unknownClassHidesTheCardButKeepsTheRequestCopy() = runComposeUiTest {
+    fun F1_AC25_unknownClassHidesTheCardButKeepsTheRequestCopy() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val nav = mountNav(world)
             openRegistration(nav, "missing-class")

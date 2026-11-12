@@ -3,7 +3,7 @@ package ph.project.active.ui
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.runComposeUiTest
+import ph.project.active.ui.testing.runFlow1UiTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -23,7 +23,7 @@ import ph.project.active.ui.testing.typeInto
 @OptIn(ExperimentalTestApi::class)
 class F1SignInTest {
     @Test
-    fun F1_AC27_blankSignInShowsRequiredAndDoesNotCallSignIn() = runComposeUiTest {
+    fun F1_AC27_blankSignInShowsRequiredAndDoesNotCallSignIn() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val gated = GatedAuthRepository(world.auth)
             val nav = mountNav(world, auth = gated)
@@ -38,7 +38,7 @@ class F1SignInTest {
     }
 
     @Test
-    fun F1_AC28_wrongPasswordShowsAuthFailedAndStaysOnRegistration() = runComposeUiTest {
+    fun F1_AC28_wrongPasswordShowsAuthFailedAndStaysOnRegistration() = runFlow1UiTest {
         Flow1Harness().use { world ->
             world.seedStudent()
             val nav = mountNav(world)
@@ -54,7 +54,7 @@ class F1SignInTest {
     }
 
     @Test
-    fun F1_AC29_signInLandsOnTheAccountRoleFromEitherMode() = runComposeUiTest {
+    fun F1_AC29_signInLandsOnTheAccountRoleFromEitherMode() {
         signInLands("student", shakeFirst = false, homeTag = "student_home")
         signInLands("coach", shakeFirst = true, homeTag = "coach_home")
         signInLands("coach", shakeFirst = false, homeTag = "coach_home")
@@ -62,7 +62,7 @@ class F1SignInTest {
     }
 
     @Test
-    fun F1_AC30_studentSignInFromRequestSendsOnePendingRequest() = runComposeUiTest {
+    fun F1_AC30_studentSignInFromRequestSendsOnePendingRequest() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val trxClass = world.coreBurn()
             world.seedStudent()
@@ -80,7 +80,7 @@ class F1SignInTest {
     }
 
     @Test
-    fun F1_AC30_coachSignInFromRequestCreatesNoMembership() = runComposeUiTest {
+    fun F1_AC30_coachSignInFromRequestCreatesNoMembership() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val trxClass = world.coreBurn()
             world.seedCoach()
@@ -95,7 +95,7 @@ class F1SignInTest {
         }
     }
 
-    private fun signInLands(role: String, shakeFirst: Boolean, homeTag: String) = runComposeUiTest {
+    private fun signInLands(role: String, shakeFirst: Boolean, homeTag: String) = runFlow1UiTest {
         Flow1Harness().use { world ->
             val email = if (role == "coach") {
                 world.seedCoach()

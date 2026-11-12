@@ -2,7 +2,7 @@ package ph.project.active.ui
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.runComposeUiTest
+import ph.project.active.ui.testing.runFlow1UiTest
 import kotlin.test.Test
 import ph.project.active.presentation.common.Field
 import ph.project.active.presentation.common.FieldError
@@ -17,7 +17,7 @@ import ph.project.active.ui.testing.tag
 @OptIn(ExperimentalTestApi::class)
 class F1RegistrationCopyTest {
     @Test
-    fun F1_AC10_freshStudentScreenShowsB1CopyAndNoRequestingCard() = runComposeUiTest {
+    fun F1_AC10_freshStudentScreenShowsB1CopyAndNoRequestingCard() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val viewModel = world.registration(RegistrationOrigin.FromClassList)
             showBound(viewModel)
@@ -46,7 +46,7 @@ class F1RegistrationCopyTest {
     }
 
     @Test
-    fun F1_AC16_eachFieldErrorRendersItsCopy() = runComposeUiTest {
+    fun F1_AC16_eachFieldErrorRendersItsCopy() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val base = world.registration(RegistrationOrigin.FromClassList).state.value
             showScreen(

@@ -12,7 +12,13 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.runComposeUiTest
 import kotlin.test.assertTrue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import androidx.navigation.NavHostController
 import ph.project.active.data.repository.AuthRepository
 import ph.project.active.presentation.common.RegistrationOrigin
@@ -146,6 +152,16 @@ object Flow1Compose {
             destination.hasRoute(GuestHome::class) ||
             destination.hasRoute(Registration::class) ||
             destination.parent?.hasRoute(GuestGraph::class) == true
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalTestApi::class)
+fun runFlow1UiTest(block: ComposeUiTest.() -> Unit) {
+    Dispatchers.setMain(UnconfinedTestDispatcher())
+    try {
+        runComposeUiTest(block = block)
+    } finally {
+        Dispatchers.resetMain()
     }
 }
 

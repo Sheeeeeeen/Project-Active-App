@@ -7,7 +7,7 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.runComposeUiTest
+import ph.project.active.ui.testing.runFlow1UiTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -25,7 +25,7 @@ import ph.project.active.ui.testing.typeInto
 @OptIn(ExperimentalTestApi::class)
 class F1RegistrationSubmitTest {
     @Test
-    fun F1_AC14_createsOneStudentAccount() = runComposeUiTest {
+    fun F1_AC14_createsOneStudentAccount() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val viewModel = world.registration(RegistrationOrigin.FromClassList)
             showBound(viewModel)
@@ -44,7 +44,7 @@ class F1RegistrationSubmitTest {
     }
 
     @Test
-    fun F1_AC15_invalidEmailShowsIconAndNoAccount() = runComposeUiTest {
+    fun F1_AC15_invalidEmailShowsIconAndNoAccount() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val viewModel = world.registration(RegistrationOrigin.FromClassList)
             showBound(viewModel)
@@ -60,7 +60,7 @@ class F1RegistrationSubmitTest {
     }
 
     @Test
-    fun F1_AC15_takenEmployeeIdShowsIconAndNoAccount() = runComposeUiTest {
+    fun F1_AC15_takenEmployeeIdShowsIconAndNoAccount() = runFlow1UiTest {
         Flow1Harness().use { world ->
             world.seedStudent(employeeId = "EMP-20611")
             val viewModel = world.registration(RegistrationOrigin.FromClassList)
@@ -77,7 +77,7 @@ class F1RegistrationSubmitTest {
     }
 
     @Test
-    fun F1_AC26_gatedSubmitShowsProgressDisablesTheFormAndIgnoresASecondTap() = runComposeUiTest {
+    fun F1_AC26_gatedSubmitShowsProgressDisablesTheFormAndIgnoresASecondTap() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val gated = GatedAuthRepository(world.auth)
             val viewModel = world.registration(RegistrationOrigin.FromClassList, gated)
@@ -109,7 +109,7 @@ class F1RegistrationSubmitTest {
     }
 
     @Test
-    fun F1_AC26_gatedSignInShowsProgressAndDisablesSubmit() = runComposeUiTest {
+    fun F1_AC26_gatedSignInShowsProgressAndDisablesSubmit() = runFlow1UiTest {
         Flow1Harness().use { world ->
             world.seedStudent()
             val gated = GatedAuthRepository(world.auth)

@@ -5,7 +5,7 @@ import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.runComposeUiTest
+import ph.project.active.ui.testing.runFlow1UiTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -20,7 +20,7 @@ import ph.project.active.ui.testing.typeInto
 @OptIn(ExperimentalTestApi::class)
 class F1HomePlaceholderTest {
     @Test
-    fun F1_AC38_homesShowTheAccountNameOpenClassIdAndNoSignOut() = runComposeUiTest {
+    fun F1_AC38_homesShowTheAccountNameOpenClassIdAndNoSignOut() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val trxClass = world.coreBurn()
             val nav = mountNav(world)
@@ -38,7 +38,7 @@ class F1HomePlaceholderTest {
     }
 
     @Test
-    fun F1_AC38_coachHomeShowsTheCoachNameAndNoSignOut() = runComposeUiTest {
+    fun F1_AC38_coachHomeShowsTheCoachNameAndNoSignOut() = runFlow1UiTest {
         Flow1Harness().use { world ->
             val shakes = ph.project.active.ui.testing.FakeShakeSource()
             mountNav(world, shakeSource = shakes)
@@ -57,7 +57,7 @@ class F1HomePlaceholderTest {
     }
 
     @Test
-    fun F1_AC38_studentHomeWithoutAClassOmitsTheOpenClassTag() = runComposeUiTest {
+    fun F1_AC38_studentHomeWithoutAClassOmitsTheOpenClassTag() = runFlow1UiTest {
         Flow1Harness().use { world ->
             mountNav(world)
             tag("guest_home_register_button").performClick()
