@@ -32,19 +32,21 @@ fun RegistrationRoute(
     val parentShakes = LocalRegistrationShakes.current
     val shakes = parentShakes ?: remember { RegistrationShakeCollection() }
     val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(shakes, viewModel, shakeSource, lifecycleOwner) {
-        shakes.ensure(scope, shakeSource, viewModel)
+    DisposableEffect(shakes, viewModel, shakeSource, lifecycleOwner, origin) {
+        val collectShakes = origin !is RegistrationOrigin.FromRequestToJoin
         val observer = LifecycleEventObserver { _, event ->
+            if (!collectShakes) return@LifecycleEventObserver
             when (event) {
                 Lifecycle.Event.ON_RESUME -> shakes.ensure(scope, shakeSource, viewModel)
                 Lifecycle.Event.ON_PAUSE -> shakes.stop(viewModel)
                 else -> Unit
             }
         }
+        if (collectShakes) shakes.ensure(scope, shakeSource, viewModel)
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
-            shakes.stop(viewModel)
+            if (collectShakes) shakes.stop(viewModel)
         }
     }
     LaunchedEffect(viewModel) {

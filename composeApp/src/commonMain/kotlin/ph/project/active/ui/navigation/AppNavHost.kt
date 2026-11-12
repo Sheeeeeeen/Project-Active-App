@@ -124,8 +124,10 @@ private fun NavHostController.follow(
         is Navigation.OpenRegistration -> {
             val classId = (event.origin as? RegistrationOrigin.FromRequestToJoin)?.classId
             navigate(Registration(classId)) { launchSingleTop = true }
-            registrationViewModel?.invoke(event.origin)?.let { viewModel ->
-                shakes.ensure(scope, shakeSource, viewModel)
+            if (event.origin !is RegistrationOrigin.FromRequestToJoin) {
+                registrationViewModel?.invoke(event.origin)?.let { viewModel ->
+                    shakes.ensure(scope, shakeSource, viewModel)
+                }
             }
         }
         is Navigation.OpenSignedInRoot -> {
