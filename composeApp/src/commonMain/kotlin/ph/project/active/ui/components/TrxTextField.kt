@@ -14,6 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,14 +26,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.password
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
@@ -95,7 +100,12 @@ fun TrxTextField(
                     VisualTransformation.None
                 },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = if (password && passwordVisible) KeyboardType.Text else keyboardType,
+                    keyboardType = when {
+                        password && passwordVisible -> KeyboardType.PasswordVisible
+                        password -> KeyboardType.Password
+                        else -> keyboardType
+                    },
+                    autoCorrectEnabled = if (password) false else true,
                 ),
                 interactionSource = interaction,
                 modifier = Modifier
@@ -122,13 +132,17 @@ fun TrxTextField(
                         .size(TrxSpacing.touchTarget)
                         .testTag(passwordToggleTag)
                         .clickable(enabled = enabled, onClick = onTogglePassword)
-                        .semantics { contentDescription = description },
+                        .semantics {
+                            role = Role.Button
+                            contentDescription = description
+                        },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(
-                        text = if (passwordVisible) "eye" else "eye-off",
-                        color = colors.textSecondary,
-                        style = TrxTypography.label,
+                    Icon(
+                        imageVector = if (passwordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                        contentDescription = null,
+                        tint = colors.textSecondary,
+                        modifier = Modifier.size(24.dp),
                     )
                 }
             }
@@ -153,7 +167,7 @@ fun TrxTextField(
                             }
                             drawPath(path, color)
                             drawLine(
-                                color = Color.White,
+                                color = colors.textSecondary,
                                 start = Offset(size.width / 2f, size.height * 0.35f),
                                 end = Offset(size.width / 2f, size.height * 0.62f),
                                 strokeWidth = 1.5.dp.toPx(),

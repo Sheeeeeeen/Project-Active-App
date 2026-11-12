@@ -16,6 +16,9 @@ data class TrxColors(
     val accentSubtle: Color,
     val dangerFg: Color,
     val focusRing: Color,
+    val textOnAccent: Color,
+    val surfaceInverse: Color,
+    val textInverse: Color,
 ) {
     companion object {
         val Light = TrxColors(
@@ -32,6 +35,9 @@ data class TrxColors(
             accentSubtle = Color(0xFFFFF4CC),
             dangerFg = Color(0xFFB42318),
             focusRing = Color(0xFF1F57C3),
+            textOnAccent = Color(0xFF0B0B0C),
+            surfaceInverse = Color(0xFF0B0B0C),
+            textInverse = Color(0xFFFFFFFF),
         )
 
         val Dark = TrxColors(
@@ -48,6 +54,9 @@ data class TrxColors(
             accentSubtle = Color(0xFF3A2E06),
             dangerFg = Color(0xFFFF7A7A),
             focusRing = Color(0xFFFFD54A),
+            textOnAccent = Color(0xFF0B0B0C),
+            surfaceInverse = Color(0xFFFFFFFF),
+            textInverse = Color(0xFF0B0B0C),
         )
     }
 }

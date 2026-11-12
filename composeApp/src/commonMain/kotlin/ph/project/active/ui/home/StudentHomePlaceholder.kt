@@ -1,7 +1,10 @@
 package ph.project.active.ui.home
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,7 +20,11 @@ fun StudentHomePlaceholder(
     modifier: Modifier = Modifier,
 ) {
     val colors = LocalTrxColors.current
-    Column(modifier.padding(TrxSpacing.screenHorizontal)) {
+    Column(
+        modifier
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .padding(TrxSpacing.screenHorizontal),
+    ) {
         Text(
             text = name,
             color = colors.textPrimary,

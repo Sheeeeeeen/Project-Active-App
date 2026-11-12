@@ -16,8 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
@@ -45,7 +47,7 @@ fun TrxLargeButton(
     }
     val content = when {
         !enabled && kind == TrxButtonKind.Primary -> colors.textTertiary
-        kind == TrxButtonKind.Primary -> Color(0xFF0B0B0C)
+        kind == TrxButtonKind.Primary -> colors.textOnAccent
         else -> colors.textPrimary
     }
     val borderColor = if (kind == TrxButtonKind.Secondary) colors.borderStrong else Color.Transparent
@@ -58,7 +60,7 @@ fun TrxLargeButton(
             .border(width = 1.dp, color = borderColor, shape = shape)
             .clickable(enabled = enabled, onClick = onClick)
             .testTag(tag)
-            .semantics {
+            .semantics(mergeDescendants = true) {
                 text = AnnotatedString(label)
                 if (!enabled) disabled()
             },
@@ -66,11 +68,18 @@ fun TrxLargeButton(
     ) {
         if (loading && progressTag != null) {
             CircularProgressIndicator(
-                modifier = Modifier.size(18.dp).testTag(progressTag),
+                modifier = Modifier
+                    .size(18.dp)
+                    .clearAndSetSemantics { testTag = progressTag },
                 color = content,
                 strokeWidth = 2.dp,
             )
         }
-        Text(text = label, color = content, style = TrxTypography.button)
+        Text(
+            text = label,
+            color = content,
+            style = TrxTypography.button,
+            modifier = Modifier.clearAndSetSemantics {},
+        )
     }
 }
