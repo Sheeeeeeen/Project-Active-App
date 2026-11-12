@@ -3,6 +3,7 @@ package ph.project.active.presentation.registration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,6 +32,7 @@ import ph.project.active.presentation.common.isOffline
 import ph.project.active.presentation.common.UiError
 import ph.project.active.domain.repository.current
 import ph.project.active.presentation.common.Field
+import ph.project.active.presentation.common.Navigation
 import ph.project.active.domain.model.Role
 
 class RegistrationViewModel(
@@ -102,7 +104,7 @@ class RegistrationViewModel(
             return
         }
         _state.update { it.copy(isSubmitting = true, fieldErrors = emptyMap(), error = null) }
-        viewModelScope.launch(start = CoroutineStart.UNDISPATCHED) {
+        viewModelScope.launch(Dispatchers.Unconfined, start = CoroutineStart.UNDISPATCHED) {
             try {
                 val result = if (current.mode == Role.STUDENT) {
                     auth.registerStudent(
@@ -154,7 +156,7 @@ class RegistrationViewModel(
             return
         }
         _state.update { it.copy(isSubmitting = true, error = null, signInError = null) }
-        viewModelScope.launch(start = CoroutineStart.UNDISPATCHED) {
+        viewModelScope.launch(Dispatchers.Unconfined, start = CoroutineStart.UNDISPATCHED) {
             try {
                 when (val result = auth.signIn(current.signInEmail.trim(), current.signInPassword)) {
                     is SignInResult.Success -> onAccountReady(result.account)
@@ -193,6 +195,7 @@ class RegistrationViewModel(
                 joinOutcome = outcome,
                 signInError = null,
                 error = null,
+                navigation = Navigation.OpenSignedInRoot(account.role, openClassId),
             )
         }
     }
