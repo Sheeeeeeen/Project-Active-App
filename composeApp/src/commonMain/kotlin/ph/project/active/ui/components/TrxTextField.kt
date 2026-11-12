@@ -14,9 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,10 +39,14 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.painterResource
 import ph.project.active.presentation.common.UiCopy
 import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTypography
+import projectactive.composeapp.generated.resources.Res
+import projectactive.composeapp.generated.resources.eye
+import projectactive.composeapp.generated.resources.eye_off
 
 @Composable
 fun TrxTextField(
@@ -139,7 +140,9 @@ fun TrxTextField(
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        imageVector = if (passwordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                        painter = painterResource(
+                            if (passwordVisible) Res.drawable.eye_off else Res.drawable.eye,
+                        ),
                         contentDescription = null,
                         tint = colors.textSecondary,
                         modifier = Modifier.size(24.dp),
