@@ -60,7 +60,7 @@ Design source: Figma file `qbHRsTH5EHXslAnGr7tV3o`, page "02 Screens", section `
 | Package | Types |
 |---|---|
 | `ui` | `TrxApp` (root composable: theme and `AppNavHost`) |
-| `ui.navigation` | Routes, one file each: `GuestGraph`, `GuestHome`, `Registration(requestClassId: String? = null)`, `StudentHome(openClassId: String? = null)`, `CoachHome`. Also `AppNavHost` and `NavigationEffect` (collects a one-shot `Navigation`, navigates, then calls `onNavigationHandled()`). |
+| `ui.navigation` | Routes, one file each: `GuestGraph`, `GuestHome`, `Registration(requestClassId: String? = null)`, `StudentHome(openClassId: String? = null)`, `CoachHome`. Also `AppNavHost`. Each route collects its one-shot `Navigation` with `collectAsStateWithLifecycle`, navigates, then calls `onNavigationHandled()` (the separate `NavigationEffect` type was dropped in review). |
 | `ui.registration` | `RegistrationRoute` (gets the VM through `koinViewModel { parametersOf(origin) }` and collects shakes), `RegistrationScreen` (stateless: `state`, callbacks, `modifier`), `RegistrationTestTags` |
 | `ui.home` | `GuestHomePlaceholder`, `StudentHomePlaceholder`, `CoachHomePlaceholder`, `HomeTestTags` |
 | `ui.theme` | `TrxTheme`, `TrxColors` (with `TrxColors.Light` and `TrxColors.Dark`), `TrxSpacing`, `TrxTypography`, `LocalTrxColors` |
@@ -117,7 +117,7 @@ NavHost(startDestination = chosen once from RootViewModel.state.root at first co
 └── CoachHome                           placeholder (D1 in flow 4)
 ```
 
-How each one-shot `Navigation` maps to a `NavController` call. `NavigationEffect` calls `onNavigationHandled()` exactly once per value, right after navigating.
+How each one-shot `Navigation` maps to a `NavController` call. The route calls `onNavigationHandled()` exactly once per value, right after navigating.
 
 | `Navigation` | NavController call |
 |---|---|
@@ -154,6 +154,9 @@ Rules:
 - **P2. `FakePasswordHasher`** in `data.fake`, implementing `PasswordHasher`. It is deterministic and not for production, and `verify(p, hash(p))` is true. Phase 5 removes it (Firebase Auth owns passwords).
 - **P3. `RegistrationUiState.canSubmit: Boolean`.** True when not `isSubmitting` and every *visible* registration field is non-blank: name, email, password, and employee ID only in `STUDENT` mode. This drives the B1 disabled look (Decision 2). `onSubmit()` behavior is unchanged.
 - **P4. `UiCopy` additions** for every flow 1 string in the copy table below. Typed values marked *Q3* use the approved copy from Decision 3.
+- **P5. `RequestingClassHeader.scheduleLine()`** (added in review, 2026-11-12): a public extension in `presentation.classdetail` that formats the B5 card line ("Coach … · days · slots"), so the Phase 4 SwiftUI card can reuse it. It needs a direct `phase2JvmTest`.
+- **P6. Shake ignored while submitting** (added in review): `onShake()` does nothing while `isSubmitting` is true. It needs a `phase2JvmTest`.
+- Launches in `RegistrationViewModel` use plain `viewModelScope.launch` (no `CoroutineStart.UNDISPATCHED`, no `Dispatchers.Unconfined`).
 
 No other ViewModel or business-logic change. The UI never calls a repository or use case directly.
 
@@ -184,7 +187,7 @@ No other ViewModel or business-logic change. The UI never calls a repository or 
    3. Theme and components.
    4. `RegistrationScreen` and `RegistrationRoute`.
    5. `ShakeDetector`, `AndroidShakeSource`, and `NoShakeSource`.
-   6. Routes, `AppNavHost`, `NavigationEffect`, and placeholders.
+   6. Routes, `AppNavHost`, and placeholders.
    7. The Koin modules.
    8. Update `docs/project-structure.md` and the ARCHITECTURE.md DI line ("Koin only if wiring gets noisy" becomes the locked Koin decision).
 3. **Reviewer.** Check against these ACs, run all suites, and do a manual Android emulator pass (see "Manual checks").
