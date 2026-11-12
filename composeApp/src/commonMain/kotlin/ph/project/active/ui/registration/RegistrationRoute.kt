@@ -1,18 +1,22 @@
 package ph.project.active.ui.registration
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableIntState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import ph.project.active.presentation.common.Navigation
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.registration.RegistrationViewModel
-import ph.project.active.ui.collectNow
-import ph.project.active.ui.navigation.NavigationEffect
+import ph.project.active.ui.navigation.LocalRegistrationShakes
+import ph.project.active.ui.navigation.RegistrationShakeCollection
 import ph.project.active.ui.platform.ShakeSource
 
 @Composable
@@ -22,31 +26,33 @@ fun RegistrationRoute(
     viewModel: RegistrationViewModel = koinViewModel { parametersOf(origin) },
     shakeSource: ShakeSource = koinInject(),
     onNavigate: (Navigation) -> Unit = {},
-    shakeTicks: MutableIntState? = null,
 ) {
-    val state = viewModel.state.collectNow()
-    val ticks = shakeTicks ?: remember { mutableIntStateOf(0) }
-    if (shakeTicks == null) {
-        LaunchedEffect(shakeSource) {
-            shakeSource.shakes.collect { ticks.intValue = ticks.intValue + 1 }
+    val state = viewModel.state.collectAsStateWithLifecycle().value
+    val scope = rememberCoroutineScope()
+    val parentShakes = LocalRegistrationShakes.current
+    val shakes = parentShakes ?: remember { RegistrationShakeCollection() }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(shakes, viewModel, shakeSource, lifecycleOwner) {
+        shakes.ensure(scope, shakeSource, viewModel)
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> shakes.ensure(scope, shakeSource, viewModel)
+                Lifecycle.Event.ON_PAUSE -> shakes.stop(viewModel)
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            shakes.stop(viewModel)
         }
     }
-    val applied = remember { mutableIntStateOf(0) }
-    LaunchedEffect(ticks.intValue) {
-        while (applied.intValue < ticks.intValue) {
-            viewModel.onShake()
-            applied.intValue = applied.intValue + 1
+    LaunchedEffect(viewModel) {
+        viewModel.state.collect { current ->
+            val event = current.navigation ?: return@collect
+            viewModel.onNavigationHandled()
+            onNavigate(event)
         }
-    }
-    NavigationEffect(
-        navigation = state.navigation,
-        onNavigationHandled = viewModel::onNavigationHandled,
-        onNavigate = onNavigate,
-    )
-    fun flushNavigation() {
-        val event = viewModel.state.value.navigation ?: return
-        onNavigate(event)
-        viewModel.onNavigationHandled()
     }
     RegistrationScreen(
         state = state,
@@ -56,14 +62,8 @@ fun RegistrationRoute(
         onEmployeeIdChange = viewModel::onEmployeeIdChange,
         onSignInEmailChange = viewModel::onSignInEmailChange,
         onSignInPasswordChange = viewModel::onSignInPasswordChange,
-        onSubmit = {
-            viewModel.onSubmit()
-            flushNavigation()
-        },
-        onSignIn = {
-            viewModel.onSignIn()
-            flushNavigation()
-        },
+        onSubmit = viewModel::onSubmit,
+        onSignIn = viewModel::onSignIn,
         onBack = onBack,
     )
 }
