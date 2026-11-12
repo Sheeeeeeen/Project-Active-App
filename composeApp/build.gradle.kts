@@ -1,7 +1,9 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmCompilation
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
@@ -9,11 +11,10 @@ plugins {
 
 kotlin {
     jvmToolchain(17)
-    // Flow 1 UI tests run on the JVM. Android and iOS targets are Builder work (F1-AC1).
+    // Flow 1 UI tests run on the JVM. iOS targets are declared and not built on Linux.
     jvm {
         val jvmTarget = this
-        // Source scans stay in their own compilation so they still run while the UI tests
-        // fail to compile against the production types Builder has not written yet.
+        // Source scans stay in their own compilation so they still run if a UI test fails.
         compilations.create("structureTest") {
             associateWith(jvmTarget.compilations.getByName("main"))
             defaultSourceSet {
@@ -27,6 +28,18 @@ kotlin {
         }
     }
 
+    iosArm64()
+    iosSimulatorArm64()
+
+    android {
+        namespace = "ph.project.active.compose"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(project(":shared"))
@@ -36,6 +49,22 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.navigation.compose)
+            implementation(libs.kotlinx.serialization.core)
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.kotlinx.datetime)
+        }
+        androidMain.dependencies {
+            implementation(libs.koin.android)
+            implementation(libs.sqldelight.android.driver)
+        }
+        iosMain.dependencies {
+            implementation(libs.sqldelight.native.driver)
+        }
+        jvmMain.dependencies {
+            implementation(libs.sqldelight.sqlite.driver)
         }
         // UI tests live under src/commonTest and compile on the JVM test compilation,
         // which can see the JDBC driver and the desktop test runtime.
