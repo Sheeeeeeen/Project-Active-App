@@ -2,7 +2,6 @@ package ph.project.active.presentation.common
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -23,7 +22,7 @@ internal fun <T> ViewModel.watchConnection(
     state: MutableStateFlow<T>,
     copyConnection: T.(ConnectionUi) -> T,
 ) {
-    viewModelScope.launch(Dispatchers.Unconfined) {
+    viewModelScope.launch {
         network.status.collect { status ->
             state.update { it.copyConnection(status.toConnection()) }
         }
