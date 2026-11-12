@@ -29,4 +29,11 @@ data class RegistrationUiState(
     val error: UiError?,
     val connection: ConnectionUi,
     val navigation: Navigation?,
-)
+) {
+    val canSubmit: Boolean
+        get() = !isSubmitting &&
+            name.isNotBlank() &&
+            email.isNotBlank() &&
+            password.isNotBlank() &&
+            (mode != Role.STUDENT || employeeId.isNotBlank())
+}
