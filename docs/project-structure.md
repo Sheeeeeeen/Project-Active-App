@@ -1,6 +1,6 @@
 # Project structure
 
-Gradle is the build. Four modules: `shared` (rules and ViewModels), `composeApp` (Compose Multiplatform screens, navigation, and Koin), `androidApp` (Android host; starts Koin and calls `TrxApp()`), and `iosApp` (Xcode host; still the template until Phase 4). The rules live in `shared`. Screens live in `composeApp`.
+Gradle is the build. Four modules: `shared` (rules and ViewModels), `composeApp` (Compose Multiplatform screens, navigation, and Koin), `androidApp` (Android host; starts Koin and calls `TrxApp()`), and `iosApp` (Xcode host; embeds the static `ComposeApp` framework, which starts Koin and shows `TrxApp()`). The rules live in `shared`. Screens live in `composeApp`. The iOS app links only `ComposeApp`, and that framework already includes `shared`.
 
 SQLDelight database `TrxDatabase` is generated in `ph.project.active.data.db`. Firebase Auth and Firestore arrive in Phase 5. Until then, `ph.project.active.data.fake` stands in for them.
 
