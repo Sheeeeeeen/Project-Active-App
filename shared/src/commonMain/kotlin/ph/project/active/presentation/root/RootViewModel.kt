@@ -2,6 +2,7 @@ package ph.project.active.presentation.root
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,7 +32,7 @@ class RootViewModel(
     val state: StateFlow<RootUiState> = _state.asStateFlow()
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Unconfined) {
             session.account.collect { account ->
                 _state.update { it.copy(root = account.toRoot()) }
             }
