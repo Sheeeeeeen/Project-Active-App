@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -161,19 +162,19 @@ fun TrxTextField(
                         .size(16.dp)
                         .testTag(errorIconTag)
                         .drawBehind {
-                            val color = colors.dangerFg
-                            val path = androidx.compose.ui.graphics.Path().apply {
-                                moveTo(size.width / 2f, 0f)
-                                lineTo(size.width, size.height)
-                                lineTo(0f, size.height)
-                                close()
-                            }
-                            drawPath(path, color)
+                            drawCircle(color = colors.dangerFg)
+                            val mark = 1.5.dp.toPx()
                             drawLine(
-                                color = colors.textSecondary,
-                                start = Offset(size.width / 2f, size.height * 0.35f),
-                                end = Offset(size.width / 2f, size.height * 0.62f),
-                                strokeWidth = 1.5.dp.toPx(),
+                                color = colors.textInverse,
+                                start = Offset(size.width / 2f, size.height * 0.26f),
+                                end = Offset(size.width / 2f, size.height * 0.58f),
+                                strokeWidth = mark,
+                                cap = StrokeCap.Round,
+                            )
+                            drawCircle(
+                                color = colors.textInverse,
+                                radius = mark * 0.55f,
+                                center = Offset(size.width / 2f, size.height * 0.74f),
                             )
                         },
                 )
