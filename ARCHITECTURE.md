@@ -14,7 +14,7 @@ One Android and iOS app. Coaches run recurring TRX classes. Students join, then 
 - **Local database:** SQLDelight in `commonMain` (cache + offline attendance outbox).
 - **Backend (decided 11 Nov 2026):** Firebase Authentication (email and password, no email confirmation) and Cloud Firestore. Repository interfaces still hide Firebase so it can be replaced later.
 - **Time:** `kotlinx-datetime`, with an injectable `Clock`. "Today" and "the day is over" use the phone's timezone.
-- **DI:** constructor injection in Phase 1; Koin only if wiring gets noisy.
+- **DI:** Koin in `composeApp` only, with `koinViewModel()` in common Compose code. `shared` ViewModels and repositories stay plain constructor classes and do not import Koin. `FakeDataModule` is the one module swapped for Firebase at the Phase 5 cutover.
 - **Tests:** `kotlin-test` + `kotlinx-coroutines-test` in `commonTest`. No mocking library required; use fakes.
 
 ## Repository layout
