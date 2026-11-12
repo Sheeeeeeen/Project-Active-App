@@ -19,10 +19,12 @@ class F1Ac4UiImportsTest {
             "import ph.project.active.domain.repository",
             "import ph.project.active.domain.usecase",
         )
-        val composeSources = kotlinSources(File(root, "composeApp/src"))
-        val hits = composeSources.filter { file ->
-            val path = file.path.replace('\\', '/')
-            if (path.contains("/ph/project/active/di/")) return@filter false
+        val uiSources = kotlinSources(ui)
+        assertTrue(
+            uiSources.isNotEmpty(),
+            "composeApp ui package has no Kotlin files, so the import rule is not enforced on any screen",
+        )
+        val hits = uiSources.filter { file ->
             val text = file.readText()
             forbidden.any { text.contains(it) }
         }
