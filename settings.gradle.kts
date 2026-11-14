@@ -32,4 +32,5 @@ dependencyResolutionManagement {
 rootProject.name = "ProjectActive"
 
 include(":androidApp")
+include(":composeApp")
 include(":shared")

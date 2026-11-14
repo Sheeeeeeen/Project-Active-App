@@ -65,6 +65,86 @@ object UiCopy {
 
     fun passwordTooShort(): String = "At least 8 characters."
 
+    fun registrationOverline(role: Role): String = when (role) {
+        Role.STUDENT -> "TRX ATTENDANCE"
+        Role.COACH -> "COACH ACCOUNT"
+    }
+
+    fun registrationSubtitle(role: Role, origin: RegistrationOrigin): String = when {
+        origin is RegistrationOrigin.FromRequestToJoin && role == Role.STUDENT ->
+            "Create your student account to send this request."
+        role == Role.COACH -> "Create classes, invite students and show the daily code."
+        else -> "Join classes and record your attendance."
+    }
+
+    fun fieldLabel(field: Field): String = when (field) {
+        Field.NAME -> "Full name"
+        Field.EMAIL, Field.SIGN_IN_EMAIL -> "Email"
+        Field.PASSWORD, Field.SIGN_IN_PASSWORD -> "Password"
+        Field.EMPLOYEE_ID -> "Employee ID"
+    }
+
+    fun fieldPlaceholder(field: Field): String = when (field) {
+        Field.NAME -> "Your name"
+        Field.EMAIL, Field.SIGN_IN_EMAIL -> "name@company.com"
+        Field.PASSWORD -> "At least 8 characters"
+        Field.EMPLOYEE_ID -> "e.g. EMP-20417"
+        Field.SIGN_IN_PASSWORD -> "Your password"
+    }
+
+    fun passwordHelper(): String = "At least 8 characters."
+
+    fun employeeIdHelper(): String = "Your company employee ID. Each ID can be registered once."
+
+    fun alreadyHaveAccount(): String = "Already have an account?"
+
+    fun signInHeading(): String = "Sign in"
+
+    fun requestingToJoinKicker(): String = "REQUESTING TO JOIN"
+
+    fun requestingClassSubtitle(coachName: String, days: String, slots: String): String =
+        "Coach $coachName \u00B7 $days \u00B7 $slots"
+
+    fun signInAlsoSends(className: String): String =
+        "Signing in also sends your request for $className."
+
+    fun registrationBackLabel(origin: RegistrationOrigin): String = when (origin) {
+        RegistrationOrigin.FromClassList -> "Classes"
+        is RegistrationOrigin.FromRequestToJoin -> "Back"
+    }
+
+    fun requiredField(): String = "Required."
+
+    fun emailTaken(): String = "This email is already registered."
+
+    fun authFailed(): String = "Email or password is incorrect."
+
+    fun offlineNothingSaved(): String = "You\u2019re offline. Nothing was saved."
+
+    fun registerOrSignIn(): String = "Register or sign in"
+
+    fun showPassword(): String = "Show password"
+
+    fun hidePassword(): String = "Hide password"
+
+    fun fieldError(error: FieldError): String = when (error) {
+        FieldError.Required -> requiredField()
+        FieldError.InvalidEmail -> invalidEmail()
+        FieldError.PasswordTooShort -> passwordTooShort()
+        FieldError.EmailTaken -> emailTaken()
+        FieldError.EmployeeIdTaken -> employeeIdTaken()
+    }
+
+    fun uiError(error: UiError): String = when (error) {
+        UiError.AuthFailed -> authFailed()
+        UiError.Offline -> offlineNothingSaved()
+        UiError.ClassCancelled -> sessionCancelled()
+        UiError.PrivateClass -> "This class is private."
+        UiError.EndDateInPast -> "End date cannot be in the past."
+        UiError.PastDate -> "Cannot cancel a past date."
+        UiError.InvalidState -> "That action is not available."
+    }
+
     fun scanPresentTitle(): String = "You\u2019re marked Present"
 
     fun scanSavedOfflineTitle(): String = "Saved on this phone"

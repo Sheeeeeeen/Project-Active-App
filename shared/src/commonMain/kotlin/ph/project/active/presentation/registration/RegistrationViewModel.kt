@@ -2,7 +2,6 @@ package ph.project.active.presentation.registration
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,6 +30,7 @@ import ph.project.active.presentation.common.isOffline
 import ph.project.active.presentation.common.UiError
 import ph.project.active.domain.repository.current
 import ph.project.active.presentation.common.Field
+import ph.project.active.presentation.common.Navigation
 import ph.project.active.domain.model.Role
 
 class RegistrationViewModel(
@@ -84,6 +84,7 @@ class RegistrationViewModel(
 
     fun onShake() {
         val current = _state.value
+        if (current.isSubmitting) return
         if (current.origin is RegistrationOrigin.FromRequestToJoin) return
         val mode = if (current.mode == Role.STUDENT) Role.COACH else Role.STUDENT
         _state.update { it.copy(mode = mode, showEmployeeId = mode == Role.STUDENT) }
@@ -102,7 +103,7 @@ class RegistrationViewModel(
             return
         }
         _state.update { it.copy(isSubmitting = true, fieldErrors = emptyMap(), error = null) }
-        viewModelScope.launch(start = CoroutineStart.UNDISPATCHED) {
+        viewModelScope.launch {
             try {
                 val result = if (current.mode == Role.STUDENT) {
                     auth.registerStudent(
@@ -154,7 +155,7 @@ class RegistrationViewModel(
             return
         }
         _state.update { it.copy(isSubmitting = true, error = null, signInError = null) }
-        viewModelScope.launch(start = CoroutineStart.UNDISPATCHED) {
+        viewModelScope.launch {
             try {
                 when (val result = auth.signIn(current.signInEmail.trim(), current.signInPassword)) {
                     is SignInResult.Success -> onAccountReady(result.account)
@@ -193,6 +194,7 @@ class RegistrationViewModel(
                 joinOutcome = outcome,
                 signInError = null,
                 error = null,
+                navigation = Navigation.OpenSignedInRoot(account.role, openClassId),
             )
         }
     }
