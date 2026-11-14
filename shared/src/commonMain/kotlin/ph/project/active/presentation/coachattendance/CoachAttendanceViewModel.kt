@@ -11,7 +11,6 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
-import kotlin.time.Instant
 import ph.project.active.domain.usecase.CoachAttendanceForDate
 import ph.project.active.domain.model.CoachAttendanceStatus
 import ph.project.active.domain.repository.AttendanceRepository

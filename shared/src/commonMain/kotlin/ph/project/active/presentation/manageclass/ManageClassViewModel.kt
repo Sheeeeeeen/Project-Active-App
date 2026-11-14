@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
@@ -34,7 +33,6 @@ import ph.project.active.domain.usecase.CancelClass
 import ph.project.active.presentation.createclass.ScheduleRow
 import ph.project.active.domain.usecase.CancelDate
 import ph.project.active.presentation.common.Navigation
-import ph.project.active.domain.model.Visibility
 import ph.project.active.presentation.common.asUiError
 import ph.project.active.presentation.common.isOffline
 import ph.project.active.presentation.common.UiError
@@ -252,32 +250,7 @@ class ManageClassViewModel(
         )
     }
 
-    private fun baseFlags(connection: ConnectionUi) = ManageClassUiState(
-        name = "",
-        visibility = Visibility.PUBLIC,
-        endDate = null,
-        sessionCount = 0,
-        slotsByWeekday = emptyMap(),
-        pendingRequestCount = 0,
-        selectedTab = ManageTab.SCHEDULE,
-        schedule = emptyList(),
-        confirmCancelDate = null,
-        confirmation = null,
-        requests = emptyList(),
-        requestsEmpty = true,
-        roster = emptyList(),
-        confirmRemove = null,
-        searchText = "",
-        match = null,
-        canSendInvite = false,
-        noMatch = false,
-        searchedId = null,
-        optionsOpen = false,
-        confirmCancelClass = false,
-        error = null,
-        connection = connection,
-        navigation = null,
-    )
+    private fun baseFlags(connection: ConnectionUi) = ManageClassUiState(connection = connection)
 
     private fun build(flags: ManageClassUiState): ManageClassUiState {
         val trxClass = classes.findClass(classId) ?: return flags
