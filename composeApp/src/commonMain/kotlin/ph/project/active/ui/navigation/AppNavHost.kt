@@ -17,7 +17,6 @@ import androidx.navigation.toRoute
 import kotlinx.coroutines.CoroutineScope
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 import ph.project.active.domain.model.Role
 import ph.project.active.presentation.common.Navigation
 import ph.project.active.presentation.common.RegistrationOrigin
@@ -71,31 +70,30 @@ fun AppNavHost(
                     GuestHomePlaceholder(onRegisterOrSignIn = guestClassListViewModel::onRegisterOrSignIn)
                 }
                 composable<Registration> { entry ->
-                    val requestClassId = entry.toRoute<Registration>().requestClassId
-                    val origin = requestClassId?.let { RegistrationOrigin.FromRequestToJoin(it) }
-                        ?: RegistrationOrigin.FromClassList
-                    val provided = registrationViewModel
-                    val routeViewModel = provided?.let { factory ->
-                        remember(origin) { factory(origin) }
+                    val classId = entry.toRoute<Registration>().requestClassId
+                    val origin = if (classId == null) {
+                        RegistrationOrigin.FromClassList
+                    } else {
+                        RegistrationOrigin.FromRequestToJoin(classId)
                     }
-                    if (routeViewModel != null) {
+                    val onNavigate: (Navigation) -> Unit = { event ->
+                        navController.follow(event, shakes, scope, shakeSource, registrationViewModel)
+                    }
+                    val factory = registrationViewModel
+                    if (factory == null) {
                         RegistrationRoute(
                             origin = origin,
-                            viewModel = routeViewModel,
-                            shakeSource = shakeSource,
                             onBack = { navController.popBackStack() },
-                            onNavigate = { event ->
-                                navController.follow(event, shakes, scope, shakeSource, registrationViewModel)
-                            },
+                            shakeSource = shakeSource,
+                            onNavigate = onNavigate,
                         )
                     } else {
                         RegistrationRoute(
                             origin = origin,
-                            shakeSource = shakeSource,
                             onBack = { navController.popBackStack() },
-                            onNavigate = { event ->
-                                navController.follow(event, shakes, scope, shakeSource, registrationViewModel)
-                            },
+                            viewModel = remember(origin) { factory(origin) },
+                            shakeSource = shakeSource,
+                            onNavigate = onNavigate,
                         )
                     }
                 }
@@ -124,7 +122,7 @@ private fun NavHostController.follow(
         is Navigation.OpenRegistration -> {
             val classId = (event.origin as? RegistrationOrigin.FromRequestToJoin)?.classId
             navigate(Registration(classId)) { launchSingleTop = true }
-            if (event.origin !is RegistrationOrigin.FromRequestToJoin) {
+            if (event.origin is RegistrationOrigin.FromClassList) {
                 registrationViewModel?.invoke(event.origin)?.let { viewModel ->
                     shakes.ensure(scope, shakeSource, viewModel)
                 }
@@ -132,15 +130,14 @@ private fun NavHostController.follow(
         }
         is Navigation.OpenSignedInRoot -> {
             shakes.stopAny()
-            when (event.role) {
-                Role.COACH -> navigate(CoachHome) {
-                    popUpTo<GuestGraph> { inclusive = true }
-                    launchSingleTop = true
-                }
-                Role.STUDENT -> navigate(StudentHome(event.openClassId)) {
-                    popUpTo<GuestGraph> { inclusive = true }
-                    launchSingleTop = true
-                }
+            val home = when (event.role) {
+                Role.COACH -> CoachHome
+                Role.STUDENT -> StudentHome(event.openClassId)
+            }
+            // Drop the guest graph so Back cannot return to the form that just signed in.
+            navigate(home) {
+                popUpTo<GuestGraph> { inclusive = true }
+                launchSingleTop = true
             }
         }
         else -> Unit
