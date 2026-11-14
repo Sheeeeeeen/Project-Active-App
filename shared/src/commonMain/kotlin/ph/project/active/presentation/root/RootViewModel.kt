@@ -13,7 +13,6 @@ import ph.project.active.domain.model.NetworkStatus
 import ph.project.active.data.repository.SessionStore
 import ph.project.active.presentation.common.toConnection
 import ph.project.active.data.sync.OutboxSync
-import ph.project.active.domain.usecase.transition
 import ph.project.active.domain.model.Role
 
 class RootViewModel(

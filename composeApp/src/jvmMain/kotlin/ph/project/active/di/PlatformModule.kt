@@ -10,6 +10,7 @@ import ph.project.active.ui.platform.ShakeSource
 
 actual fun platformModule(): Module = module {
     single<SqlDriver> {
+        // JDBC does not apply the schema itself. The Android and iOS drivers do.
         JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY).also { driver ->
             TrxDatabase.Schema.create(driver)
         }

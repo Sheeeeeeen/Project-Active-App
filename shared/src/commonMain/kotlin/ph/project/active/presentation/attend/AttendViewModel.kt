@@ -102,6 +102,7 @@ class AttendViewModel(
                     it.copy(result = result, scannerOpen = false, recordedToday = recorded(it.today))
                 }
                 if (online) {
+                    // UNDISPATCHED runs the upload in this turn, before onCodeScanned returns.
                     viewModelScope.launch(start = CoroutineStart.UNDISPATCHED) {
                         try {
                             outbox.sync()

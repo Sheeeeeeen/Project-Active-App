@@ -17,6 +17,7 @@ internal class RegistrationShakeCollection {
         if (existing != null && existing.isActive && this.viewModel === viewModel) return
         existing?.cancel()
         this.viewModel = viewModel
+        // UNDISPATCHED subscribes before ensure() returns, so a shake in this same turn is not dropped.
         job = scope.launch(start = CoroutineStart.UNDISPATCHED) {
             source.shakes.collect { viewModel.onShake() }
         }

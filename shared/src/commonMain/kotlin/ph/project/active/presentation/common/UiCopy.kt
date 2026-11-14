@@ -92,7 +92,7 @@ object UiCopy {
         Field.SIGN_IN_PASSWORD -> "Your password"
     }
 
-    fun passwordHelper(): String = "At least 8 characters."
+    fun passwordHelper(): String = passwordTooShort()
 
     fun employeeIdHelper(): String = "Your company employee ID. Each ID can be registered once."
 

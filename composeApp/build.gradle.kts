@@ -46,6 +46,7 @@ kotlin {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_11
         }
+        // Compose icons are omitted from the Android app unless resources are enabled here.
         androidResources {
             enable = true
         }
