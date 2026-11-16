@@ -1,6 +1,7 @@
 package ph.project.active.ui.invites
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,10 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.AnnotatedString
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -39,6 +37,8 @@ import ph.project.active.presentation.invites.InvitesUiState
 import ph.project.active.presentation.invites.dayLine
 import ph.project.active.presentation.invites.timeLine
 import ph.project.active.presentation.manageclass.InviteConfirmation
+import ph.project.active.ui.components.EmptyState
+import ph.project.active.ui.components.FormError
 import ph.project.active.ui.components.LargeTitleHeader
 import ph.project.active.ui.components.OfflineBanner
 import ph.project.active.ui.components.StatusChip
@@ -51,8 +51,11 @@ import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTypography
 import projectactive.composeapp.generated.resources.Res
 import projectactive.composeapp.generated.resources.calendar_days
+import projectactive.composeapp.generated.resources.circle_check
 import projectactive.composeapp.generated.resources.clock
 import projectactive.composeapp.generated.resources.globe
+import projectactive.composeapp.generated.resources.inbox
+import projectactive.composeapp.generated.resources.info
 import projectactive.composeapp.generated.resources.lock
 
 object InvitesTestTags {
@@ -93,44 +96,44 @@ fun InvitesScreen(
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Bottom),
         bottomBar = tabBar,
     ) { innerPadding ->
-        Box(
+        Column(
             Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState()),
         ) {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
-            ) {
-                Column(Modifier.padding(horizontal = TrxSpacing.screenHorizontal)) {
-                    LargeTitleHeader(
-                        title = UiCopy.invitesTitle(),
-                        titleTag = InvitesTestTags.title,
-                        accountTag = InvitesTestTags.account,
+            Column(Modifier.padding(horizontal = TrxSpacing.screenHorizontal)) {
+                LargeTitleHeader(
+                    title = UiCopy.invitesTitle(),
+                    titleTag = InvitesTestTags.title,
+                    accountTag = InvitesTestTags.account,
+                )
+                if (!state.isEmpty) {
+                    Text(
+                        text = UiCopy.invitesSubtitle(),
+                        color = colors.textSecondary,
+                        style = TrxTypography.body,
+                        modifier = Modifier
+                            .padding(top = TrxSpacing.s4)
+                            .testTag(InvitesTestTags.subtitle),
                     )
-                    if (!state.isEmpty) {
-                        Text(
-                            text = UiCopy.invitesSubtitle(),
-                            color = colors.textSecondary,
-                            style = TrxTypography.body,
-                            modifier = Modifier
-                                .padding(top = TrxSpacing.s4)
-                                .testTag(InvitesTestTags.subtitle),
-                        )
-                    }
-                }
-                state.connection.banner?.let { banner -> OfflineBanner(banner, Modifier.padding(top = TrxSpacing.s16)) }
-                Column(Modifier.padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16)) {
-                    state.error?.let { error -> FormError(UiCopy.uiError(error)) }
-                    if (state.isEmpty) {
-                        EmptyInvites()
-                    } else {
-                        state.invites.forEach { invite -> InviteCard(invite, onAccept, onDecline) }
-                    }
                 }
             }
-            confirmation?.let { Toast(it.message(), Modifier.align(Alignment.BottomCenter)) }
+            state.connection.banner?.let { banner -> OfflineBanner(banner, Modifier.padding(top = TrxSpacing.s16)) }
+            Column(Modifier.padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16)) {
+                confirmation?.let { Toast(it) }
+                state.error?.let { error -> FormError(UiCopy.uiError(error), InvitesTestTags.formError) }
+                if (state.isEmpty) {
+                    EmptyState(
+                        icon = Res.drawable.inbox,
+                        title = UiCopy.invitesEmptyTitle(),
+                        body = UiCopy.invitesEmptyBody(),
+                        tag = InvitesTestTags.empty,
+                    )
+                } else {
+                    state.invites.forEach { invite -> InviteCard(invite, onAccept, onDecline) }
+                }
+            }
         }
     }
 }
@@ -162,7 +165,10 @@ private fun InviteCard(invite: InviteRow, onAccept: (String) -> Unit, onDecline:
         }
         CaptionRow(Res.drawable.calendar_days, invite.dayLine(), Modifier.padding(top = TrxSpacing.s12))
         CaptionRow(Res.drawable.clock, invite.timeLine(), Modifier.padding(top = TrxSpacing.s4))
-        Row(Modifier.padding(top = TrxSpacing.s12)) {
+        Row(
+            Modifier.padding(top = TrxSpacing.s12),
+            horizontalArrangement = Arrangement.spacedBy(TrxSpacing.s8),
+        ) {
             TrxLargeButton(
                 label = UiCopy.decline(),
                 kind = TrxButtonKind.Secondary,
@@ -171,6 +177,7 @@ private fun InviteCard(invite: InviteRow, onAccept: (String) -> Unit, onDecline:
                 enabled = true,
                 modifier = Modifier.weight(1f),
                 height = TrxSpacing.touchTarget,
+                textStyle = TrxTypography.subheadStrong,
             )
             TrxLargeButton(
                 label = UiCopy.accept(),
@@ -178,10 +185,9 @@ private fun InviteCard(invite: InviteRow, onAccept: (String) -> Unit, onDecline:
                 tag = InvitesTestTags.accept(invite.classId),
                 onClick = { onAccept(invite.classId) },
                 enabled = true,
-                modifier = Modifier
-                    .padding(start = TrxSpacing.s8)
-                    .weight(1f),
+                modifier = Modifier.weight(1f),
                 height = TrxSpacing.touchTarget,
+                textStyle = TrxTypography.subheadStrong,
             )
         }
     }
@@ -199,7 +205,7 @@ private fun Initials(name: String) {
         Text(
             text = name.split(" ").filter { it.isNotBlank() }.take(2).joinToString("") { it.first().uppercase() },
             color = colors.accentText,
-            style = TrxTypography.label,
+            style = TrxTypography.headline,
             modifier = Modifier.clearAndSetSemantics {},
         )
     }
@@ -227,70 +233,40 @@ private fun CaptionRow(icon: DrawableResource, text: String, modifier: Modifier 
                 .padding(end = TrxSpacing.s8)
                 .size(TrxSpacing.iconSmall),
         )
-        Text(text, color = colors.textSecondary, style = TrxTypography.footnote)
+        Text(text, color = colors.textSecondary, style = TrxTypography.subhead)
     }
 }
 
 @Composable
-private fun FormError(message: String) {
+private fun Toast(confirmation: InviteConfirmation) {
     val colors = LocalTrxColors.current
-    Text(
-        text = message,
-        color = colors.textPrimary,
-        style = TrxTypography.body,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(colors.dangerBg, RoundedCornerShape(TrxSpacing.radiusMd))
-            .padding(TrxSpacing.s16)
-            .testTag(InvitesTestTags.formError),
-    )
-}
-
-@Composable
-private fun EmptyInvites() {
-    val colors = LocalTrxColors.current
-    Column(
+    val icon = when (confirmation) {
+        is InviteConfirmation.InviteAccepted -> Res.drawable.circle_check
+        InviteConfirmation.InviteDeclined -> Res.drawable.info
+    }
+    Row(
         Modifier
-            .padding(top = TrxSpacing.s16)
-            .testTag(InvitesTestTags.empty)
-            .semantics {
-                this[SemanticsProperties.Text] = listOf(
-                    AnnotatedString(UiCopy.invitesEmptyTitle()),
-                    AnnotatedString(UiCopy.invitesEmptyBody()),
-                )
-            },
-    ) {
-        Text(
-            text = UiCopy.invitesEmptyTitle(),
-            color = colors.textPrimary,
-            style = TrxTypography.button,
-            modifier = Modifier.clearAndSetSemantics {},
-        )
-        Text(
-            text = UiCopy.invitesEmptyBody(),
-            color = colors.textSecondary,
-            style = TrxTypography.body,
-            modifier = Modifier
-                .padding(top = TrxSpacing.s8)
-                .clearAndSetSemantics {},
-        )
-    }
-}
-
-@Composable
-private fun Toast(message: String, modifier: Modifier = Modifier) {
-    val colors = LocalTrxColors.current
-    Text(
-        text = message,
-        color = colors.textInverse,
-        style = TrxTypography.body,
-        modifier = modifier
-            .padding(TrxSpacing.s16)
+            .padding(bottom = TrxSpacing.s4)
             .fillMaxWidth()
             .background(colors.surfaceInverse, RoundedCornerShape(TrxSpacing.radiusMd))
-            .padding(TrxSpacing.s16)
-            .testTag(InvitesTestTags.toast),
-    )
+            .padding(TrxSpacing.s16),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            painter = painterResource(icon),
+            contentDescription = null,
+            tint = colors.textInverse,
+            modifier = Modifier.size(TrxSpacing.s20),
+        )
+        Text(
+            text = confirmation.message(),
+            color = colors.textInverse,
+            style = TrxTypography.subheadStrong,
+            modifier = Modifier
+                .padding(start = TrxSpacing.s12)
+                .testTag(InvitesTestTags.toast),
+        )
+    }
 }
 
 private fun InviteConfirmation.message(): String = when (this) {
