@@ -138,21 +138,16 @@ private fun BackRow(onBack: () -> Unit, tint: Color, modifier: Modifier = Modifi
     TextButton(
         onClick = onBack,
         modifier = modifier
-            .fillMaxWidth()
+            .padding(start = TrxSpacing.s16 - 12.dp)
             .heightIn(min = TrxSpacing.touchTarget)
             .testTag(ClassDetailTestTags.back)
             .semantics {
                 this[SemanticsProperties.Text] = listOf(AnnotatedString(UiCopy.guestListTitle()))
             },
         colors = ButtonDefaults.textButtonColors(contentColor = tint),
-        contentPadding = PaddingValues(0.dp),
+        contentPadding = PaddingValues(horizontal = 12.dp),
     ) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = TrxSpacing.s16),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 painter = painterResource(Res.drawable.chevron_left),
                 contentDescription = null,
