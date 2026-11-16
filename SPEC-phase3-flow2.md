@@ -133,7 +133,8 @@ New constructor parameters go **last, with defaults**, so existing tests compile
 - **P6. Errors clear.** `onRequestToJoin()` clears `error` before it tries. `refresh()` clears `error` and `notice`. Test: offline tap sets `Offline`; going online, then refresh, clears it.
 - **P7. Request not sent.** `JoinOutcome` becomes `enum class JoinOutcome { ClassCancelled, ClassUnavailable }` so it works as a route argument. `RegistrationViewModel` maps `PrivateClass` and `ClassNotFound` to `ClassUnavailable`. `Navigation.OpenSignedInRoot` gains `joinOutcome: JoinOutcome? = null`, which is set from the same result. Test: each `JoinResult` maps to the right outcome and navigation, and a normal request leaves both null.
 - **P8. One-time note.** `ClassDetailViewModel` takes `joinOutcome: JoinOutcome? = null` and exposes it as `ClassDetailUiState.notice`. The note clears on the next request tap or `refresh()`. Test: the note is set from the parameter and gone after `refresh()`. A new ViewModel without the parameter has no note.
-- **P9. Copy.** New `UiCopy` functions for every string in sections 2 and 4. Also `formatDaysLong(days)` ("Monday and Wednesday", "Monday, Tuesday and Thursday", "Every day") and `ClassContent.timeLines()` (decision 6). `uiError(ClassCancelled)` and `uiError(PrivateClass)` use the decision 26 text, and `sessionCancelled()` stays "This date is cancelled.". Test: exact strings.
+- **P9. Copy.** New `UiCopy` functions for every string in sections 2 and 4. Also `formatDaysLong(days)` ("Monday and Wednesday", "Monday, Tuesday and Thursday", "Every day") and `ClassContent.timeLines()` (decision 6). `uiError(ClassCancelled)` and `uiError(PrivateClass)` use the decision 26 text, and `sessionCancelled()` stays "This date is cancelled.". Test: exact strings. Function names are the ones Tester's PR #6 uses (accepted 16 Nov 2026).
+- **F1_AC38 reading (16 Nov):** when sign-up or sign-in starts from a class, the open-class check looks at class detail showing "Awaiting approval", with `StudentHome` underneath it on the back stack. The student-home name check stays for sign-up that doesn't start from a class.
 
 Note text for P8 (shown in the Form Error row):
 - `ClassCancelled`: "Your account is ready, but no request was sent because this class was cancelled."
@@ -178,7 +179,7 @@ Unless an AC says otherwise, its test uses the A1 example "TRX Core Burn", Coach
 - **F2-AC25.** Guest path: A1, tap card, "Request to join". The back stack is `[GuestHome, ClassDetail(id), Registration(id)]`, and the B5 card shows the class.
 - **F2-AC26.** Offline guest tap: still opens `Registration(id)` (decision 23).
 - **F2-AC27.** Signing up there ends with the back stack `[StudentHome(id), ClassDetail(id)]`, one pending request, and A4 on screen. Back shows `student_home`. Signing in as an existing student behaves the same.
-- **F2-AC28.** Exactly once: after three forced recompositions, and after the NavHost is torn down and rebuilt with the same ViewModels (navigation already handled), there's still exactly one `ClassDetail` on the stack. `StateRestorationTester` is not used (unsupported on desktop); a real Android process-death check is on Sheen's manual list.
+- **F2-AC28.** Exactly once: after three forced recompositions, and after the NavHost is torn down and rebuilt with the same ViewModels and the same NavHostController (navigation already handled), there's still exactly one `ClassDetail` on the stack. (Amended 16 Nov: `StateRestorationTester` can't run on desktop in Compose 1.12. A real Android process-death check is a manual step for Sheen, not an automated test.)
 - **F2-AC29.** If the class is cancelled while on B5, you land on A8 with `class_detail_notice` showing the `ClassCancelled` note, and no membership is created. If it was made private or deleted, you get the unavailable screen (A9) with the `ClassUnavailable` note.
 - **F2-AC30.** One-time note: after `refresh()`, or when the same class is opened again without an outcome, the note is gone.
 
@@ -186,7 +187,7 @@ Unless an AC says otherwise, its test uses the A1 example "TRX Core Burn", Coach
 - **F2-AC31.** Source scan: `DemoSeed` appears only under a debug source set. No file under `*/src/main`, `*/src/commonMain`, `*/src/androidMain`, `*/src/iosMain`, or `*/src/*release*` mentions it.
 - **F2-AC32.** Source scan: each new route (`ClassDetail`) and each new screen file holds one public type. No nested classes.
 - **F2-AC33.** All existing suites still pass. The only test edits allowed are the three flow 1 back-stack assertions listed in section 4.
-- **F2-AC34.** Any screen or component in flow 2 that is a placeholder wears the shared `PlaceholderTag`: "PLACEHOLDER" pill, testTag `placeholder_tag`, screen-reader label "Placeholder", not clickable, in its own file. Style per Designer's spec (accent tokens, top end). Added 16 Nov 2026 at Sheen's request.
+- **F2-AC34.** Any screen or component in flow 2 that is a placeholder wears the shared `PlaceholderTag`: "PLACEHOLDER" pill, testTag `placeholder_tag`, screen-reader label "Placeholder", not clickable, in its own file. Style per Designer's spec (accent tokens, top end). Added 16 Nov 2026 at Sheen's request. In flow 2 this means the StudentHome and CoachHome placeholder homes show `placeholder_tag`; A1 and class detail do not.
 
 **Manual checks** (Reviewer, on the Android emulator; these are not ACs):
 - A fresh debug install shows the 5 demo classes. Relaunching doesn't add them again.
