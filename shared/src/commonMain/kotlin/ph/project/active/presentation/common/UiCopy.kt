@@ -266,4 +266,46 @@ object UiCopy {
         JoinOutcome.ClassCancelled -> accountReadyClassCancelled()
         JoinOutcome.ClassUnavailable -> accountReadyClassUnavailable()
     }
+
+    fun largeTitleEyebrow(): String = "TRX ATTENDANCE"
+
+    fun classesTitle(): String = "Classes"
+
+    fun classesGreeting(name: String, employeeId: String?): String {
+        val firstName = name.trim().substringBefore(' ')
+        return if (employeeId.isNullOrBlank()) "Hi $firstName" else "Hi $firstName \u00B7 $employeeId"
+    }
+
+    fun myClassesHeader(): String = "MY CLASSES"
+
+    fun studentPublicClassesHeader(): String = "Public classes"
+
+    fun joinedCount(count: Int): String = "$count joined"
+
+    fun classesEmptyTitle(): String = "No classes yet"
+
+    fun classesEmptyBody(): String =
+        "When you join a class, or when a coach creates a public class, it shows up here."
+
+    fun invitesTitle(): String = "Invites"
+
+    fun invitesSubtitle(): String = "Accept to join a class roster."
+
+    fun inviteInvitedYou(coachName: String): String = "Coach $coachName invited you."
+
+    fun inviteDeclined(): String = "Invite declined"
+
+    fun decline(): String = "Decline"
+
+    fun accept(): String = "Accept"
+
+    fun account(): String = "Account"
+
+    fun tabClasses(): String = "Classes"
+
+    fun tabAttend(): String = "Attend"
+
+    fun tabSessions(): String = "Sessions"
+
+    fun tabInvites(): String = "Invites"
 }

@@ -117,6 +117,8 @@ class F1NavigationTest {
                     guestClassListViewModel = world.guest(),
                     registrationViewModel = factory,
                     classDetailViewModel = world.detailFactory(),
+                    studentClassesViewModel = world.studentClassesFactory(),
+                    invitesViewModel = world.invitesFactory(),
                     onNavController = { nav = it },
                 )
             }
@@ -177,13 +179,13 @@ class F1NavigationTest {
             first.session.save(account)
             runFlow1UiTest {
                 showApp(first)
-                tag("student_home").assertTextContains("Ella Navarro")
+                tag("student_home").assertTextContains("Hi Ella \u00B7 EMP-20417")
             }
         }
         Flow1Harness(path = path, createSchema = false).use { second ->
             runFlow1UiTest {
                 showApp(second)
-                tag("student_home").assertTextContains("Ella Navarro")
+                tag("student_home").assertTextContains("Hi Ella \u00B7 EMP-20417")
             }
         }
     }

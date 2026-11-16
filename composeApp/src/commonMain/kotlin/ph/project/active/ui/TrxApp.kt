@@ -8,8 +8,10 @@ import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.guestclasses.GuestClassListViewModel
+import ph.project.active.presentation.invites.InvitesViewModel
 import ph.project.active.presentation.registration.RegistrationViewModel
 import ph.project.active.presentation.root.RootViewModel
+import ph.project.active.presentation.studentclasses.StudentClassesViewModel
 import ph.project.active.ui.navigation.AppNavHost
 import ph.project.active.ui.platform.ShakeSource
 import ph.project.active.ui.theme.TrxTheme
@@ -21,6 +23,8 @@ fun TrxApp(
     registrationViewModel: ((RegistrationOrigin) -> RegistrationViewModel)? = null,
     shakeSource: ShakeSource = koinInject(),
     classDetailViewModel: ((classId: String, viewer: SignedInAccount?, joinOutcome: JoinOutcome?) -> ClassDetailViewModel)? = null,
+    studentClassesViewModel: ((SignedInAccount) -> StudentClassesViewModel)? = null,
+    invitesViewModel: ((SignedInAccount) -> InvitesViewModel)? = null,
 ) {
     TrxTheme {
         AppNavHost(
@@ -29,6 +33,8 @@ fun TrxApp(
             registrationViewModel = registrationViewModel,
             shakeSource = shakeSource,
             classDetailViewModel = classDetailViewModel,
+            studentClassesViewModel = studentClassesViewModel,
+            invitesViewModel = invitesViewModel,
         )
     }
 }

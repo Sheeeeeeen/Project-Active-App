@@ -26,6 +26,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.DrawableResource
@@ -46,6 +47,7 @@ fun TrxLargeButton(
     progressTag: String? = null,
     icon: DrawableResource? = null,
     height: Dp = TrxSpacing.buttonHeight,
+    textStyle: TextStyle = TrxTypography.button,
 ) {
     val colors = LocalTrxColors.current
     val shape = RoundedCornerShape(TrxSpacing.radiusMd)
@@ -98,7 +100,7 @@ fun TrxLargeButton(
             Text(
                 text = label,
                 color = content,
-                style = TrxTypography.button,
+                style = textStyle,
                 modifier = Modifier.clearAndSetSemantics {},
             )
         }

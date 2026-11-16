@@ -26,9 +26,11 @@ import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.guestclasses.GuestClassListViewModel
+import ph.project.active.presentation.invites.InvitesViewModel
 import ph.project.active.presentation.registration.RegistrationUiState
 import ph.project.active.presentation.registration.RegistrationViewModel
 import ph.project.active.presentation.root.RootViewModel
+import ph.project.active.presentation.studentclasses.StudentClassesViewModel
 import ph.project.active.ui.TrxApp
 import ph.project.active.ui.navigation.AppNavHost
 import ph.project.active.ui.navigation.ClassDetail
@@ -108,6 +110,8 @@ object Flow1Compose {
         guestClassListViewModel: GuestClassListViewModel,
         registrationViewModel: (RegistrationOrigin) -> RegistrationViewModel,
         classDetailViewModel: (String, SignedInAccount?, JoinOutcome?) -> ClassDetailViewModel,
+        studentClassesViewModel: (SignedInAccount) -> StudentClassesViewModel,
+        invitesViewModel: (SignedInAccount) -> InvitesViewModel,
         shakeSource: ShakeSource = NoShakeSource,
         navController: NavHostController? = null,
         onNavController: (NavHostController) -> Unit,
@@ -120,6 +124,8 @@ object Flow1Compose {
                 shakeSource = shakeSource,
                 onNavController = onNavController,
                 classDetailViewModel = classDetailViewModel,
+                studentClassesViewModel = studentClassesViewModel,
+                invitesViewModel = invitesViewModel,
             )
         } else {
             AppNavHost(
@@ -129,6 +135,8 @@ object Flow1Compose {
                 shakeSource = shakeSource,
                 onNavController = onNavController,
                 classDetailViewModel = classDetailViewModel,
+                studentClassesViewModel = studentClassesViewModel,
+                invitesViewModel = invitesViewModel,
                 navController = navController,
             )
         }
@@ -140,6 +148,8 @@ object Flow1Compose {
         guestClassListViewModel: GuestClassListViewModel,
         registrationViewModel: (RegistrationOrigin) -> RegistrationViewModel,
         classDetailViewModel: (String, SignedInAccount?, JoinOutcome?) -> ClassDetailViewModel,
+        studentClassesViewModel: (SignedInAccount) -> StudentClassesViewModel,
+        invitesViewModel: (SignedInAccount) -> InvitesViewModel,
         shakeSource: ShakeSource = NoShakeSource,
     ) {
         TrxApp(
@@ -148,6 +158,8 @@ object Flow1Compose {
             registrationViewModel = registrationViewModel,
             shakeSource = shakeSource,
             classDetailViewModel = classDetailViewModel,
+            studentClassesViewModel = studentClassesViewModel,
+            invitesViewModel = invitesViewModel,
         )
     }
 
@@ -226,6 +238,8 @@ fun ComposeUiTest.mountNav(
             guestClassListViewModel = guest,
             registrationViewModel = registrationViewModel,
             classDetailViewModel = world.detailFactory(),
+            studentClassesViewModel = world.studentClassesFactory(),
+            invitesViewModel = world.invitesFactory(),
             shakeSource = shakeSource,
             onNavController = { nav = it },
         )
@@ -245,6 +259,8 @@ fun ComposeUiTest.showApp(world: Flow1Harness, shakeSource: ShakeSource = NoShak
             guestClassListViewModel = guest,
             registrationViewModel = registrationViewModel,
             classDetailViewModel = world.detailFactory(),
+            studentClassesViewModel = world.studentClassesFactory(),
+            invitesViewModel = world.invitesFactory(),
             shakeSource = shakeSource,
         )
     }
