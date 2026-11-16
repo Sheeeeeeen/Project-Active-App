@@ -187,7 +187,7 @@ Unless an AC says otherwise, its test uses the A1 example "TRX Core Burn", Coach
 - **F2-AC31.** Source scan: `DemoSeed` appears only under a debug source set. No file under `*/src/main`, `*/src/commonMain`, `*/src/androidMain`, `*/src/iosMain`, or `*/src/*release*` mentions it.
 - **F2-AC32.** Source scan: each new route (`ClassDetail`) and each new screen file holds one public type. No nested classes.
 - **F2-AC33.** All existing suites still pass. The only test edits allowed are the three flow 1 back-stack assertions listed in section 4.
-- **F2-AC34.** Any screen or component in flow 2 that is a placeholder wears the shared `PlaceholderTag`: "PLACEHOLDER" pill, testTag `placeholder_tag`, screen-reader label "Placeholder", not clickable, in its own file. Style per Designer's spec (accent tokens, top end). Added 16 Nov 2026 at Sheen's request. In flow 2 this means the StudentHome and CoachHome placeholder homes show `placeholder_tag`; A1 and class detail do not.
+- **F2-AC34.** Any screen or component in flow 2 that is a placeholder wears the shared `PlaceholderTag`: "PLACEHOLDER" pill, testTag `placeholder_tag`, screen-reader label "Placeholder", not clickable, in its own file. Style per Designer's spec (accent tokens, top end). Added 16 Nov 2026 at Sheen's request. In flow 2 this means the StudentHome and CoachHome placeholder homes show `placeholder_tag`; A1 and class detail do not. (Updated 16 Nov 2026: flow 3 F3-AC23 replaces the StudentHome placeholder with the real Classes home, so StudentHome no longer wears the tag. CoachHome still does.)
 
 **Manual checks** (Reviewer, on the Android emulator; these are not ACs):
 - A fresh debug install shows the 5 demo classes. Relaunching doesn't add them again.
