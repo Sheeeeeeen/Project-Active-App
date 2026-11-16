@@ -2,7 +2,6 @@ package ph.project.active.ui
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
 import ph.project.active.ui.testing.runFlow1UiTest
@@ -30,10 +29,9 @@ class F1HomePlaceholderTest {
             typeInto("registration_password_field", "password1")
             typeInto("registration_employee_id_field", "EMP-20417")
             clickTag("registration_submit_button")
-            tag("student_home").assertTextContains("Ella Navarro")
-            tag("student_home_open_class").assertTextEquals(trxClass.id)
+            // F2-AC33: sign-up from a class shows that class's detail. StudentHome stays underneath.
+            tag("class_detail_status_title").assertTextContains("Awaiting approval")
             assertNoSignOut()
-            // F2-AC33: the open class is still on StudentHome, with its detail pushed above it.
             assertEquals(
                 listOf("StudentHome(${trxClass.id})", "ClassDetail(${trxClass.id})"),
                 Flow1Compose.screenRoutes(nav),
