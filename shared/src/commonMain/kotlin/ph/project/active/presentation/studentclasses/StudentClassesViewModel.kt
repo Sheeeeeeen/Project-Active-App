@@ -24,7 +24,7 @@ class StudentClassesViewModel(
     account: SignedInAccount,
     private val classes: ClassRepository,
     private val memberships: MembershipRepository,
-    private val people: PersonRepository,
+    @Suppress("unused") private val people: PersonRepository,
     network: NetworkMonitor,
 ) : ViewModel() {
     init {
@@ -74,7 +74,4 @@ class StudentClassesViewModel(
             }
         _state.update { it.copy(myClasses = myClasses, publicClasses = publicClasses) }
     }
-
-    @Suppress("unused")
-    private val peopleRef = people
 }

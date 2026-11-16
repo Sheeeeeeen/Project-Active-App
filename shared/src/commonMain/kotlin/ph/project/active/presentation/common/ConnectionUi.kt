@@ -12,7 +12,7 @@ data class ConnectionUi(val isOffline: Boolean, val banner: String?)
 
 internal fun NetworkStatus.toConnection(): ConnectionUi = ConnectionUi(
     isOffline = this == NetworkStatus.OFFLINE,
-    banner = if (this == NetworkStatus.OFFLINE) "No internet connection" else null,
+    banner = if (this == NetworkStatus.OFFLINE) UiCopy.offlineBanner() else null,
 )
 
 internal fun NetworkMonitor.isOffline(): Boolean = status.value == NetworkStatus.OFFLINE

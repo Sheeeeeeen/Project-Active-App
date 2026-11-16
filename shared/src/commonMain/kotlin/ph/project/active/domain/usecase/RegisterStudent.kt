@@ -5,11 +5,10 @@ import ph.project.active.domain.repository.UserRepository
 import ph.project.active.domain.model.Role
 import ph.project.active.domain.model.User
 
-/** AC1-AC3, AC18: registers a student (signed in immediately) and optionally requests to join a class. */
 class RegisterStudent(
     private val users: UserRepository,
     private val hasher: PasswordHasher,
-    private val requestToJoin: RequestToJoin,
+    private val requestToJoin: RequestToJoin? = null,
 ) {
     operator fun invoke(
         name: String,
@@ -32,8 +31,10 @@ class RegisterStudent(
             passwordHash = hasher.hash(password),
         )
         users.add(user)
-        // Guest "request to join" path: the result (e.g. ClassCancelled, PrivateClass) does not undo registration.
-        if (requestToJoinClassId != null) requestToJoin(classId = requestToJoinClassId, studentId = user.id)
+        // A failed join does not undo the account that was just created.
+        if (requestToJoinClassId != null) {
+            checkNotNull(requestToJoin)(classId = requestToJoinClassId, studentId = user.id)
+        }
         return user
     }
 }

@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.datetime.DayOfWeek
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.data.repository.PersonRepository
 import ph.project.active.domain.repository.ClassRepository

@@ -1,7 +1,5 @@
 package ph.project.active.domain.model
 
-import ph.project.active.domain.repository.current
-
 sealed interface AttendanceResult {
     data class Recorded(val attendance: AttendanceRecord) : AttendanceResult
     data object AlreadyRecorded : AttendanceResult
