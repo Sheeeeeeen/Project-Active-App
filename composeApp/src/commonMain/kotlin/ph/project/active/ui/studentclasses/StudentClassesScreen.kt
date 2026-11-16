@@ -108,7 +108,7 @@ fun StudentClassesScreen(
                 Text(
                     text = greeting,
                     color = colors.textSecondary,
-                    style = TrxTypography.body,
+                    style = TrxTypography.subhead,
                     modifier = Modifier
                         .padding(top = TrxSpacing.s4)
                         .testTag(StudentClassesTestTags.greeting),
