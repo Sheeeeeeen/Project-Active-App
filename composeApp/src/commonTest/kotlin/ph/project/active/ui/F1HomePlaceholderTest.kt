@@ -33,7 +33,11 @@ class F1HomePlaceholderTest {
             tag("student_home").assertTextContains("Ella Navarro")
             tag("student_home_open_class").assertTextEquals(trxClass.id)
             assertNoSignOut()
-            assertEquals(listOf("StudentHome(${trxClass.id})"), Flow1Compose.screenRoutes(nav))
+            // F2-AC33: the open class is still on StudentHome, with its detail pushed above it.
+            assertEquals(
+                listOf("StudentHome(${trxClass.id})", "ClassDetail(${trxClass.id})"),
+                Flow1Compose.screenRoutes(nav),
+            )
         }
     }
 

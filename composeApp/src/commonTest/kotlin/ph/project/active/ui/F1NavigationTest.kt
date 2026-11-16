@@ -91,7 +91,12 @@ class F1NavigationTest {
             openRegistration(nav, trxClass.id)
             fillStudent()
             clickTag("registration_submit_button")
-            assertSignedInOnly(nav, "StudentHome(${trxClass.id})")
+            // F2-AC33: sign-up from a class pushes that class's detail on the student home.
+            assertEquals(
+                listOf("StudentHome(${trxClass.id})", "ClassDetail(${trxClass.id})"),
+                Flow1Compose.screenRoutes(nav),
+            )
+            assertFalse(Flow1Compose.hasGuestRoute(nav))
             val pending = world.memberships.forClass(trxClass.id)
                 .filter { it.status == MembershipStatus.PENDING_REQUEST }
             assertEquals(1, pending.size)

@@ -28,6 +28,7 @@ import ph.project.active.presentation.registration.RegistrationViewModel
 import ph.project.active.presentation.root.RootViewModel
 import ph.project.active.ui.TrxApp
 import ph.project.active.ui.navigation.AppNavHost
+import ph.project.active.ui.navigation.ClassDetail
 import ph.project.active.ui.navigation.CoachHome
 import ph.project.active.ui.navigation.GuestGraph
 import ph.project.active.ui.navigation.GuestHome
@@ -136,6 +137,7 @@ object Flow1Compose {
             destination.hasRoute(GuestHome::class) -> "GuestHome"
             destination.hasRoute(Registration::class) -> "Registration(${entry.toRoute<Registration>().requestClassId})"
             destination.hasRoute(StudentHome::class) -> "StudentHome(${entry.toRoute<StudentHome>().openClassId})"
+            destination.hasRoute(ClassDetail::class) -> "ClassDetail(${entry.toRoute<ClassDetail>().classId})"
             destination.hasRoute(CoachHome::class) -> "CoachHome"
             else -> null
         }

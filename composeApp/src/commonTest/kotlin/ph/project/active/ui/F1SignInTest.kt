@@ -71,7 +71,11 @@ class F1SignInTest {
             typeInto("registration_signin_email_field", "ella.navarro@acme.test")
             typeInto("registration_signin_password_field", "password1")
             clickTag("registration_signin_button")
-            assertEquals(listOf("StudentHome(${trxClass.id})"), Flow1Compose.screenRoutes(nav))
+            // F2-AC33: an existing student signing in from a class lands on that class's detail.
+            assertEquals(
+                listOf("StudentHome(${trxClass.id})", "ClassDetail(${trxClass.id})"),
+                Flow1Compose.screenRoutes(nav),
+            )
             tag("student_home").assertExists()
             val pending = world.memberships.forClass(trxClass.id)
                 .filter { it.status == MembershipStatus.PENDING_REQUEST }
