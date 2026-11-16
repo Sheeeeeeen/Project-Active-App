@@ -2,26 +2,32 @@ package ph.project.active.ui.classdetail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -30,6 +36,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -42,17 +49,25 @@ import ph.project.active.presentation.classdetail.runsLine
 import ph.project.active.presentation.common.UiCopy
 import ph.project.active.presentation.manageclass.RequestAction
 import ph.project.active.ui.components.OfflineBanner
+import ph.project.active.ui.components.StatusCard
+import ph.project.active.ui.components.StatusChip
 import ph.project.active.ui.components.TrxButtonKind
+import ph.project.active.ui.components.TrxCard
 import ph.project.active.ui.components.TrxLargeButton
 import ph.project.active.ui.platform.LightStatusBarIcons
 import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTypography
 import projectactive.composeapp.generated.resources.Res
+import projectactive.composeapp.generated.resources.ban
+import projectactive.composeapp.generated.resources.calendar_check
 import projectactive.composeapp.generated.resources.calendar_days
+import projectactive.composeapp.generated.resources.check
 import projectactive.composeapp.generated.resources.chevron_left
 import projectactive.composeapp.generated.resources.clock
-import projectactive.composeapp.generated.resources.user
+import projectactive.composeapp.generated.resources.globe
+import projectactive.composeapp.generated.resources.hourglass
+import projectactive.composeapp.generated.resources.info
 
 object ClassDetailTestTags {
     const val back = "class_detail_back"
@@ -79,38 +94,47 @@ fun ClassDetailScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LightStatusBarIcons(lightIcons = true)
     val colors = LocalTrxColors.current
-    val content = state.content
+    val content = state.content?.takeUnless { state.unavailable }
+    LightStatusBarIcons(lightIcons = content != null)
     Column(
         modifier
             .fillMaxSize()
             .background(colors.canvas)
-            .windowInsetsPadding(WindowInsets.safeDrawing)
-            .verticalScroll(rememberScrollState()),
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)),
     ) {
-        state.connection.banner?.let { banner -> OfflineBanner(banner) }
-        BackRow(onBack)
-        state.notice?.let { outcome ->
-            FormRow(UiCopy.joinNotice(outcome), ClassDetailTestTags.notice)
+        Column(
+            Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            if (content == null) {
+                BackRow(onBack, colors.textPrimary, Modifier.windowInsetsPadding(WindowInsets.statusBars))
+            } else {
+                Hero(content, state.requestAction, onBack)
+            }
+            state.connection.banner?.let { banner -> OfflineBanner(banner) }
+            state.notice?.let { outcome ->
+                FormRow(UiCopy.joinNotice(outcome), ClassDetailTestTags.notice)
+            }
+            if (content == null) {
+                Unavailable()
+            } else {
+                Status(state, content)
+                Details(content)
+            }
+            state.error?.let { error -> FormRow(UiCopy.uiError(error), ClassDetailTestTags.formError) }
         }
-        if (content == null || state.unavailable) {
-            Unavailable()
-            state.error?.let { error -> FormRow(UiCopy.uiError(error), ClassDetailTestTags.formError) }
-        } else {
-            Hero(content, state.requestAction)
-            Details(content)
-            state.error?.let { error -> FormRow(UiCopy.uiError(error), ClassDetailTestTags.formError) }
-            Bottom(state, content, onRequestToJoin)
+        if (content != null && showsRequestButton(state, content)) {
+            BottomBar(state, content, onRequestToJoin)
         }
     }
 }
 
 @Composable
-private fun BackRow(onBack: () -> Unit) {
-    val colors = LocalTrxColors.current
+private fun BackRow(onBack: () -> Unit, tint: Color, modifier: Modifier = Modifier) {
     Row(
-        Modifier
+        modifier
             .fillMaxWidth()
             .heightIn(min = TrxSpacing.touchTarget)
             .testTag(ClassDetailTestTags.back)
@@ -119,46 +143,52 @@ private fun BackRow(onBack: () -> Unit) {
                 role = Role.Button
                 this[SemanticsProperties.Text] = listOf(AnnotatedString(UiCopy.guestListTitle()))
             }
-            .padding(horizontal = TrxSpacing.screenHorizontal),
+            .padding(horizontal = TrxSpacing.s16),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             painter = painterResource(Res.drawable.chevron_left),
             contentDescription = null,
-            tint = colors.textPrimary,
+            tint = tint,
             modifier = Modifier
-                .padding(end = TrxSpacing.s8)
-                .size(20.dp),
+                .padding(end = TrxSpacing.s4)
+                .size(24.dp),
         )
-        Text(
-            text = UiCopy.guestListTitle(),
-            color = colors.textPrimary,
-            style = TrxTypography.button,
-        )
+        Text(text = UiCopy.guestListTitle(), color = tint, style = TrxTypography.body)
     }
 }
 
 @Composable
-private fun Hero(content: ClassContent, action: RequestAction) {
+private fun Hero(content: ClassContent, action: RequestAction, onBack: () -> Unit) {
     val colors = LocalTrxColors.current
+    val visibility = visibilityLabel(content)
+    val status = chipLabel(content, action)
     Column(
         Modifier
             .fillMaxWidth()
             .background(colors.surfaceInverse)
-            .padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s24),
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .padding(bottom = TrxSpacing.s24),
     ) {
-        Text(
-            text = chipLabel(content, action),
-            color = colors.textInverse,
-            style = TrxTypography.label,
-            modifier = Modifier.testTag(ClassDetailTestTags.chip),
-        )
+        BackRow(onBack, colors.textInverse)
+        Row(
+            Modifier.padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s8),
+            horizontalArrangement = Arrangement.spacedBy(TrxSpacing.s8),
+        ) {
+            if (status == visibility) {
+                VisibilityChip(visibility, Modifier.testTag(ClassDetailTestTags.chip))
+            } else {
+                VisibilityChip(visibility)
+                StateChip(content, action, Modifier.testTag(ClassDetailTestTags.chip))
+            }
+        }
         Text(
             text = content.name,
             color = colors.textInverse,
             style = TrxTypography.title,
             modifier = Modifier
-                .padding(top = TrxSpacing.s12)
+                .padding(horizontal = TrxSpacing.screenHorizontal)
+                .padding(top = TrxSpacing.s8)
                 .testTag(ClassDetailTestTags.name)
                 .semantics { heading() },
         )
@@ -166,22 +196,127 @@ private fun Hero(content: ClassContent, action: RequestAction) {
 }
 
 @Composable
+private fun VisibilityChip(label: String, modifier: Modifier = Modifier) {
+    val colors = LocalTrxColors.current
+    StatusChip(label, Res.drawable.globe, colors.surfaceAlt, colors.textPrimary, modifier)
+}
+
+@Composable
+private fun StateChip(content: ClassContent, action: RequestAction, modifier: Modifier = Modifier) {
+    val colors = LocalTrxColors.current
+    val label = chipLabel(content, action)
+    when {
+        content.isCancelled -> StatusChip(label, Res.drawable.ban, colors.surfaceAlt, colors.textSecondary, modifier)
+        action is RequestAction.Pending -> StatusChip(label, Res.drawable.hourglass, colors.warningBg, colors.warningFg, modifier)
+        action is RequestAction.Joined -> StatusChip(label, Res.drawable.check, colors.successBg, colors.successFg, modifier)
+        else -> StatusChip(label, Res.drawable.info, colors.infoBg, colors.infoFg, modifier)
+    }
+}
+
+@Composable
+private fun Status(state: ClassDetailUiState, content: ClassContent) {
+    val colors = LocalTrxColors.current
+    val action = state.requestAction
+    val modifier = Modifier
+        .padding(horizontal = TrxSpacing.screenHorizontal)
+        .padding(top = TrxSpacing.s16)
+    when {
+        content.isCancelled -> StatusCard(
+            label = UiCopy.cancelled(),
+            icon = Res.drawable.ban,
+            background = colors.surfaceAlt,
+            accent = colors.textSecondary,
+            title = null,
+            body = UiCopy.classCancelledBody(),
+            titleTag = ClassDetailTestTags.statusTitle,
+            bodyTag = ClassDetailTestTags.statusBody,
+            modifier = modifier,
+        )
+        content.isEnded -> StatusCard(
+            label = null,
+            icon = Res.drawable.ban,
+            background = colors.surfaceAlt,
+            accent = colors.textSecondary,
+            title = null,
+            body = content.endedLine(),
+            titleTag = ClassDetailTestTags.statusTitle,
+            bodyTag = ClassDetailTestTags.statusBody,
+            modifier = modifier,
+        )
+        action is RequestAction.Pending -> StatusCard(
+            label = UiCopy.pending(),
+            icon = Res.drawable.hourglass,
+            background = colors.warningBg,
+            accent = colors.warningFg,
+            title = UiCopy.awaitingApproval(),
+            body = UiCopy.pendingApprovalBody(content.coachName),
+            titleTag = ClassDetailTestTags.statusTitle,
+            bodyTag = ClassDetailTestTags.statusBody,
+            modifier = modifier,
+        )
+        action is RequestAction.Joined -> StatusCard(
+            label = UiCopy.joined(),
+            icon = Res.drawable.check,
+            background = colors.successBg,
+            accent = colors.successFg,
+            title = UiCopy.joinedTitle(),
+            body = UiCopy.joinedBody(),
+            titleTag = ClassDetailTestTags.statusTitle,
+            bodyTag = ClassDetailTestTags.statusBody,
+            modifier = modifier,
+        )
+        action is RequestAction.Invited -> StatusCard(
+            label = UiCopy.invited(),
+            icon = Res.drawable.info,
+            background = colors.infoBg,
+            accent = colors.infoFg,
+            title = null,
+            body = UiCopy.invitedBody(content.coachName),
+            titleTag = ClassDetailTestTags.statusTitle,
+            bodyTag = ClassDetailTestTags.statusBody,
+            modifier = modifier,
+        )
+        state.requestAgain -> Callout(modifier)
+    }
+}
+
+@Composable
 private fun Details(content: ClassContent) {
     val colors = LocalTrxColors.current
-    val runs = content.runsLine()
-    Column(
+    TrxCard(
         Modifier
-            .padding(TrxSpacing.screenHorizontal)
-            .padding(top = TrxSpacing.s16)
-            .fillMaxWidth()
-            .background(colors.surface, RoundedCornerShape(TrxSpacing.radiusMd))
-            .padding(TrxSpacing.s16),
+            .padding(horizontal = TrxSpacing.screenHorizontal)
+            .padding(top = TrxSpacing.s16, bottom = TrxSpacing.s24),
     ) {
-        Text(UiCopy.classDetailsHeading(), color = colors.textPrimary, style = TrxTypography.button)
-        DetailRow(Res.drawable.user, UiCopy.detailCoachLabel(), "Coach ${content.coachName}")
-        DetailRow(Res.drawable.calendar_days, UiCopy.detailDaysLabel(), content.daysLong(), ClassDetailTestTags.days)
-        DetailLines(Res.drawable.clock, UiCopy.detailTimeLabel(), content.timeLines(), ClassDetailTestTags.time)
-        DetailRow(Res.drawable.calendar_days, UiCopy.detailRunsLabel(), runs, ClassDetailTestTags.runs)
+        Text(UiCopy.classDetailsHeading(), color = colors.textSecondary, style = TrxTypography.overline)
+        CoachRow(content.coachName)
+        HorizontalDivider(color = colors.borderDefault)
+        DetailRow(Res.drawable.calendar_days, UiCopy.detailDaysLabel(), listOf(content.daysLong()), ClassDetailTestTags.days)
+        HorizontalDivider(color = colors.borderDefault)
+        DetailRow(Res.drawable.clock, UiCopy.detailTimeLabel(), content.timeLines(), ClassDetailTestTags.time)
+        HorizontalDivider(color = colors.borderDefault)
+        DetailRow(Res.drawable.calendar_check, UiCopy.detailRunsLabel(), listOf(content.runsLine()), ClassDetailTestTags.runs)
+    }
+}
+
+@Composable
+private fun CoachRow(coachName: String) {
+    val colors = LocalTrxColors.current
+    Row(Modifier.padding(vertical = TrxSpacing.s12), verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            Modifier
+                .padding(end = TrxSpacing.s16)
+                .size(TrxSpacing.avatar)
+                .background(colors.accentSubtle, CircleShape)
+                .clearAndSetSemantics {},
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(initials(coachName), color = colors.accentText, style = TrxTypography.label)
+        }
+        Column {
+            Text(UiCopy.detailCoachLabel(), color = colors.textSecondary, style = TrxTypography.footnote)
+            Text(coachName, color = colors.textPrimary, style = TrxTypography.headline)
+        }
     }
 }
 
@@ -189,95 +324,68 @@ private fun Details(content: ClassContent) {
 private fun DetailRow(
     icon: DrawableResource,
     label: String,
-    value: String,
-    valueTag: String? = null,
-) {
-    val colors = LocalTrxColors.current
-    Row(Modifier.padding(top = TrxSpacing.s12), verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            painter = painterResource(icon),
-            contentDescription = null,
-            tint = colors.textSecondary,
-            modifier = Modifier
-                .padding(end = TrxSpacing.s12)
-                .size(20.dp),
-        )
-        Column {
-            Text(label, color = colors.textSecondary, style = TrxTypography.label)
-            Text(
-                text = value,
-                color = colors.textPrimary,
-                style = TrxTypography.body,
-                modifier = if (valueTag == null) Modifier else Modifier.testTag(valueTag),
-            )
-        }
-    }
-}
-
-@Composable
-private fun DetailLines(
-    icon: DrawableResource,
-    label: String,
     lines: List<String>,
     valueTag: String,
 ) {
     val colors = LocalTrxColors.current
-    Row(Modifier.padding(top = TrxSpacing.s12), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.padding(vertical = TrxSpacing.s12), verticalAlignment = Alignment.CenterVertically) {
         Icon(
             painter = painterResource(icon),
             contentDescription = null,
-            tint = colors.textSecondary,
+            tint = colors.textPrimary,
             modifier = Modifier
-                .padding(end = TrxSpacing.s12)
-                .size(20.dp),
+                .padding(start = TrxSpacing.s8, end = TrxSpacing.s24)
+                .size(24.dp),
         )
-        Column(
-            Modifier
-                .testTag(valueTag)
-                .semantics {
-                    this[SemanticsProperties.Text] = lines.map { AnnotatedString(it) }
-                },
-        ) {
-            Text(label, color = colors.textSecondary, style = TrxTypography.label, modifier = Modifier.clearAndSetSemantics {})
-            lines.forEach { line ->
-                Text(
-                    text = line,
-                    color = colors.textPrimary,
-                    style = TrxTypography.body,
-                    modifier = Modifier.clearAndSetSemantics {},
-                )
+        Column {
+            Text(label, color = colors.textSecondary, style = TrxTypography.footnote)
+            Column(
+                Modifier
+                    .testTag(valueTag)
+                    .semantics { this[SemanticsProperties.Text] = lines.map { AnnotatedString(it) } },
+            ) {
+                lines.forEach { line ->
+                    Text(
+                        text = line,
+                        color = colors.textPrimary,
+                        style = TrxTypography.headline,
+                        modifier = Modifier.clearAndSetSemantics {},
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun Bottom(
+private fun BottomBar(
     state: ClassDetailUiState,
     content: ClassContent,
     onRequestToJoin: () -> Unit,
 ) {
-    Column(Modifier.padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s24)) {
-        when {
-            content.isCancelled -> StatusBody(UiCopy.classCancelledBody())
-            content.isEnded -> StatusBody(content.endedLine())
-            state.requestAction is RequestAction.Pending -> {
-                StatusTitle(UiCopy.awaitingApproval())
-                StatusBody(UiCopy.pendingApprovalBody(content.coachName))
-            }
-            state.requestAction is RequestAction.Joined -> {
-                StatusTitle(UiCopy.joinedTitle())
-                StatusBody(UiCopy.joinedBody())
-            }
-            state.requestAction is RequestAction.Invited -> StatusBody(UiCopy.invitedBody(content.coachName))
-            state.requestAgain -> {
-                Callout()
-                Spacer(Modifier.height(TrxSpacing.s16))
-                RequestButton(state, onRequestToJoin)
-            }
-            state.requestAction is RequestAction.RequestToJoin -> {
-                RequestButton(state, onRequestToJoin)
-                val action = state.requestAction as RequestAction.RequestToJoin
+    val colors = LocalTrxColors.current
+    val action = state.requestAction
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(colors.surface),
+    ) {
+        HorizontalDivider(color = colors.borderDefault)
+        Column(
+            Modifier.padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            TrxLargeButton(
+                label = UiCopy.requestToJoin(),
+                kind = TrxButtonKind.Primary,
+                tag = ClassDetailTestTags.requestButton,
+                onClick = onRequestToJoin,
+                enabled = !state.isSending,
+                loading = state.isSending,
+                progressTag = ClassDetailTestTags.requestProgress,
+                height = TrxSpacing.bottomBarButtonHeight,
+            )
+            if (!state.requestAgain && action is RequestAction.RequestToJoin) {
                 val note = if (action.opensRegistration) {
                     UiCopy.requestToJoinGuestNote()
                 } else {
@@ -285,8 +393,9 @@ private fun Bottom(
                 }
                 Text(
                     text = note,
-                    color = LocalTrxColors.current.textSecondary,
-                    style = TrxTypography.label,
+                    color = colors.textSecondary,
+                    style = TrxTypography.footnote,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
                         .padding(top = TrxSpacing.s12)
                         .testTag(ClassDetailTestTags.footnote),
@@ -297,58 +406,21 @@ private fun Bottom(
 }
 
 @Composable
-private fun RequestButton(state: ClassDetailUiState, onRequestToJoin: () -> Unit) {
-    TrxLargeButton(
-        label = UiCopy.requestToJoin(),
-        kind = TrxButtonKind.Primary,
-        tag = ClassDetailTestTags.requestButton,
-        onClick = onRequestToJoin,
-        enabled = !state.isSending,
-        loading = state.isSending,
-        progressTag = ClassDetailTestTags.requestProgress,
-    )
-}
-
-@Composable
-private fun StatusTitle(title: String) {
-    Text(
-        text = title,
-        color = LocalTrxColors.current.textPrimary,
-        style = TrxTypography.button,
-        modifier = Modifier
-            .testTag(ClassDetailTestTags.statusTitle)
-            .semantics { heading() },
-    )
-}
-
-@Composable
-private fun StatusBody(body: String) {
-    Text(
-        text = body,
-        color = LocalTrxColors.current.textSecondary,
-        style = TrxTypography.body,
-        modifier = Modifier
-            .padding(top = TrxSpacing.s8)
-            .testTag(ClassDetailTestTags.statusBody),
-    )
-}
-
-@Composable
-private fun Callout() {
+private fun Callout(modifier: Modifier) {
     val colors = LocalTrxColors.current
     val title = UiCopy.requestAgain()
     val body = UiCopy.requestAgainBody()
     Column(
-        Modifier
+        modifier
             .fillMaxWidth()
             .testTag(ClassDetailTestTags.callout)
             .semantics {
                 this[SemanticsProperties.Text] = listOf(AnnotatedString(title), AnnotatedString(body))
             }
-            .background(colors.surfaceAlt, RoundedCornerShape(TrxSpacing.radiusMd))
+            .background(colors.accentSubtle, RoundedCornerShape(TrxSpacing.radiusLg))
             .padding(TrxSpacing.s16),
     ) {
-        Text(title, color = colors.textPrimary, style = TrxTypography.button, modifier = Modifier.clearAndSetSemantics {})
+        Text(title, color = colors.textPrimary, style = TrxTypography.headline, modifier = Modifier.clearAndSetSemantics {})
         Text(
             body,
             color = colors.textSecondary,
@@ -402,11 +474,23 @@ private fun FormRow(message: String, tag: String) {
     )
 }
 
+private fun showsRequestButton(state: ClassDetailUiState, content: ClassContent): Boolean {
+    val action = state.requestAction
+    if (content.isCancelled || content.isEnded) return false
+    if (action is RequestAction.Pending || action is RequestAction.Joined || action is RequestAction.Invited) return false
+    return state.requestAgain || action is RequestAction.RequestToJoin
+}
+
+private fun initials(name: String): String =
+    name.split(" ").filter { it.isNotBlank() }.take(2).joinToString("") { it.first().uppercase() }
+
+private fun visibilityLabel(content: ClassContent): String =
+    if (content.visibility == Visibility.PRIVATE) UiCopy.visibilityPrivate() else UiCopy.visibilityPublic()
+
 private fun chipLabel(content: ClassContent, action: RequestAction): String = when {
     content.isCancelled -> UiCopy.cancelled()
     action is RequestAction.Pending -> UiCopy.pending()
     action is RequestAction.Joined -> UiCopy.joined()
     action is RequestAction.Invited -> UiCopy.invited()
-    content.visibility == Visibility.PRIVATE -> UiCopy.visibilityPrivate()
-    else -> UiCopy.visibilityPublic()
+    else -> visibilityLabel(content)
 }
