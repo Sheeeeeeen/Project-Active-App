@@ -21,7 +21,6 @@ import ph.project.active.domain.repository.ClassRepository
 import ph.project.active.domain.usecase.RequestToJoin
 import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.classdetail.RequestingClassHeader
-import ph.project.active.presentation.common.DetailGraph
 import ph.project.active.presentation.common.Field
 import ph.project.active.presentation.common.FieldError
 import ph.project.active.presentation.common.Navigation
@@ -51,11 +50,6 @@ class RegistrationViewModel(
     val state: StateFlow<RegistrationUiState> = _state.asStateFlow()
 
     init {
-        DetailGraph.classes = classes
-        DetailGraph.people = people
-        DetailGraph.network = network
-        DetailGraph.memberships = requestToJoin.memberships
-        DetailGraph.requestToJoin = requestToJoin
         watchConnection(network, _state) { copy(connection = it) }
     }
 

@@ -13,6 +13,7 @@ import ph.project.active.data.fake.FakeAuthRepository
 import ph.project.active.data.fake.FakePasswordHasher
 import ph.project.active.data.fake.MutableNetworkMonitor
 import ph.project.active.data.model.PersonProfile
+import ph.project.active.data.model.SignedInAccount
 import ph.project.active.data.repository.AuthRepository
 import ph.project.active.data.repository.SqlAttendanceRepository
 import ph.project.active.data.repository.SqlClassRepository
@@ -30,6 +31,8 @@ import ph.project.active.domain.repository.inmemory.InMemoryUserRepository
 import ph.project.active.domain.usecase.CreateClass
 import ph.project.active.domain.usecase.RegisterCoach
 import ph.project.active.domain.usecase.RegisterStudent
+import ph.project.active.presentation.classdetail.ClassDetailViewModel
+import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.guestclasses.GuestClassListViewModel
 import ph.project.active.presentation.registration.RegistrationViewModel
@@ -95,6 +98,25 @@ class Flow1Harness(
         val cache = mutableMapOf<RegistrationOrigin, RegistrationViewModel>()
         return { origin -> cache.getOrPut(origin) { registration(origin, authRepository) } }
     }
+
+    // Same repositories, network and RequestToJoin as the list and registration,
+    // with the ViewModel's default clock, as the old DetailGraph wiring had.
+    fun detail(
+        classId: String,
+        viewer: SignedInAccount?,
+        joinOutcome: JoinOutcome?,
+    ): ClassDetailViewModel = ClassDetailViewModel(
+        classId = classId,
+        viewer = viewer,
+        classes = classes,
+        memberships = memberships,
+        people = people,
+        requestToJoin = requestToJoin,
+        network = network,
+        joinOutcome = joinOutcome,
+    )
+
+    fun detailFactory(): (String, SignedInAccount?, JoinOutcome?) -> ClassDetailViewModel = ::detail
 
     fun coreBurn(): TrxClass {
         people.upsert(PersonProfile(CORE_BURN_COACH_ID, "Mara Santos", Role.COACH, null))

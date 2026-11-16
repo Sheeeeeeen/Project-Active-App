@@ -5,7 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -35,7 +35,7 @@ fun PlaceholderTag(modifier: Modifier = Modifier) {
         lineHeight = 12.sp,
         maxLines = 1,
         modifier = modifier
-            .height(20.dp)
+            .heightIn(min = 20.dp)
             .border(1.dp, colors.accentDefault, CircleShape)
             .background(colors.accentSubtle, CircleShape)
             .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -45,8 +45,8 @@ fun PlaceholderTag(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun Placeholder(content: @Composable () -> Unit) {
-    Box(Modifier.fillMaxWidth()) {
+fun Placeholder(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Box(modifier.fillMaxWidth()) {
         content()
         PlaceholderTag(
             Modifier

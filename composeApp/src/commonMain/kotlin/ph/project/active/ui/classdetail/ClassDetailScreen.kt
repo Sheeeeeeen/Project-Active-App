@@ -1,8 +1,8 @@
 package ph.project.active.ui.classdetail
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,18 +21,19 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
@@ -97,15 +98,19 @@ fun ClassDetailScreen(
     val colors = LocalTrxColors.current
     val content = state.content?.takeUnless { state.unavailable }
     LightStatusBarIcons(lightIcons = content != null)
-    Column(
+    val barContent = content?.takeIf { showsRequestButton(state, it) }
+    Scaffold(
         modifier
             .fillMaxSize()
-            .background(colors.canvas)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)),
-    ) {
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        containerColor = colors.canvas,
+        contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
+        bottomBar = { barContent?.let { BottomBar(state, it, onRequestToJoin) } },
+    ) { innerPadding ->
         Column(
             Modifier
-                .weight(1f)
+                .fillMaxSize()
+                .padding(innerPadding)
                 .verticalScroll(rememberScrollState()),
         ) {
             if (content == null) {
@@ -125,36 +130,39 @@ fun ClassDetailScreen(
             }
             state.error?.let { error -> FormRow(UiCopy.uiError(error), ClassDetailTestTags.formError) }
         }
-        if (content != null && showsRequestButton(state, content)) {
-            BottomBar(state, content, onRequestToJoin)
-        }
     }
 }
 
 @Composable
 private fun BackRow(onBack: () -> Unit, tint: Color, modifier: Modifier = Modifier) {
-    Row(
-        modifier
+    TextButton(
+        onClick = onBack,
+        modifier = modifier
             .fillMaxWidth()
             .heightIn(min = TrxSpacing.touchTarget)
             .testTag(ClassDetailTestTags.back)
-            .clickable(onClick = onBack)
             .semantics {
-                role = Role.Button
                 this[SemanticsProperties.Text] = listOf(AnnotatedString(UiCopy.guestListTitle()))
-            }
-            .padding(horizontal = TrxSpacing.s16),
-        verticalAlignment = Alignment.CenterVertically,
+            },
+        colors = ButtonDefaults.textButtonColors(contentColor = tint),
+        contentPadding = PaddingValues(0.dp),
     ) {
-        Icon(
-            painter = painterResource(Res.drawable.chevron_left),
-            contentDescription = null,
-            tint = tint,
-            modifier = Modifier
-                .padding(end = TrxSpacing.s4)
-                .size(24.dp),
-        )
-        Text(text = UiCopy.guestListTitle(), color = tint, style = TrxTypography.body)
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = TrxSpacing.s16),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.chevron_left),
+                contentDescription = null,
+                tint = tint,
+                modifier = Modifier
+                    .padding(end = TrxSpacing.s4)
+                    .size(24.dp),
+            )
+            Text(text = UiCopy.guestListTitle(), color = tint, style = TrxTypography.body)
+        }
     }
 }
 
@@ -372,7 +380,9 @@ private fun BottomBar(
     ) {
         HorizontalDivider(color = colors.borderDefault)
         Column(
-            Modifier.padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16),
+            Modifier
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+                .padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             TrxLargeButton(
