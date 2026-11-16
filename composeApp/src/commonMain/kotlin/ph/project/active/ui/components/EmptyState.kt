@@ -37,7 +37,7 @@ fun EmptyState(
     Column(
         modifier
             .fillMaxWidth()
-            .padding(top = TrxSpacing.s48)
+            .padding(top = TrxSpacing.s32)
             .testTag(tag)
             .semantics {
                 this[SemanticsProperties.Text] = listOf(AnnotatedString(title), AnnotatedString(body))
@@ -60,7 +60,7 @@ fun EmptyState(
         Text(
             text = title,
             color = colors.textPrimary,
-            style = TrxTypography.headline,
+            style = TrxTypography.sectionTitle,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .padding(top = TrxSpacing.s16)
