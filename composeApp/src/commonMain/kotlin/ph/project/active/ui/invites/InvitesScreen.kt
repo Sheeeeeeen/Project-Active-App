@@ -113,9 +113,7 @@ fun InvitesScreen(
                         text = UiCopy.invitesSubtitle(),
                         color = colors.textSecondary,
                         style = TrxTypography.subhead,
-                        modifier = Modifier
-                            .padding(top = TrxSpacing.s4)
-                            .testTag(InvitesTestTags.subtitle),
+                        modifier = Modifier.testTag(InvitesTestTags.subtitle),
                     )
                 }
             }

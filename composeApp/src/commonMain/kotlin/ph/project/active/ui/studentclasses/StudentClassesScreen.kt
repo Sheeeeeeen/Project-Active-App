@@ -109,9 +109,7 @@ fun StudentClassesScreen(
                     text = greeting,
                     color = colors.textSecondary,
                     style = TrxTypography.subhead,
-                    modifier = Modifier
-                        .padding(top = TrxSpacing.s4)
-                        .testTag(StudentClassesTestTags.greeting),
+                    modifier = Modifier.testTag(StudentClassesTestTags.greeting),
                 )
             }
             state.connection.banner?.let { banner -> OfflineBanner(banner, Modifier.padding(top = TrxSpacing.s16)) }
