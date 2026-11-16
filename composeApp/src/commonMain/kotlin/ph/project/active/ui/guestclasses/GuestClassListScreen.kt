@@ -186,30 +186,32 @@ fun GuestClassListScreen(
 @Composable
 private fun RegisterBar(onRegisterOrSignIn: () -> Unit) {
     val colors = LocalTrxColors.current
-    HorizontalDivider(color = colors.borderDefault)
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .background(colors.surface)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
-            .padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        TrxLargeButton(
-            label = UiCopy.registerOrSignIn(),
-            kind = TrxButtonKind.Primary,
-            tag = "guest_home_register_button",
-            onClick = onRegisterOrSignIn,
-            enabled = true,
-            icon = Res.drawable.log_in,
-        )
-        Text(
-            text = UiCopy.createAccountToRequest(),
-            color = colors.textSecondary,
-            style = TrxTypography.footnote,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = TrxSpacing.s12),
-        )
+    Column {
+        HorizontalDivider(color = colors.borderDefault)
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .background(colors.surface)
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+                .padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            TrxLargeButton(
+                label = UiCopy.registerOrSignIn(),
+                kind = TrxButtonKind.Primary,
+                tag = "guest_home_register_button",
+                onClick = onRegisterOrSignIn,
+                enabled = true,
+                icon = Res.drawable.log_in,
+            )
+            Text(
+                text = UiCopy.createAccountToRequest(),
+                color = colors.textSecondary,
+                style = TrxTypography.footnote,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = TrxSpacing.s12),
+            )
+        }
     }
 }
 
