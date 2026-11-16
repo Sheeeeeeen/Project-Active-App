@@ -34,6 +34,63 @@ class F2StructureTest {
         }
         assertTrue(problems.isEmpty(), problems.joinToString("\n"))
     }
+
+    @Test
+    fun F2_AC34_placeholderTagIsAPublicComposableInItsOwnFile() {
+        val ui = File(repoRoot(), "composeApp/src/commonMain/kotlin/ph/project/active/ui")
+        val matches = kotlinSources(ui).filter { it.name == "PlaceholderTag.kt" }
+        assertTrue(matches.size == 1, "expected one PlaceholderTag.kt under ui, found ${matches.map { it.path }}")
+        val source = matches.single().readText()
+        assertTrue(
+            declaresPublicComposable(source, "PlaceholderTag"),
+            "PlaceholderTag.kt must declare a public @Composable fun PlaceholderTag",
+        )
+        val nested = nestedTypeNames(source)
+        assertTrue(nested.isEmpty(), "PlaceholderTag.kt has nested types: $nested")
+    }
+}
+
+private fun declaresPublicComposable(source: String, name: String): Boolean {
+    val cleaned = maskStringsAndComments(source)
+    var depth = 0
+    var index = 0
+    while (index < cleaned.length) {
+        val character = cleaned[index]
+        when {
+            character == '{' -> {
+                depth += 1
+                index += 1
+            }
+            character == '}' -> {
+                depth = (depth - 1).coerceAtLeast(0)
+                index += 1
+            }
+            depth == 0 && cleaned.startsWith("fun", index) && isWord(cleaned, index, "fun") -> {
+                val funName = readIdentifier(cleaned, index + 3)
+                if (funName == name && headerIsPublicComposable(cleaned, index)) return true
+                index += 3
+            }
+            else -> index += 1
+        }
+    }
+    return false
+}
+
+private fun isWord(text: String, index: Int, word: String): Boolean {
+    val end = index + word.length
+    val before = index == 0 || !text[index - 1].isLetterOrDigit()
+    val after = end >= text.length || !text[end].isLetterOrDigit()
+    return before && after
+}
+
+private fun headerIsPublicComposable(cleaned: String, funIndex: Int): Boolean {
+    val from = (funIndex - 200).coerceAtLeast(0)
+    val prefix = cleaned.substring(from, funIndex)
+    val cut = prefix.lastIndexOf('}')
+    val header = if (cut >= 0) prefix.substring(cut + 1) else prefix
+    if (!header.contains("@Composable")) return false
+    val words = header.split(Regex("\\W+")).filter { it.isNotEmpty() }
+    return "private" !in words && "internal" !in words
 }
 
 private fun isDebugSourceSet(path: String): Boolean {
