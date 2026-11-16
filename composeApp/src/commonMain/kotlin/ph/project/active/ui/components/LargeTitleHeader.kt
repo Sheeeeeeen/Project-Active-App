@@ -75,8 +75,6 @@ fun LargeTitleHeader(
         text = title,
         color = colors.textPrimary,
         style = TrxTypography.largeTitle,
-        modifier = Modifier
-            .padding(top = TrxSpacing.s8)
-            .testTag(titleTag),
+        modifier = Modifier.testTag(titleTag),
     )
 }
