@@ -43,7 +43,7 @@ class F3ClassesScreenTest {
 
             tag("student_home").assertExists()
             assertTextUnder("student_classes_title", "Classes")
-            assertTextUnder("student_classes_greeting", "Hi Paolo Reyes \u00B7 EMP-20417")
+            assertTextUnder("student_classes_greeting", "Hi Paolo \u00B7 EMP-20417")
             assertTextUnder("student_my_classes_header", "MY CLASSES")
             assertTextUnder("student_my_classes_count", "3 joined")
             assertTextUnder("student_public_classes_header", "Public classes")

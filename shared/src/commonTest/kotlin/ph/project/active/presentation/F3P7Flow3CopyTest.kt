@@ -8,8 +8,7 @@ class F3P7Flow3CopyTest {
     @Test
     fun F3_P7_flow3CopyMatchesTheSpec() {
         assertEquals("Classes", UiCopy.classesTitle())
-        assertEquals("Hi Paolo Reyes \u00B7 EMP-20417", UiCopy.classesGreeting("Paolo Reyes", "EMP-20417"))
-        assertEquals("Hi Paolo Reyes", UiCopy.classesGreeting("Paolo Reyes", null))
+        assertEquals("Hi Paolo \u00B7 EMP-20417", UiCopy.classesGreeting("Paolo Reyes", "EMP-20417"))
         assertEquals("MY CLASSES", UiCopy.myClassesHeader())
         assertEquals("Public classes", UiCopy.studentPublicClassesHeader())
         assertEquals("1 joined", UiCopy.joinedCount(1))
@@ -34,5 +33,12 @@ class F3P7Flow3CopyTest {
             "When a coach invites you to a class, it shows up here. You can accept or decline it.",
             UiCopy.invitesEmptyBody(),
         )
+    }
+
+    // F3-AC1 / section 5: the greeting uses the first word of the name.
+    // Section 9 item 7: with no employee ID it is "Hi {first name}" with no middle dot.
+    @Test
+    fun F3_P7_greetingWithoutEmployeeIdIsFirstNameOnlyWithNoDot() {
+        assertEquals("Hi Paolo", UiCopy.classesGreeting("Paolo Reyes", null))
     }
 }
