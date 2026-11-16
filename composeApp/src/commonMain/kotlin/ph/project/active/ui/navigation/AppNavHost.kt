@@ -18,8 +18,10 @@ import kotlinx.coroutines.CoroutineScope
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.reflect.typeOf
+import ph.project.active.data.model.SignedInAccount
 import ph.project.active.di.rememberClassDetail
 import ph.project.active.domain.model.Role
+import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.common.Navigation
 import ph.project.active.presentation.common.RegistrationOrigin
@@ -41,6 +43,7 @@ fun AppNavHost(
     registrationViewModel: ((RegistrationOrigin) -> RegistrationViewModel)? = null,
     shakeSource: ShakeSource = koinInject(),
     onNavController: (NavHostController) -> Unit = {},
+    classDetailViewModel: ((classId: String, viewer: SignedInAccount?, joinOutcome: JoinOutcome?) -> ClassDetailViewModel)? = null,
 ) {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
@@ -121,6 +124,7 @@ fun AppNavHost(
                     classId = route.classId,
                     viewer = viewer,
                     joinOutcome = route.joinOutcome,
+                    factory = classDetailViewModel,
                 )
                 val detailState by detailViewModel.state.collectAsStateWithLifecycle()
                 ClassDetailScreen(

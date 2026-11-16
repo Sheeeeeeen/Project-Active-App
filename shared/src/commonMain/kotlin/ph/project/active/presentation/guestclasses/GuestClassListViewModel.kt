@@ -14,7 +14,6 @@ import ph.project.active.domain.model.Visibility
 import ph.project.active.domain.model.hasEnded
 import ph.project.active.domain.repository.ClassRepository
 import ph.project.active.presentation.common.ConnectionUi
-import ph.project.active.presentation.common.DetailGraph
 import ph.project.active.presentation.common.Navigation
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.common.toConnection
@@ -31,9 +30,6 @@ class GuestClassListViewModel(
     val state: StateFlow<GuestClassListUiState> = _state.asStateFlow()
 
     init {
-        DetailGraph.classes = classes
-        DetailGraph.people = people
-        DetailGraph.network = network
         watchConnection(network, _state) { copy(connection = it) }
     }
 
