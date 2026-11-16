@@ -43,6 +43,7 @@ import ph.project.active.presentation.studentclasses.StudentClassesUiState
 import ph.project.active.presentation.studentclasses.dayLine
 import ph.project.active.presentation.studentclasses.spokenCard
 import ph.project.active.presentation.studentclasses.timeLine
+import ph.project.active.ui.components.EmptyState
 import ph.project.active.ui.components.LargeTitleHeader
 import ph.project.active.ui.components.OfflineBanner
 import ph.project.active.ui.components.StatusChip
@@ -56,6 +57,7 @@ import projectactive.composeapp.generated.resources.check
 import projectactive.composeapp.generated.resources.chevron_right
 import projectactive.composeapp.generated.resources.clock
 import projectactive.composeapp.generated.resources.hourglass
+import projectactive.composeapp.generated.resources.inbox
 import projectactive.composeapp.generated.resources.mail
 import projectactive.composeapp.generated.resources.user
 
@@ -115,7 +117,12 @@ fun StudentClassesScreen(
             state.connection.banner?.let { banner -> OfflineBanner(banner, Modifier.padding(top = TrxSpacing.s16)) }
             Column(Modifier.padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16)) {
                 if (state.myClasses.isEmpty() && state.publicClasses.isEmpty()) {
-                    EmptyClasses()
+                    EmptyState(
+                        icon = Res.drawable.inbox,
+                        title = UiCopy.classesEmptyTitle(),
+                        body = UiCopy.classesEmptyBody(),
+                        tag = StudentClassesTestTags.empty,
+                    )
                 }
                 if (state.myClasses.isNotEmpty()) {
                     SectionHeader(
@@ -167,37 +174,6 @@ private fun SectionHeader(title: String, titleTag: String, count: String?) {
 }
 
 @Composable
-private fun EmptyClasses() {
-    val colors = LocalTrxColors.current
-    Column(
-        Modifier
-            .padding(top = TrxSpacing.s16)
-            .testTag(StudentClassesTestTags.empty)
-            .semantics {
-                this[SemanticsProperties.Text] = listOf(
-                    AnnotatedString(UiCopy.classesEmptyTitle()),
-                    AnnotatedString(UiCopy.classesEmptyBody()),
-                )
-            },
-    ) {
-        Text(
-            text = UiCopy.classesEmptyTitle(),
-            color = colors.textPrimary,
-            style = TrxTypography.button,
-            modifier = Modifier.clearAndSetSemantics {},
-        )
-        Text(
-            text = UiCopy.classesEmptyBody(),
-            color = colors.textSecondary,
-            style = TrxTypography.body,
-            modifier = Modifier
-                .padding(top = TrxSpacing.s8)
-                .clearAndSetSemantics {},
-        )
-    }
-}
-
-@Composable
 private fun ClassCard(item: StudentClassItem, onClassTapped: (String) -> Unit) {
     val colors = LocalTrxColors.current
     val coach = "Coach ${item.coachName}"
@@ -229,7 +205,7 @@ private fun ClassCard(item: StudentClassItem, onClassTapped: (String) -> Unit) {
                     color = colors.textPrimary,
                     style = TrxTypography.headline,
                     modifier = Modifier
-                        .weight(1f, fill = false)
+                        .weight(1f)
                         .clearAndSetSemantics {},
                 )
                 item.chip?.let { chip -> CardChip(chip, Modifier.padding(start = TrxSpacing.s8)) }
@@ -269,6 +245,6 @@ private fun CaptionRow(icon: DrawableResource, text: String, modifier: Modifier 
                 .padding(end = TrxSpacing.s8)
                 .size(TrxSpacing.iconSmall),
         )
-        Text(text, color = colors.textSecondary, style = TrxTypography.footnote, modifier = Modifier.clearAndSetSemantics {})
+        Text(text, color = colors.textSecondary, style = TrxTypography.subhead, modifier = Modifier.clearAndSetSemantics {})
     }
 }
