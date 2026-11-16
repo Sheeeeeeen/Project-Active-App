@@ -117,6 +117,8 @@ class F1NavigationTest {
                     guestClassListViewModel = world.guest(),
                     registrationViewModel = factory,
                     classDetailViewModel = world.detailFactory(),
+                    studentClassesViewModel = world.studentClassesFactory(),
+                    invitesViewModel = world.invitesFactory(),
                     onNavController = { nav = it },
                 )
             }

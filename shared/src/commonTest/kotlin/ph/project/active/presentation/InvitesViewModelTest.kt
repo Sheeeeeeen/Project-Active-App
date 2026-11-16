@@ -2,7 +2,6 @@ package ph.project.active.presentation
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import ph.project.active.domain.model.MembershipStatus
 import ph.project.active.domain.model.Visibility
@@ -61,7 +60,8 @@ class InvitesViewModelTest {
             viewModel.onDecline(declined.id)
             assertEquals(MembershipStatus.DECLINED, world.statusOf(declined.id, student.id))
             assertTrue(world.memberships.activeRoster(declined.id).none { it == student.id })
-            assertNull(viewModel.state.value.confirmation)
+            // Flow 3 P5: a successful decline now confirms with InviteDeclined.
+            assertEquals(InviteConfirmation.InviteDeclined, viewModel.state.value.confirmation)
             assertEquals(listOf(cancelled.id), viewModel.state.value.invites.map { it.classId })
 
             viewModel.onAccept(cancelled.id)

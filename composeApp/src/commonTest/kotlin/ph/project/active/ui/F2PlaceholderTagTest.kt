@@ -15,18 +15,14 @@ import ph.project.active.presentation.common.ConnectionUi
 import ph.project.active.presentation.guestclasses.GuestClassListUiState
 import ph.project.active.presentation.manageclass.RequestAction
 import ph.project.active.ui.home.CoachHomePlaceholder
-import ph.project.active.ui.home.StudentHomePlaceholder
 import ph.project.active.ui.testing.Flow2Ui
 import ph.project.active.ui.testing.ShowClassDetailState
 import ph.project.active.ui.testing.ShowGuestListState
 
 @OptIn(ExperimentalTestApi::class)
 class F2PlaceholderTagTest {
-    @Test
-    fun F2_AC34_studentHomeShowsOnePlaceholderTag() = Flow2Ui.run {
-        setContent { StudentHomePlaceholder(name = "Ella Navarro", openClassId = null) }
-        assertOnePlaceholder()
-    }
+    // Flow 3 (F3-AC18, F3-AC23): StudentHome is no longer a placeholder. Attend and Sessions
+    // carry the tag now, and F3TabsTest.F3_AC18 checks them.
 
     @Test
     fun F2_AC34_coachHomeShowsOnePlaceholderTag() = Flow2Ui.run {

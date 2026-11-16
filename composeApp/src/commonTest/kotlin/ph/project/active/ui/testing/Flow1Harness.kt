@@ -28,15 +28,19 @@ import ph.project.active.domain.model.TrxClass
 import ph.project.active.domain.model.User
 import ph.project.active.domain.model.Visibility
 import ph.project.active.domain.repository.inmemory.InMemoryUserRepository
+import ph.project.active.domain.usecase.AcceptInvite
 import ph.project.active.domain.usecase.CreateClass
+import ph.project.active.domain.usecase.DeclineInvite
 import ph.project.active.domain.usecase.RegisterCoach
 import ph.project.active.domain.usecase.RegisterStudent
 import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.guestclasses.GuestClassListViewModel
+import ph.project.active.presentation.invites.InvitesViewModel
 import ph.project.active.presentation.registration.RegistrationViewModel
 import ph.project.active.presentation.root.RootViewModel
+import ph.project.active.presentation.studentclasses.StudentClassesViewModel
 
 class Flow1Harness(
     path: String? = null,
@@ -117,6 +121,29 @@ class Flow1Harness(
     )
 
     fun detailFactory(): (String, SignedInAccount?, JoinOutcome?) -> ClassDetailViewModel = ::detail
+
+    // Flow 3: the student tabs read the same repositories, so StudentHome needs no Koin.
+    fun studentClasses(account: SignedInAccount): StudentClassesViewModel = StudentClassesViewModel(
+        account = account,
+        classes = classes,
+        memberships = memberships,
+        people = people,
+        network = network,
+    )
+
+    fun studentClassesFactory(): (SignedInAccount) -> StudentClassesViewModel = ::studentClasses
+
+    fun invites(account: SignedInAccount): InvitesViewModel = InvitesViewModel(
+        account = account,
+        classes = classes,
+        memberships = memberships,
+        people = people,
+        acceptInvite = AcceptInvite(memberships),
+        declineInvite = DeclineInvite(memberships),
+        network = network,
+    )
+
+    fun invitesFactory(): (SignedInAccount) -> InvitesViewModel = ::invites
 
     fun coreBurn(): TrxClass {
         people.upsert(PersonProfile(CORE_BURN_COACH_ID, "Mara Santos", Role.COACH, null))
