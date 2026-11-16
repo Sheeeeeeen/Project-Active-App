@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.password
@@ -146,13 +147,14 @@ fun TrxTextField(
                     enabled = enabled,
                     modifier = Modifier
                         .size(TrxSpacing.touchTarget)
-                        .testTag(passwordToggleTag),
+                        .testTag(passwordToggleTag)
+                        .semantics { contentDescription = description },
                 ) {
                     Icon(
                         painter = painterResource(
                             if (passwordVisible) Res.drawable.eye_off else Res.drawable.eye,
                         ),
-                        contentDescription = description,
+                        contentDescription = null,
                         tint = colors.textSecondary,
                         modifier = Modifier.size(24.dp),
                     )
