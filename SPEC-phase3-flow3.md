@@ -106,7 +106,7 @@ Tabs:                         switch Classes / Attend / Sessions / Invites insid
 - `StudentHome` still pushes `ClassDetail` from `openClassId` only once, as in flow 2.
 - The starting tab is Classes.
 - `StudentClassesViewModel` and `InvitesViewModel` are bound in `ViewModelModule` (Koin in `composeApp` only) and scoped to the `StudentHome` back-stack entry, so they survive tab switches. Call `refresh()` each time that tab is shown.
-- The C1 root keeps testTag `student_home`. The subtitle includes the account name, so existing name checks can still pass. `placeholder_tag` moves off StudentHome and onto Attend and Sessions only.
+- The C1 root keeps testTag `student_home`. The subtitle shows the first name only ("Hi {first name} · {employeeId}"), so the flow 1 checks that look for the full name on `student_home` (F1_AC37 and F1_AC38) change to the first-name greeting. (Updated 16 Nov 2026.) `placeholder_tag` moves off StudentHome and onto Attend and Sessions only.
 
 **Debug demo seed:** extend the existing debug-only `DemoSeed` (it still runs once at startup, only when there are no classes). Release builds never include it. It now also sets up the C1 story:
 
