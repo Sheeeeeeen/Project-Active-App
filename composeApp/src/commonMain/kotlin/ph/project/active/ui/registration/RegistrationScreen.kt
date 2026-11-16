@@ -41,6 +41,7 @@ import ph.project.active.ui.components.RequestingClassCard
 import ph.project.active.ui.components.TrxButtonKind
 import ph.project.active.ui.components.TrxLargeButton
 import ph.project.active.ui.components.TrxTextField
+import ph.project.active.ui.platform.LightStatusBarIcons
 import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTheme
@@ -68,6 +69,7 @@ fun RegistrationScreen(
     modifier: Modifier = Modifier,
 ) {
     val dark = state.mode == Role.COACH
+    LightStatusBarIcons(lightIcons = dark)
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var signInPasswordVisible by rememberSaveable { mutableStateOf(false) }
     var signInWasLastAction by rememberSaveable { mutableStateOf(false) }
