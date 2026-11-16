@@ -2,7 +2,6 @@ package ph.project.active.ui
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.StateRestorationTester
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.performClick
 import kotlin.test.Test
@@ -17,6 +16,7 @@ import ph.project.active.ui.testing.Flow1Compose
 import ph.project.active.ui.testing.Flow1Harness
 import ph.project.active.ui.testing.Flow2Harness
 import ph.project.active.ui.testing.Flow2Ui
+import ph.project.active.ui.testing.SaveableRoundTrip
 import ph.project.active.ui.testing.ShowClassDetail
 import ph.project.active.ui.testing.clickTag
 import ph.project.active.ui.testing.mountNav
@@ -92,24 +92,30 @@ class F2RequestNavigationTest {
         }
     }
 
+    // emulateSaveAndRestore throws NotImplementedError on Compose 1.12 desktop.
+    // StateRestorationTester.skiko.kt platformEncodeDecode is a stub. SaveableStateRegistry
+    // is the supported round trip: NavHost saves its back stack there, we dispose, then
+    // compose the same ViewModels again from that saved map.
     @Test
     fun F2_AC28_classDetailStaysOnceAfterRecompositionAndRestoration() = Flow2Ui.run {
         Flow1Harness().use { world ->
             val trxClass = world.coreBurn()
             val tick = mutableStateOf(0)
-            val tester = StateRestorationTester(this)
+            val trip = SaveableRoundTrip()
             lateinit var nav: androidx.navigation.NavHostController
             val root = world.root()
             val guest = world.guest()
             val factory = world.factory()
-            tester.setContent {
-                tick.value
-                Flow1Compose.Nav(
-                    rootViewModel = root,
-                    guestClassListViewModel = guest,
-                    registrationViewModel = factory,
-                    onNavController = { nav = it },
-                )
+            setContent {
+                trip.Wrap {
+                    tick.value
+                    Flow1Compose.Nav(
+                        rootViewModel = root,
+                        guestClassListViewModel = guest,
+                        registrationViewModel = factory,
+                        onNavController = { nav = it },
+                    )
+                }
             }
             waitForIdle()
             tag("guest_list_card_${trxClass.id}").performClick()
@@ -125,7 +131,24 @@ class F2RequestNavigationTest {
                 tick.value = tick.value + 1
                 waitForIdle()
             }
-            tester.emulateSaveAndRestore()
+            val savedRoutes = Flow1Compose.screenRoutes(nav)
+            runOnIdle { trip.saveForNextComposition() }
+            setContent { }
+            waitForIdle()
+            setContent {
+                trip.Wrap {
+                    tick.value
+                    Flow1Compose.Nav(
+                        rootViewModel = root,
+                        guestClassListViewModel = guest,
+                        registrationViewModel = factory,
+                        onNavController = { nav = it },
+                    )
+                }
+            }
+            waitForIdle()
+            assertEquals(savedRoutes, Flow1Compose.screenRoutes(nav))
+            tick.value = tick.value + 1
             waitForIdle()
             val details = Flow1Compose.screenRoutes(nav).filter { it.startsWith("ClassDetail(") }
             assertEquals(listOf("ClassDetail(${trxClass.id})"), details)
