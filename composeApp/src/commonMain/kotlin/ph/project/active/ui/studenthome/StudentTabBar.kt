@@ -1,7 +1,10 @@
 package ph.project.active.ui.studenthome
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -10,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import ph.project.active.presentation.common.UiCopy
@@ -41,39 +45,61 @@ fun StudentTabBar(
     modifier: Modifier = Modifier,
 ) {
     val colors = LocalTrxColors.current
-    NavigationBar(modifier, containerColor = colors.surface) {
-        StudentTab.entries.forEach { tab ->
-            NavigationBarItem(
-                selected = tab == selected,
-                onClick = { onSelect(tab) },
-                icon = {
-                    val icon = @Composable {
-                        Icon(painterResource(tab.icon()), contentDescription = null)
-                    }
-                    if (tab == StudentTab.Invites && pendingInviteCount > 0) {
-                        BadgedBox(
-                            badge = {
-                                Badge(Modifier.testTag(StudentTabBarTestTags.invitesBadge)) {
-                                    Text(pendingInviteCount.toString())
-                                }
-                            },
-                        ) { icon() }
-                    } else {
-                        icon()
-                    }
-                },
-                label = { Text(tab.label(), style = TrxTypography.label) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = colors.textOnAccent,
-                    selectedTextColor = colors.textPrimary,
-                    indicatorColor = colors.accentDefault,
-                    unselectedIconColor = colors.textSecondary,
-                    unselectedTextColor = colors.textSecondary,
-                ),
-                modifier = Modifier.testTag(tab.tag()),
-            )
+    Column(modifier) {
+        HorizontalDivider(color = colors.borderDefault)
+        NavigationBar(containerColor = colors.surface) {
+            StudentTab.entries.forEach { tab -> TabItem(tab, tab == selected, pendingInviteCount, onSelect) }
         }
     }
+}
+
+@Composable
+private fun RowScope.TabItem(
+    tab: StudentTab,
+    selected: Boolean,
+    pendingInviteCount: Int,
+    onSelect: (StudentTab) -> Unit,
+) {
+    val colors = LocalTrxColors.current
+    NavigationBarItem(
+        selected = selected,
+        onClick = { onSelect(tab) },
+        icon = {
+            val icon = @Composable {
+                Icon(painterResource(tab.icon()), contentDescription = null)
+            }
+            if (tab == StudentTab.Invites && pendingInviteCount > 0) {
+                BadgedBox(
+                    badge = {
+                        Badge(
+                            modifier = Modifier.testTag(StudentTabBarTestTags.invitesBadge),
+                            containerColor = colors.dangerFg,
+                            contentColor = colors.textInverse,
+                        ) {
+                            Text(pendingInviteCount.toString())
+                        }
+                    },
+                ) { icon() }
+            } else {
+                icon()
+            }
+        },
+        label = {
+            Text(
+                text = tab.label(),
+                style = TrxTypography.label,
+                fontWeight = if (selected) FontWeight.SemiBold else null,
+            )
+        },
+        colors = NavigationBarItemDefaults.colors(
+            selectedIconColor = colors.textOnAccent,
+            selectedTextColor = colors.textPrimary,
+            indicatorColor = colors.accentDefault,
+            unselectedIconColor = colors.textSecondary,
+            unselectedTextColor = colors.textSecondary,
+        ),
+        modifier = Modifier.testTag(tab.tag()),
+    )
 }
 
 private fun StudentTab.label(): String = when (this) {
