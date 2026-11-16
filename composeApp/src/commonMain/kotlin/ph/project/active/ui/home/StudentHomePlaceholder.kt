@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import ph.project.active.ui.components.Placeholder
 import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTypography
@@ -19,27 +20,30 @@ fun StudentHomePlaceholder(
     openClassId: String?,
     modifier: Modifier = Modifier,
 ) {
+    // Placeholder: the student class list replaces this in flow 3.
     val colors = LocalTrxColors.current
-    Column(
-        modifier
-            .windowInsetsPadding(WindowInsets.safeDrawing)
-            .padding(TrxSpacing.screenHorizontal),
-    ) {
-        Text(
-            text = name,
-            color = colors.textPrimary,
-            style = TrxTypography.title,
-            modifier = Modifier.testTag(HomeTestTags.studentHome),
-        )
-        if (openClassId != null) {
+    Placeholder {
+        Column(
+            modifier
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .padding(TrxSpacing.screenHorizontal),
+        ) {
             Text(
-                text = openClassId,
-                color = colors.textSecondary,
-                style = TrxTypography.body,
-                modifier = Modifier
-                    .padding(top = TrxSpacing.s8)
-                    .testTag(HomeTestTags.studentOpenClass),
+                text = name,
+                color = colors.textPrimary,
+                style = TrxTypography.title,
+                modifier = Modifier.testTag(HomeTestTags.studentHome),
             )
+            if (openClassId != null) {
+                Text(
+                    text = openClassId,
+                    color = colors.textSecondary,
+                    style = TrxTypography.body,
+                    modifier = Modifier
+                        .padding(top = TrxSpacing.s8)
+                        .testTag(HomeTestTags.studentOpenClass),
+                )
+            }
         }
     }
 }

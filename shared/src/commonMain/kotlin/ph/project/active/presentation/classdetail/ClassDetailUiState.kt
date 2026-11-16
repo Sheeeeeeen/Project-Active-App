@@ -13,4 +13,6 @@ data class ClassDetailUiState(
     val error: UiError?,
     val connection: ConnectionUi,
     val navigation: Navigation?,
+    val isSending: Boolean = false,
+    val notice: JoinOutcome? = null,
 )

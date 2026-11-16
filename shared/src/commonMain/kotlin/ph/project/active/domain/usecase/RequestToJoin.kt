@@ -11,7 +11,7 @@ import ph.project.active.domain.repository.current
 /** AC18-AC21, AC26: a student asks to join a public, open class. */
 class RequestToJoin(
     private val classes: ClassRepository,
-    private val memberships: MembershipRepository,
+    val memberships: MembershipRepository,
 ) {
     operator fun invoke(classId: String, studentId: String): JoinResult {
         val trxClass = classes.findClass(classId) ?: return JoinResult.ClassNotFound

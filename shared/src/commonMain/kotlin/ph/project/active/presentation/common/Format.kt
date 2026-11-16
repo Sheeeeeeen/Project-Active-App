@@ -30,3 +30,23 @@ fun formatDays(days: Set<DayOfWeek>): String {
     if (days.containsAll(DayOfWeek.entries)) return "Every day"
     return days.sortedBy { it.ordinal }.joinToString(" \u00B7 ") { day -> WEEKDAYS[day.ordinal] }
 }
+
+private val LONG_DAYS = listOf(
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+)
+
+fun formatDaysLong(days: Set<DayOfWeek>): String {
+    if (days.containsAll(DayOfWeek.entries)) return "Every day"
+    val names = days.sortedBy { it.ordinal }.map { day -> LONG_DAYS[day.ordinal] }
+    return when (names.size) {
+        0 -> ""
+        1 -> names[0]
+        else -> names.dropLast(1).joinToString(", ") + " and " + names.last()
+    }
+}

@@ -2,12 +2,20 @@ package ph.project.active.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,15 +25,19 @@ import androidx.navigation.toRoute
 import kotlinx.coroutines.CoroutineScope
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.reflect.typeOf
+import ph.project.active.di.rememberClassDetail
 import ph.project.active.domain.model.Role
+import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.common.Navigation
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.guestclasses.GuestClassListViewModel
 import ph.project.active.presentation.registration.RegistrationViewModel
 import ph.project.active.presentation.root.Root
 import ph.project.active.presentation.root.RootViewModel
+import ph.project.active.ui.classdetail.ClassDetailScreen
+import ph.project.active.ui.guestclasses.GuestClassListScreen
 import ph.project.active.ui.home.CoachHomePlaceholder
-import ph.project.active.ui.home.GuestHomePlaceholder
 import ph.project.active.ui.home.StudentHomePlaceholder
 import ph.project.active.ui.platform.ShakeSource
 import ph.project.active.ui.registration.RegistrationRoute
@@ -50,24 +62,51 @@ fun AppNavHost(
         }
     }
     val rootState by rootViewModel.state.collectAsStateWithLifecycle()
+    DisposableEffect(navController, guestClassListViewModel) {
+        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            if (destination.route?.contains("GuestHome") == true) guestClassListViewModel.refresh()
+        }
+        navController.addOnDestinationChangedListener(listener)
+        onDispose { navController.removeOnDestinationChangedListener(listener) }
+    }
     CompositionLocalProvider(LocalRegistrationShakes provides shakes) {
         NavHost(navController = navController, startDestination = startDestination) {
             navigation<GuestGraph>(startDestination = GuestHome) {
                 composable<GuestHome> {
+                    val lifecycle = LocalLifecycleOwner.current.lifecycle
+                    DisposableEffect(lifecycle, guestClassListViewModel) {
+                        val observer = LifecycleEventObserver { _, event ->
+                            if (event == Lifecycle.Event.ON_RESUME) guestClassListViewModel.refresh()
+                        }
+                        lifecycle.addObserver(observer)
+                        onDispose { lifecycle.removeObserver(observer) }
+                    }
+                    LaunchedEffect(Unit) { guestClassListViewModel.refresh() }
                     LaunchedEffect(guestClassListViewModel) {
                         guestClassListViewModel.state.collect { state ->
                             val event = state.navigation ?: return@collect
                             guestClassListViewModel.onNavigationHandled()
-                            navController.follow(
-                                event = event,
-                                shakes = shakes,
-                                scope = scope,
-                                shakeSource = shakeSource,
-                                registrationViewModel = registrationViewModel,
-                            )
+                            navController.follow(event, shakes, scope, shakeSource, registrationViewModel)
                         }
                     }
-                    GuestHomePlaceholder(onRegisterOrSignIn = guestClassListViewModel::onRegisterOrSignIn)
+                    val listState by guestClassListViewModel.state.collectAsStateWithLifecycle()
+                    GuestClassListScreen(
+                        state = listState,
+                        onClassTapped = { id ->
+                            guestClassListViewModel.onClassTapped(id)
+                            guestClassListViewModel.state.value.navigation?.let { event ->
+                                guestClassListViewModel.onNavigationHandled()
+                                navController.follow(event, shakes, scope, shakeSource, registrationViewModel)
+                            }
+                        },
+                        onRegisterOrSignIn = {
+                            guestClassListViewModel.onRegisterOrSignIn()
+                            guestClassListViewModel.state.value.navigation?.let { event ->
+                                guestClassListViewModel.onNavigationHandled()
+                                navController.follow(event, shakes, scope, shakeSource, registrationViewModel)
+                            }
+                        },
+                    )
                 }
                 composable<Registration> { entry ->
                     val classId = entry.toRoute<Registration>().requestClassId
@@ -98,8 +137,54 @@ fun AppNavHost(
                     }
                 }
             }
-            composable<StudentHome> { entry ->
-                val openClassId = entry.toRoute<StudentHome>().openClassId
+            composable<ClassDetail>(typeMap = joinOutcomeType) { entry ->
+                val route = entry.toRoute<ClassDetail>()
+                val viewer = when (val root = rootState.root) {
+                    is Root.Student -> root.account
+                    is Root.Coach -> root.account
+                    Root.Guest -> null
+                }
+                val detailViewModel = rememberClassDetail(
+                    classId = route.classId,
+                    viewer = viewer,
+                    joinOutcome = route.joinOutcome,
+                )
+                LaunchedEffect(detailViewModel) {
+                    detailViewModel.state.collect { state ->
+                        val event = state.navigation ?: return@collect
+                        detailViewModel.onNavigationHandled()
+                        navController.follow(event, shakes, scope, shakeSource, registrationViewModel)
+                    }
+                }
+                val detailState by detailViewModel.state.collectAsStateWithLifecycle()
+                ClassDetailScreen(
+                    state = detailState,
+                    onRequestToJoin = {
+                        detailViewModel.onRequestToJoin()
+                        detailViewModel.state.value.navigation?.let { event ->
+                            detailViewModel.onNavigationHandled()
+                            navController.follow(event, shakes, scope, shakeSource, registrationViewModel)
+                        }
+                    },
+                    onBack = { navController.popBackStack() },
+                )
+            }
+            composable<StudentHome>(typeMap = joinOutcomeType) { entry ->
+                val route = entry.toRoute<StudentHome>()
+                val openClassId = route.openClassId
+                val alreadyOpened = navController.getBackStackEntry<StudentHome>()
+                    .savedStateHandle
+                    .get<Boolean>("opened") == true
+                var opened by rememberSaveable { mutableStateOf(alreadyOpened) }
+                LaunchedEffect(openClassId) {
+                    if (openClassId != null && !opened) {
+                        opened = true
+                        navController.getBackStackEntry<StudentHome>().savedStateHandle["opened"] = true
+                        navController.navigate(ClassDetail(openClassId, route.joinOutcome)) {
+                            launchSingleTop = true
+                        }
+                    }
+                }
                 val name = (rootState.root as? Root.Student)?.account?.name.orEmpty()
                 StudentHomePlaceholder(name = name, openClassId = openClassId)
             }
@@ -110,6 +195,8 @@ fun AppNavHost(
         }
     }
 }
+
+private val joinOutcomeType = mapOf(typeOf<JoinOutcome?>() to JoinOutcomeNavType)
 
 private fun NavHostController.follow(
     event: Navigation,
@@ -128,16 +215,24 @@ private fun NavHostController.follow(
                 }
             }
         }
+        is Navigation.OpenClassDetail -> {
+            navigate(ClassDetail(event.classId)) { launchSingleTop = true }
+        }
         is Navigation.OpenSignedInRoot -> {
             shakes.stopAny()
             val home = when (event.role) {
                 Role.COACH -> CoachHome
-                Role.STUDENT -> StudentHome(event.openClassId)
+                Role.STUDENT -> StudentHome(event.openClassId, event.joinOutcome)
             }
-            // Drop the guest graph so Back cannot return to the form that just signed in.
+            // Drop the guest graph, including a class detail pushed above it.
             navigate(home) {
-                popUpTo<GuestGraph> { inclusive = true }
+                popUpTo(graph.id) { inclusive = true }
                 launchSingleTop = true
+            }
+            val classId = event.openClassId
+            if (event.role == Role.STUDENT && classId != null) {
+                getBackStackEntry<StudentHome>().savedStateHandle["opened"] = true
+                navigate(ClassDetail(classId, event.joinOutcome)) { launchSingleTop = true }
             }
         }
         else -> Unit

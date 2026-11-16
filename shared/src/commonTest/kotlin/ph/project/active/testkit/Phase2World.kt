@@ -279,6 +279,8 @@ class Phase2World(
         classes = classes,
         people = people,
         network = network,
+        clock = clock,
+        timeZone = timeZone,
     )
 
     fun classDetail(classId: String, viewer: SignedInAccount?): ClassDetailViewModel =
@@ -290,6 +292,8 @@ class Phase2World(
             people = people,
             requestToJoin = requestToJoin,
             network = network,
+            clock = clock,
+            timeZone = timeZone,
         )
 
     fun studentClasses(account: SignedInAccount): StudentClassesViewModel =

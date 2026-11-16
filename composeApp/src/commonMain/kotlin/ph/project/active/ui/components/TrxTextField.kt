@@ -1,5 +1,6 @@
 package ph.project.active.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import ph.project.active.presentation.common.UiCopy
 import ph.project.active.ui.theme.LocalTrxColors
@@ -68,6 +70,7 @@ fun TrxTextField(
     passwordVisible: Boolean = false,
     passwordToggleTag: String? = null,
     onTogglePassword: (() -> Unit)? = null,
+    leadingIcon: DrawableResource? = null,
 ) {
     val colors = LocalTrxColors.current
     val interaction = remember { MutableInteractionSource() }
@@ -78,6 +81,7 @@ fun TrxTextField(
         else -> colors.borderDefault
     }
     val borderWidth = if (focused || errorMessage != null) TrxSpacing.focusWidth else 1.dp
+    val shape = RoundedCornerShape(TrxSpacing.radiusMd)
     Column(modifier.fillMaxWidth()) {
         Text(text = label, color = colors.textSecondary, style = TrxTypography.label)
         Row(
@@ -85,10 +89,21 @@ fun TrxTextField(
                 .padding(top = TrxSpacing.s8)
                 .fillMaxWidth()
                 .heightIn(min = TrxSpacing.touchTarget)
-                .border(borderWidth, borderColor, RoundedCornerShape(TrxSpacing.radiusMd))
+                .background(colors.surface, shape)
+                .border(borderWidth, borderColor, shape)
                 .padding(horizontal = TrxSpacing.s12),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (leadingIcon != null) {
+                Icon(
+                    painter = painterResource(leadingIcon),
+                    contentDescription = null,
+                    tint = colors.textSecondary,
+                    modifier = Modifier
+                        .padding(end = TrxSpacing.s8)
+                        .size(18.dp),
+                )
+            }
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
