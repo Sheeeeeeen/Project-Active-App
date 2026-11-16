@@ -1,10 +1,7 @@
 package ph.project.active.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
 import ph.project.active.presentation.common.UiCopy
 import ph.project.active.ui.theme.LocalTrxColors
@@ -46,10 +42,13 @@ fun LargeTitleHeader(
             style = TrxTypography.overline,
             modifier = Modifier.weight(1f),
         )
-        // Placeholder: the account button does nothing yet and wears the PlaceholderTag. An account menu
-        // (sign-out, profile) replaces it in a later flow (not yet planned). The test tag sits on a Box
-        // around the button so the pill can overflow the button's circular clip.
-        Box(if (accountTag != null) Modifier.testTag(accountTag) else Modifier) {
+        // Placeholder: the account button does nothing yet and wears the PlaceholderTag beside it.
+        // An account menu (sign-out, profile) replaces it in a later flow (not yet planned).
+        Row(
+            if (accountTag != null) Modifier.testTag(accountTag) else Modifier,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            PlaceholderTag(Modifier.padding(end = TrxSpacing.s8))
             IconButton(
                 onClick = {},
                 modifier = Modifier.background(colors.surfaceAlt, CircleShape),
@@ -59,14 +58,6 @@ fun LargeTitleHeader(
                     contentDescription = UiCopy.account(),
                     tint = colors.textPrimary,
                     modifier = Modifier.size(TrxSpacing.iconMedium),
-                )
-            }
-            Box(Modifier.matchParentSize()) {
-                PlaceholderTag(
-                    Modifier
-                        .align(Alignment.BottomCenter)
-                        .offset(y = 10.dp)
-                        .wrapContentWidth(unbounded = true),
                 )
             }
         }
