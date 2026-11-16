@@ -19,7 +19,7 @@ import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTypography
 import projectactive.composeapp.generated.resources.Res
-import projectactive.composeapp.generated.resources.user
+import projectactive.composeapp.generated.resources.circle_user
 
 /** Eyebrow "TRX ATTENDANCE" with the account button on the right, above a large title. */
 @Composable
@@ -42,7 +42,9 @@ fun LargeTitleHeader(
             style = TrxTypography.overline,
             modifier = Modifier.weight(1f),
         )
-        // The account button has no action until sign-out and the account screen arrive.
+        // Placeholder: the account button does nothing yet. An account menu (sign-out, profile) replaces
+        // this no-op in a later flow (not yet planned). No PlaceholderTag here, because the spec keeps
+        // Classes and Invites free of the tag (decision 3, F3-AC18).
         IconButton(
             onClick = {},
             modifier = Modifier
@@ -50,7 +52,7 @@ fun LargeTitleHeader(
                 .let { if (accountTag != null) it.testTag(accountTag) else it },
         ) {
             Icon(
-                painter = painterResource(Res.drawable.user),
+                painter = painterResource(Res.drawable.circle_user),
                 contentDescription = UiCopy.account(),
                 tint = colors.textPrimary,
                 modifier = Modifier.size(TrxSpacing.iconMedium),
@@ -60,7 +62,9 @@ fun LargeTitleHeader(
     Text(
         text = title,
         color = colors.textPrimary,
-        style = TrxTypography.title,
-        modifier = Modifier.testTag(titleTag),
+        style = TrxTypography.largeTitle,
+        modifier = Modifier
+            .padding(top = TrxSpacing.s8)
+            .testTag(titleTag),
     )
 }
