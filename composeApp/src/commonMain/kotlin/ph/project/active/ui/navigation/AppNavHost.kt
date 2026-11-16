@@ -6,7 +6,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -58,9 +58,9 @@ fun AppNavHost(
         NavHost(navController = navController, startDestination = startDestination) {
             navigation<GuestGraph>(startDestination = GuestHome) {
                 composable<GuestHome> {
-                    LifecycleResumeEffect(guestClassListViewModel) {
+                    LifecycleStartEffect(guestClassListViewModel) {
                         guestClassListViewModel.refresh()
-                        onPauseOrDispose {}
+                        onStopOrDispose {}
                     }
                     val listState by guestClassListViewModel.state.collectAsStateWithLifecycle()
                     GuestClassListScreen(
