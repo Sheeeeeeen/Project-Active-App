@@ -4,5 +4,13 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>SplashBackground</string>
+		<!-- Placeholder: SplashLogo is a temporary monogram; final TRX logo replaces it. -->
+		<key>UIImageName</key>
+		<string>SplashLogo</string>
+	</dict>
 </dict>
 </plist>
