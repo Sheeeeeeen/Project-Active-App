@@ -7,8 +7,10 @@ import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.guestclasses.GuestClassListViewModel
+import ph.project.active.presentation.invites.InvitesViewModel
 import ph.project.active.presentation.registration.RegistrationViewModel
 import ph.project.active.presentation.root.RootViewModel
+import ph.project.active.presentation.studentclasses.StudentClassesViewModel
 
 val ViewModelModule = module {
     viewModel { RootViewModel(session = get(), network = get(), outbox = get()) }
@@ -23,6 +25,26 @@ val ViewModelModule = module {
             requestToJoin = get(),
             network = get(),
             joinOutcome = joinOutcome,
+        )
+    }
+    viewModel { (account: SignedInAccount) ->
+        StudentClassesViewModel(
+            account = account,
+            classes = get(),
+            memberships = get(),
+            people = get(),
+            network = get(),
+        )
+    }
+    viewModel { (account: SignedInAccount) ->
+        InvitesViewModel(
+            account = account,
+            classes = get(),
+            memberships = get(),
+            people = get(),
+            acceptInvite = get(),
+            declineInvite = get(),
+            network = get(),
         )
     }
     viewModel { (origin: RegistrationOrigin) ->

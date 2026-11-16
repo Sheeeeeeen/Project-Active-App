@@ -25,6 +25,8 @@ import ph.project.active.domain.repository.ClassRepository
 import ph.project.active.domain.repository.MembershipRepository
 import ph.project.active.domain.repository.UserRepository
 import ph.project.active.domain.repository.inmemory.InMemoryUserRepository
+import ph.project.active.domain.usecase.AcceptInvite
+import ph.project.active.domain.usecase.DeclineInvite
 import ph.project.active.domain.usecase.RequestToJoin
 
 val FakeDataModule = module {
@@ -55,4 +57,6 @@ val FakeDataModule = module {
         )
     }
     single { RequestToJoin(classes = get(), memberships = get()) }
+    single { AcceptInvite(memberships = get()) }
+    single { DeclineInvite(memberships = get()) }
 }
