@@ -1,6 +1,7 @@
 package ph.project.active.ui.guestclasses
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,11 +16,13 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -28,8 +31,11 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import ph.project.active.domain.model.Role as AccountRole
 import ph.project.active.presentation.common.UiCopy
 import ph.project.active.presentation.guestclasses.GuestClassItem
 import ph.project.active.presentation.guestclasses.GuestClassListUiState
@@ -37,13 +43,18 @@ import ph.project.active.presentation.guestclasses.dayLine
 import ph.project.active.presentation.guestclasses.spokenCard
 import ph.project.active.presentation.guestclasses.timeLine
 import ph.project.active.ui.components.OfflineBanner
+import ph.project.active.ui.components.TrxButtonKind
+import ph.project.active.ui.components.TrxLargeButton
 import ph.project.active.ui.platform.LightStatusBarIcons
 import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTypography
 import projectactive.composeapp.generated.resources.Res
+import projectactive.composeapp.generated.resources.calendar_days
 import projectactive.composeapp.generated.resources.chevron_right
+import projectactive.composeapp.generated.resources.clock
 import projectactive.composeapp.generated.resources.log_in
+import projectactive.composeapp.generated.resources.user
 
 object GuestClassListTestTags {
     const val title = "guest_list_title"
@@ -74,6 +85,12 @@ fun GuestClassListScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16),
         ) {
+            Text(
+                text = UiCopy.registrationOverline(AccountRole.STUDENT),
+                color = colors.accentText,
+                style = TrxTypography.overline,
+                modifier = Modifier.padding(bottom = TrxSpacing.s8),
+            )
             Column(
                 Modifier
                     .testTag(GuestClassListTestTags.title)
@@ -99,21 +116,26 @@ fun GuestClassListScreen(
                         .clearAndSetSemantics {},
                 )
             }
-            Text(
-                text = UiCopy.publicClassesHeader(),
-                color = colors.textSecondary,
-                style = TrxTypography.overline,
-                modifier = Modifier.padding(top = TrxSpacing.s24),
-            )
-            if (!state.isEmpty) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = TrxSpacing.s24),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(
-                    text = UiCopy.classCount(state.items.size),
+                    text = UiCopy.publicClassesHeader(),
                     color = colors.textSecondary,
-                    style = TrxTypography.label,
-                    modifier = Modifier
-                        .padding(top = TrxSpacing.s4)
-                        .testTag(GuestClassListTestTags.count),
+                    style = TrxTypography.overline,
+                    modifier = Modifier.weight(1f),
                 )
+                if (!state.isEmpty) {
+                    Text(
+                        text = UiCopy.classCount(state.items.size),
+                        color = colors.textTertiary,
+                        style = TrxTypography.footnote,
+                        modifier = Modifier.testTag(GuestClassListTestTags.count),
+                    )
+                }
             }
             if (state.isEmpty) {
                 Column(
@@ -148,43 +170,28 @@ fun GuestClassListScreen(
                 }
             }
         }
+        HorizontalDivider(color = colors.borderDefault)
         Column(
             Modifier
                 .fillMaxWidth()
                 .background(colors.surface)
                 .padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = TrxSpacing.touchTarget)
-                    .testTag("guest_home_register_button")
-                    .clickable(onClick = onRegisterOrSignIn)
-                    .semantics {
-                        role = Role.Button
-                        this[SemanticsProperties.Text] = listOf(AnnotatedString(UiCopy.registerOrSignIn()))
-                    },
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.log_in),
-                    contentDescription = null,
-                    tint = colors.textPrimary,
-                    modifier = Modifier
-                        .padding(end = TrxSpacing.s8)
-                        .size(20.dp),
-                )
-                Text(
-                    text = UiCopy.registerOrSignIn(),
-                    color = colors.textPrimary,
-                    style = TrxTypography.button,
-                )
-            }
+            TrxLargeButton(
+                label = UiCopy.registerOrSignIn(),
+                kind = TrxButtonKind.Primary,
+                tag = "guest_home_register_button",
+                onClick = onRegisterOrSignIn,
+                enabled = true,
+                icon = Res.drawable.log_in,
+            )
             Text(
                 text = UiCopy.createAccountToRequest(),
                 color = colors.textSecondary,
-                style = TrxTypography.label,
-                modifier = Modifier.padding(top = TrxSpacing.s4),
+                style = TrxTypography.footnote,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = TrxSpacing.s12),
             )
         }
     }
@@ -201,11 +208,14 @@ private fun ClassCard(
     val time = item.timeLine()
     val coach = "Coach ${item.coachName}"
     val spoken = item.spokenCard()
+    val shape = RoundedCornerShape(TrxSpacing.radiusLg)
     Row(
         modifier
             .fillMaxWidth()
             .heightIn(min = TrxSpacing.touchTarget)
-            .background(colors.surface, RoundedCornerShape(TrxSpacing.radiusMd))
+            .clip(shape)
+            .background(colors.surface)
+            .border(1.dp, colors.borderDefault, shape)
             .clickable { onClassTapped(item.classId) }
             .testTag(GuestClassListTestTags.card(item.classId))
             .semantics(mergeDescendants = true) {
@@ -217,10 +227,10 @@ private fun ClassCard(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            Text(item.name, color = colors.textPrimary, style = TrxTypography.button, modifier = Modifier.clearAndSetSemantics {})
-            Text(coach, color = colors.textSecondary, style = TrxTypography.body, modifier = Modifier.clearAndSetSemantics {})
-            Text(days, color = colors.textSecondary, style = TrxTypography.body, modifier = Modifier.clearAndSetSemantics {})
-            Text(time, color = colors.textPrimary, style = TrxTypography.body, modifier = Modifier.clearAndSetSemantics {})
+            Text(item.name, color = colors.textPrimary, style = TrxTypography.headline, modifier = Modifier.clearAndSetSemantics {})
+            CaptionRow(Res.drawable.user, coach, Modifier.padding(top = TrxSpacing.s8))
+            CaptionRow(Res.drawable.calendar_days, days, Modifier.padding(top = TrxSpacing.s4))
+            CaptionRow(Res.drawable.clock, time, Modifier.padding(top = TrxSpacing.s4))
         }
         Icon(
             painter = painterResource(Res.drawable.chevron_right),
@@ -228,5 +238,21 @@ private fun ClassCard(
             tint = colors.textTertiary,
             modifier = Modifier.size(20.dp),
         )
+    }
+}
+
+@Composable
+private fun CaptionRow(icon: DrawableResource, text: String, modifier: Modifier = Modifier) {
+    val colors = LocalTrxColors.current
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            painter = painterResource(icon),
+            contentDescription = null,
+            tint = colors.textSecondary,
+            modifier = Modifier
+                .padding(end = TrxSpacing.s8)
+                .size(TrxSpacing.iconSmall),
+        )
+        Text(text, color = colors.textSecondary, style = TrxTypography.footnote, modifier = Modifier.clearAndSetSemantics {})
     }
 }
