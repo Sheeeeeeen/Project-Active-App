@@ -12,6 +12,8 @@ kotlin {
 }
 dependencies {
     implementation(project(":composeApp"))
+    implementation(project(":shared"))
+    implementation(libs.kotlinx.datetime)
     implementation(libs.androidx.activity.compose)
     implementation(libs.koin.android)
     implementation(libs.compose.uiToolingPreview)
