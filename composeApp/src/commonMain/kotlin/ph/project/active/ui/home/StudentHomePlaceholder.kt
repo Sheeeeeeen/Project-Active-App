@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import ph.project.active.ui.components.Placeholder
+import ph.project.active.ui.platform.LightStatusBarIcons
 import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTypography
@@ -21,6 +22,7 @@ fun StudentHomePlaceholder(
     modifier: Modifier = Modifier,
 ) {
     // Placeholder: the student class list replaces this in flow 3.
+    LightStatusBarIcons(lightIcons = false)
     val colors = LocalTrxColors.current
     Placeholder {
         Column(
