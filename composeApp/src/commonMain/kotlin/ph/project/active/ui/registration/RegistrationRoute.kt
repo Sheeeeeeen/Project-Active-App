@@ -49,6 +49,12 @@ fun RegistrationRoute(
             if (collectShakes) shakes.stop(viewModel)
         }
     }
+    fun deliverNavigation(viewModel: RegistrationViewModel, onNavigate: (Navigation) -> Unit) {
+        val event = viewModel.state.value.navigation ?: return
+        viewModel.onNavigationHandled()
+        onNavigate(event)
+    }
+
     LaunchedEffect(viewModel) {
         viewModel.state.collect { current ->
             val event = current.navigation ?: return@collect
@@ -64,8 +70,14 @@ fun RegistrationRoute(
         onEmployeeIdChange = viewModel::onEmployeeIdChange,
         onSignInEmailChange = viewModel::onSignInEmailChange,
         onSignInPasswordChange = viewModel::onSignInPasswordChange,
-        onSubmit = viewModel::onSubmit,
-        onSignIn = viewModel::onSignIn,
+        onSubmit = {
+            viewModel.onSubmit()
+            deliverNavigation(viewModel, onNavigate)
+        },
+        onSignIn = {
+            viewModel.onSignIn()
+            deliverNavigation(viewModel, onNavigate)
+        },
         onBack = onBack,
     )
 }

@@ -8,20 +8,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import ph.project.active.ui.components.Placeholder
 import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTypography
 
 @Composable
 fun CoachHomePlaceholder(name: String, modifier: Modifier = Modifier) {
+    // Placeholder: the coach class list replaces this in flow 3.
     val colors = LocalTrxColors.current
-    Text(
-        text = name,
-        color = colors.textPrimary,
-        style = TrxTypography.title,
-        modifier = modifier
-            .windowInsetsPadding(WindowInsets.safeDrawing)
-            .padding(TrxSpacing.screenHorizontal)
-            .testTag(HomeTestTags.coachHome),
-    )
+    Placeholder {
+        Text(
+            text = name,
+            color = colors.textPrimary,
+            style = TrxTypography.title,
+            modifier = modifier
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .padding(TrxSpacing.screenHorizontal)
+                .testTag(HomeTestTags.coachHome),
+        )
+    }
 }
