@@ -44,8 +44,8 @@ fun AppNavHost(
     shakeSource: ShakeSource = koinInject(),
     onNavController: (NavHostController) -> Unit = {},
     classDetailViewModel: ((classId: String, viewer: SignedInAccount?, joinOutcome: JoinOutcome?) -> ClassDetailViewModel)? = null,
+    navController: NavHostController = rememberNavController(),
 ) {
-    val navController = rememberNavController()
     val scope = rememberCoroutineScope()
     val shakes = remember { RegistrationShakeCollection() }
     SideEffect { onNavController(navController) }
