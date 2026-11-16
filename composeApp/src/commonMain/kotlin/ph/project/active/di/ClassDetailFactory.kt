@@ -14,9 +14,11 @@ fun rememberClassDetail(
     viewer: SignedInAccount?,
     joinOutcome: JoinOutcome?,
     factory: ((classId: String, viewer: SignedInAccount?, joinOutcome: JoinOutcome?) -> ClassDetailViewModel)?,
-): ClassDetailViewModel =
-    if (factory == null) {
-        koinViewModel { parametersOf(classId, viewer, joinOutcome) }
+): ClassDetailViewModel {
+    val key = "$classId:${viewer?.id}:${joinOutcome?.name}"
+    return if (factory == null) {
+        koinViewModel(key = key) { parametersOf(classId, viewer, joinOutcome) }
     } else {
-        viewModel(key = "$classId:${viewer?.id}:${joinOutcome?.name}") { factory(classId, viewer, joinOutcome) }
+        viewModel(key = key) { factory(classId, viewer, joinOutcome) }
     }
+}
