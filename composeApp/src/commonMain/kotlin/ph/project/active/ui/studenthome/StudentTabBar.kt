@@ -27,6 +27,10 @@ object StudentTabBarTestTags {
     const val sessions = "student_tab_sessions"
     const val invites = "student_tab_invites"
     const val invitesBadge = "student_tab_invites_badge"
+    const val attendRoot = "student_attend"
+    const val attendTitle = "student_attend_title"
+    const val sessionsRoot = "student_sessions"
+    const val sessionsTitle = "student_sessions_title"
 }
 
 @Composable

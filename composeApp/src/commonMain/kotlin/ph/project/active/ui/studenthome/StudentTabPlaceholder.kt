@@ -23,6 +23,7 @@ import ph.project.active.ui.theme.TrxSpacing
 fun StudentTabPlaceholder(
     title: String,
     rootTag: String,
+    titleTag: String,
     tabBar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -44,7 +45,7 @@ fun StudentTabPlaceholder(
                 .padding(horizontal = TrxSpacing.screenHorizontal)
                 .testTag(rootTag),
         ) {
-            LargeTitleHeader(title = title, titleTag = "${rootTag}_title", accountTag = null)
+            LargeTitleHeader(title = title, titleTag = titleTag, accountTag = null)
             PlaceholderTag(Modifier.padding(top = TrxSpacing.s16))
         }
     }

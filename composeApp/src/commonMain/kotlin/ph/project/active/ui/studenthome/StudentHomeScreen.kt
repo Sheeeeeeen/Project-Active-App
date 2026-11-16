@@ -55,12 +55,14 @@ fun StudentHomeScreen(
         )
         StudentTab.Attend -> StudentTabPlaceholder(
             title = UiCopy.tabAttend(),
-            rootTag = "student_attend",
+            rootTag = StudentTabBarTestTags.attendRoot,
+            titleTag = StudentTabBarTestTags.attendTitle,
             tabBar = tabBar,
         )
         StudentTab.Sessions -> StudentTabPlaceholder(
             title = UiCopy.tabSessions(),
-            rootTag = "student_sessions",
+            rootTag = StudentTabBarTestTags.sessionsRoot,
+            titleTag = StudentTabBarTestTags.sessionsTitle,
             tabBar = tabBar,
         )
         StudentTab.Invites -> InvitesScreen(
