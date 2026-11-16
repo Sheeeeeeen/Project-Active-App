@@ -15,6 +15,12 @@ object TrxTypography {
         lineHeight = 16.sp,
         letterSpacing = 1.2.sp,
     )
+    val largeTitle = TextStyle(
+        fontFamily = family,
+        fontWeight = FontWeight.Bold,
+        fontSize = 34.sp,
+        lineHeight = 41.sp,
+    )
     val title = TextStyle(
         fontFamily = family,
         fontWeight = FontWeight.Bold,
@@ -38,6 +44,18 @@ object TrxTypography {
         fontWeight = FontWeight.Normal,
         fontSize = 17.sp,
         lineHeight = 22.sp,
+    )
+    val subhead = TextStyle(
+        fontFamily = family,
+        fontWeight = FontWeight.Normal,
+        fontSize = 15.sp,
+        lineHeight = 20.sp,
+    )
+    val subheadStrong = TextStyle(
+        fontFamily = family,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 15.sp,
+        lineHeight = 20.sp,
     )
     val label = TextStyle(
         fontFamily = family,
