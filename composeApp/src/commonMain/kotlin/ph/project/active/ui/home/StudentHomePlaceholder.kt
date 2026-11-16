@@ -22,9 +22,9 @@ fun StudentHomePlaceholder(
 ) {
     // Placeholder: the student class list replaces this in flow 3.
     val colors = LocalTrxColors.current
-    Placeholder {
+    Placeholder(modifier) {
         Column(
-            modifier
+            Modifier
                 .windowInsetsPadding(WindowInsets.safeDrawing)
                 .padding(TrxSpacing.screenHorizontal),
         ) {

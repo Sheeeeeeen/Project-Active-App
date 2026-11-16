@@ -17,12 +17,12 @@ import ph.project.active.ui.theme.TrxTypography
 fun CoachHomePlaceholder(name: String, modifier: Modifier = Modifier) {
     // Placeholder: the coach class list replaces this in flow 3.
     val colors = LocalTrxColors.current
-    Placeholder {
+    Placeholder(modifier) {
         Text(
             text = name,
             color = colors.textPrimary,
             style = TrxTypography.title,
-            modifier = modifier
+            modifier = Modifier
                 .windowInsetsPadding(WindowInsets.safeDrawing)
                 .padding(TrxSpacing.screenHorizontal)
                 .testTag(HomeTestTags.coachHome),
