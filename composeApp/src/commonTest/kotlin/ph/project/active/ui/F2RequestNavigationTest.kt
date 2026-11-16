@@ -1,10 +1,11 @@
 package ph.project.active.ui
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.SaveableStateRegistry
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.performClick
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -19,7 +20,6 @@ import ph.project.active.ui.testing.Flow1Compose
 import ph.project.active.ui.testing.Flow1Harness
 import ph.project.active.ui.testing.Flow2Harness
 import ph.project.active.ui.testing.Flow2Ui
-import ph.project.active.ui.testing.SaveableRegistryHost
 import ph.project.active.ui.testing.ShowClassDetail
 import ph.project.active.ui.testing.clickTag
 import ph.project.active.ui.testing.mountNav
@@ -95,28 +95,29 @@ class F2RequestNavigationTest {
         }
     }
 
-    // A fresh registry would build a new NavController and empty the stack.
-    // Restore the saved registry values so the back stack comes back with the same ViewModels.
+    // One NavHostController lives across both compositions, so tearing down and
+    // rebuilding only the NavHost keeps the back stack and the same ViewModels.
     @Test
     fun F2_AC28_classDetailStaysOnceAfterRecompositionAndRebuild() = Flow2Ui.run {
         Flow1Harness().use { world ->
             val trxClass = world.coreBurn()
             val tick = mutableStateOf(0)
-            lateinit var nav: androidx.navigation.NavHostController
+            lateinit var nav: NavHostController
             val root = world.root()
             val guest = world.guest()
             val factory = world.factory()
-            val first = SaveableRegistryHost(SaveableStateRegistry(restoredValues = null) { true })
+            val detail = world.detailFactory()
             setContent {
-                first.Wrap {
-                    tick.value
-                    Flow1Compose.Nav(
-                        rootViewModel = root,
-                        guestClassListViewModel = guest,
-                        registrationViewModel = factory,
-                        onNavController = { nav = it },
-                    )
-                }
+                tick.value
+                nav = rememberNavController()
+                Flow1Compose.Nav(
+                    rootViewModel = root,
+                    guestClassListViewModel = guest,
+                    registrationViewModel = factory,
+                    classDetailViewModel = detail,
+                    navController = nav,
+                    onNavController = {},
+                )
             }
             waitForIdle()
             tag("guest_list_card_${trxClass.id}").performClick()
@@ -132,29 +133,30 @@ class F2RequestNavigationTest {
             repeat(3) {
                 tick.value = tick.value + 1
                 waitForIdle()
-                assertEquals(oneDetail, Flow1Compose.screenRoutes(nav).filter { it.startsWith("ClassDetail(") })
+                assertEquals(oneDetail, detailRoutes(nav))
             }
             assertNull(factory(RegistrationOrigin.FromRequestToJoin(trxClass.id)).state.value.navigation)
-            val saved = runOnIdle { first.registry.performSave() }
+
+            val sameNav = nav
             setContent { }
             waitForIdle()
-            val restored = SaveableRegistryHost(SaveableStateRegistry(restoredValues = saved) { true })
             setContent {
-                restored.Wrap {
-                    tick.value
-                    Flow1Compose.Nav(
-                        rootViewModel = root,
-                        guestClassListViewModel = guest,
-                        registrationViewModel = factory,
-                        onNavController = { nav = it },
-                    )
-                }
+                tick.value
+                Flow1Compose.Nav(
+                    rootViewModel = root,
+                    guestClassListViewModel = guest,
+                    registrationViewModel = factory,
+                    classDetailViewModel = detail,
+                    navController = sameNav,
+                    onNavController = {},
+                )
             }
             waitForIdle()
-            assertEquals(oneDetail, Flow1Compose.screenRoutes(nav).filter { it.startsWith("ClassDetail(") })
+            assertEquals(oneDetail, detailRoutes(sameNav))
             tick.value = tick.value + 1
             waitForIdle()
-            assertEquals(oneDetail, Flow1Compose.screenRoutes(nav).filter { it.startsWith("ClassDetail(") })
+            assertEquals(oneDetail, detailRoutes(sameNav))
+            assertNull(factory(RegistrationOrigin.FromRequestToJoin(trxClass.id)).state.value.navigation)
         }
     }
 
@@ -235,6 +237,9 @@ class F2RequestNavigationTest {
             tag("class_detail_notice").assertDoesNotExist()
         }
     }
+
+    private fun detailRoutes(nav: NavHostController): List<String> =
+        Flow1Compose.screenRoutes(nav).filter { it.startsWith("ClassDetail(") }
 
     private suspend fun androidx.compose.ui.test.ComposeUiTest.openDetailAndRegister(classId: String) {
         tag("guest_list_card_$classId").performClick()

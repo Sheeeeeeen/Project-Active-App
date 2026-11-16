@@ -20,7 +20,10 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import androidx.navigation.NavHostController
+import ph.project.active.data.model.SignedInAccount
 import ph.project.active.data.repository.AuthRepository
+import ph.project.active.presentation.classdetail.ClassDetailViewModel
+import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.guestclasses.GuestClassListViewModel
 import ph.project.active.presentation.registration.RegistrationUiState
@@ -104,16 +107,31 @@ object Flow1Compose {
         rootViewModel: RootViewModel,
         guestClassListViewModel: GuestClassListViewModel,
         registrationViewModel: (RegistrationOrigin) -> RegistrationViewModel,
+        classDetailViewModel: (String, SignedInAccount?, JoinOutcome?) -> ClassDetailViewModel,
         shakeSource: ShakeSource = NoShakeSource,
+        navController: NavHostController? = null,
         onNavController: (NavHostController) -> Unit,
     ) {
-        AppNavHost(
-            rootViewModel = rootViewModel,
-            guestClassListViewModel = guestClassListViewModel,
-            registrationViewModel = registrationViewModel,
-            shakeSource = shakeSource,
-            onNavController = onNavController,
-        )
+        if (navController == null) {
+            AppNavHost(
+                rootViewModel = rootViewModel,
+                guestClassListViewModel = guestClassListViewModel,
+                registrationViewModel = registrationViewModel,
+                shakeSource = shakeSource,
+                onNavController = onNavController,
+                classDetailViewModel = classDetailViewModel,
+            )
+        } else {
+            AppNavHost(
+                rootViewModel = rootViewModel,
+                guestClassListViewModel = guestClassListViewModel,
+                registrationViewModel = registrationViewModel,
+                shakeSource = shakeSource,
+                onNavController = onNavController,
+                classDetailViewModel = classDetailViewModel,
+                navController = navController,
+            )
+        }
     }
 
     @Composable
@@ -121,6 +139,7 @@ object Flow1Compose {
         rootViewModel: RootViewModel,
         guestClassListViewModel: GuestClassListViewModel,
         registrationViewModel: (RegistrationOrigin) -> RegistrationViewModel,
+        classDetailViewModel: (String, SignedInAccount?, JoinOutcome?) -> ClassDetailViewModel,
         shakeSource: ShakeSource = NoShakeSource,
     ) {
         TrxApp(
@@ -128,6 +147,7 @@ object Flow1Compose {
             guestClassListViewModel = guestClassListViewModel,
             registrationViewModel = registrationViewModel,
             shakeSource = shakeSource,
+            classDetailViewModel = classDetailViewModel,
         )
     }
 
@@ -205,6 +225,7 @@ fun ComposeUiTest.mountNav(
             rootViewModel = root,
             guestClassListViewModel = guest,
             registrationViewModel = registrationViewModel,
+            classDetailViewModel = world.detailFactory(),
             shakeSource = shakeSource,
             onNavController = { nav = it },
         )
@@ -223,6 +244,7 @@ fun ComposeUiTest.showApp(world: Flow1Harness, shakeSource: ShakeSource = NoShak
             rootViewModel = root,
             guestClassListViewModel = guest,
             registrationViewModel = registrationViewModel,
+            classDetailViewModel = world.detailFactory(),
             shakeSource = shakeSource,
         )
     }
