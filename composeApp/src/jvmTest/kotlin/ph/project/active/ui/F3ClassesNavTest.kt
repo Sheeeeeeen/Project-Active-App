@@ -82,7 +82,8 @@ class F3ClassesNavTest {
             for (chip in listOf("Pending", "Joined", "Invited")) assertNoTextUnder(bootcampCard, chip)
 
             openCard(c1.bootcamp.id)
-            tag("class_detail_status_body").assertTextContains(
+            // A5 renders its decision 17 text in the flow 2 callout (F2-AC17, F2ClassDetailScreenTest).
+            tag("class_detail_callout").assertTextContains(
                 "You can send a new request. The coach will need to approve it again.",
             )
             tag("class_detail_request_button").assertTextContains("Request to join")

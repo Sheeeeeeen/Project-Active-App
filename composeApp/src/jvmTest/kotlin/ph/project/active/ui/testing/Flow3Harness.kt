@@ -148,7 +148,9 @@ class Flow3Harness : AutoCloseable {
         }
     }
 
+    /** Registers Paolo first (paolo() is cached), because an invite by employee ID needs an existing student. */
     fun invite(classId: String) {
+        paolo()
         InviteByEmployeeId(users, classes, memberships).invoke(classId, "EMP-20417")
     }
 
