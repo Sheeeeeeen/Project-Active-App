@@ -32,6 +32,7 @@ fun PlaceholderTag(modifier: Modifier = Modifier) {
         fontSize = 11.sp,
         fontWeight = FontWeight.SemiBold,
         letterSpacing = 0.5.sp,
+        lineHeight = 12.sp,
         maxLines = 1,
         modifier = modifier
             .height(20.dp)
