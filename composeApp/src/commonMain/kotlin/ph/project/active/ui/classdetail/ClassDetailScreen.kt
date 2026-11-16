@@ -311,7 +311,7 @@ private fun CoachRow(coachName: String) {
                 .clearAndSetSemantics {},
             contentAlignment = Alignment.Center,
         ) {
-            Text(initials(coachName), color = colors.accentText, style = TrxTypography.label)
+            Text(initials(coachName), color = colors.accentText, style = TrxTypography.headline)
         }
         Column {
             Text(UiCopy.detailCoachLabel(), color = colors.textSecondary, style = TrxTypography.footnote)
