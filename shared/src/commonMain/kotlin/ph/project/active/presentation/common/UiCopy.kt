@@ -297,6 +297,8 @@ object UiCopy {
 
     fun accept(): String = "Accept"
 
+    fun account(): String = "Account"
+
     fun tabClasses(): String = "Classes"
 
     fun tabAttend(): String = "Attend"
