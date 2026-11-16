@@ -14,7 +14,7 @@
 1. Flow 3 builds the signed-in student **Classes** home (C1), the **Invites** tab (C2–C4), and the four-item tab bar. Class detail is already built; C1 is now the way a student opens it.
 2. There is **no student Requests screen**, no Requests tab, and no Requests section. A pending request is a **Pending** chip on a card in C1’s **Public classes** section, not in My classes. Tapping that card opens A4. An invited public class also lives in Public classes (Invited chip) and opens the Invited detail from flow 2. **My classes is Joined only.**
 3. Attend and Sessions are flow 5. The tab bar still shows all four items: Classes, Attend, Sessions, Invites. Attend and Sessions open simple PLACEHOLDER screens (the same `PlaceholderTag` used on today’s StudentHome placeholder). Classes and Invites are real screens and do not wear that tag.
-4. The profile icon in the top-right is visible so the layout matches Figma. Tapping it does nothing in flow 3. Sign-out and a real account screen come later.
+4. The profile icon in the top-right is visible so the layout matches Figma. Tapping it does nothing in flow 3, so it wears the `PlaceholderTag` (Sheen’s rule that every placeholder is marked; added 16 Nov 2026). Sign-out and a real account screen come later.
 5. A student cannot leave a class in flow 3. They stay Joined unless a coach removes them (flow 4) or the class is cancelled.
 6. Debug builds also seed the C1 story and a demo student, Paolo, so a manual check can walk Classes and Invites. Release builds never include this. See section 4.
 
@@ -162,7 +162,7 @@ Unless an AC says otherwise, tests use a clock fixed on **Mon 28 Sep 2026** and 
 - **F3-AC8.** Tapping a My classes card opens `ClassDetail(id)` on A6 (Joined chip, "You’re on this class"). Tapping it twice quickly still gives one `ClassDetail` entry. The detail screen has no tab bar. Back (`class_detail_back`, "Classes") returns to C1 with the tab bar visible.
 - **F3-AC9.** Tapping Every Day 20 opens A3 (Request to join). Tapping Bootcamp (Pending) opens A4 (Awaiting approval, no button). Tapping Mobility Flow (Invited) opens the Invited state from flow 2, with no button. After a public class is `DECLINED` (or `REMOVED`) and `refresh()` runs, that card has no chip in Public classes; tapping it opens A5 with the flow 2 decision 17 text and "Request to join"; one tap sends a new pending request and shows A4.
 - **F3-AC10.** Each C1 card is one merged node with a spoken description in the same pattern as flow 2 ("Sunrise TRX Strength, Coach Mara Santos, Monday, Wednesday and Friday, 6:00 AM to 6:45 AM") and a height of at least 48dp.
-- **F3-AC11.** The account icon is visible on C1 and C2. Tapping it does not add a back-stack entry and does not change the current tab.
+- **F3-AC11.** The account icon is visible on C1 and C2 and wears `placeholder_tag` (the account buttons are `student_classes_account` on C1 and `invites_account` on C2, as listed in the test tags section). Tapping it does not add a back-stack entry and does not change the current tab. (Amended 16 Nov 2026.)
 
 **Invites (C2–C4)**
 
@@ -175,7 +175,7 @@ Unless an AC says otherwise, tests use a clock fixed on **Mon 28 Sep 2026** and 
 
 **Tabs and navigation**
 
-- **F3-AC18.** The tab bar has exactly four items, in this order, with these labels: Classes, Attend, Sessions, Invites. There is no Requests tab. Attend shows the title "Attend" and `placeholder_tag`. Sessions shows the title "Sessions" and `placeholder_tag`. Classes and Invites do not show `placeholder_tag`.
+- **F3-AC18.** The tab bar has exactly four items, in this order, with these labels: Classes, Attend, Sessions, Invites. There is no Requests tab. Attend shows the title "Attend" and `placeholder_tag`. Sessions shows the title "Sessions" and `placeholder_tag`. On Classes and Invites, the only `placeholder_tag` is the one inside the account button (F3-AC11); the screen body has none. Attend and Sessions also have the account button’s tag. (Amended 16 Nov 2026.)
 - **F3-AC19.** Signing in as a student with no `openClassId` lands on `StudentHome`, Classes tab, C1. Signing up or signing in from a class still ends with the back stack `[StudentHome(id), ClassDetail(id)]` and A4 on screen, as in flow 2. Back shows C1 (`student_home`) with the tab bar.
 - **F3-AC20.** When `pendingInviteCount` is 0, the Invites tab has no badge. When it is 2, the badge reads "2".
 

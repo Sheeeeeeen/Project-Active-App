@@ -8,6 +8,7 @@ import kotlin.test.assertEquals
 import ph.project.active.ui.testing.Flow3Harness
 import ph.project.active.ui.testing.assertTextUnder
 import ph.project.active.ui.testing.countTagged
+import ph.project.active.ui.testing.countTaggedUnder
 import ph.project.active.ui.testing.mountFlow3
 import ph.project.active.ui.testing.openTab
 import ph.project.active.ui.testing.runFlow3UiTest
@@ -16,7 +17,7 @@ import ph.project.active.ui.testing.tag
 @OptIn(ExperimentalTestApi::class)
 class F3TabsTest {
     @Test
-    fun F3_AC18_fourTabsInOrderAndOnlyAttendAndSessionsWearThePlaceholderTag() = runFlow3UiTest {
+    fun F3_AC18_fourTabsInOrderAndOnlyTheAccountButtonIsTaggedOnClassesAndInvites() = runFlow3UiTest {
         Flow3Harness().use { world ->
             world.seedC1()
             world.signInAsPaolo()
@@ -28,20 +29,22 @@ class F3TabsTest {
             assertEquals(lefts.sorted(), lefts, "tabs run Classes, Attend, Sessions, Invites")
             assertEquals(0, countTagged("student_tab_requests"))
 
-            assertEquals(0, countTagged("placeholder_tag"), "Classes has no placeholder tag")
+            assertEquals(1, countTagged("placeholder_tag"), "Classes has one placeholder tag")
+            assertEquals(1, countTaggedUnder("student_classes_account", "placeholder_tag"), "and it is on the account button")
 
             openTab("attend")
             tag("student_tab_attend").assertIsSelected()
             assertTextUnder("student_attend", "Attend")
-            assertEquals(1, countTagged("placeholder_tag"))
+            assertEquals(2, countTagged("placeholder_tag"), "Attend's own tag plus the account button's")
 
             openTab("sessions")
             tag("student_tab_sessions").assertIsSelected()
             assertTextUnder("student_sessions", "Sessions")
-            assertEquals(1, countTagged("placeholder_tag"))
+            assertEquals(2, countTagged("placeholder_tag"), "Sessions' own tag plus the account button's")
 
             openTab("invites")
-            assertEquals(0, countTagged("placeholder_tag"), "Invites has no placeholder tag")
+            assertEquals(1, countTagged("placeholder_tag"), "Invites has one placeholder tag")
+            assertEquals(1, countTaggedUnder("invites_account", "placeholder_tag"), "and it is on the account button")
         }
     }
 

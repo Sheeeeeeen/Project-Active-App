@@ -25,6 +25,7 @@ import ph.project.active.ui.testing.assertShown
 import ph.project.active.ui.testing.assertTextUnder
 import ph.project.active.ui.testing.cardIdsTopToBottom
 import ph.project.active.ui.testing.countTagged
+import ph.project.active.ui.testing.countTaggedUnder
 import ph.project.active.ui.testing.mergedTag
 import ph.project.active.ui.testing.mountFlow3
 import ph.project.active.ui.testing.openTab
@@ -251,7 +252,7 @@ class F3ClassesScreenTest {
     }
 
     @Test
-    fun F3_AC11_theAccountIconDoesNothingOnClassesAndInvites() = runFlow3UiTest {
+    fun F3_AC11_theAccountIconIsTaggedAndDoesNothingOnClassesAndInvites() = runFlow3UiTest {
         Flow3Harness().use { world ->
             world.seedC1()
             world.signInAsPaolo()
@@ -259,6 +260,7 @@ class F3ClassesScreenTest {
             val before = Flow1Compose.screenRoutes(nav)
 
             tag("student_classes_account").assertExists()
+            assertEquals(1, countTaggedUnder("student_classes_account", "placeholder_tag"))
             tag("student_classes_account").performClick()
             waitForIdle()
             assertEquals(before, Flow1Compose.screenRoutes(nav))
@@ -266,6 +268,7 @@ class F3ClassesScreenTest {
 
             openTab("invites")
             tag("invites_account").assertExists()
+            assertEquals(1, countTaggedUnder("invites_account", "placeholder_tag"))
             tag("invites_account").performClick()
             waitForIdle()
             assertEquals(before, Flow1Compose.screenRoutes(nav))

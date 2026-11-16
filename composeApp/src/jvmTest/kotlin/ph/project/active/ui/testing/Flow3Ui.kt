@@ -3,6 +3,8 @@ package ph.project.active.ui.testing
 import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -79,6 +81,12 @@ fun ComposeUiTest.topOf(tagName: String): Float =
 @OptIn(ExperimentalTestApi::class)
 fun ComposeUiTest.countTagged(tagName: String): Int =
     onAllNodesWithTag(tagName, useUnmergedTree = true).fetchSemanticsNodes(atLeastOneRootRequired = false).size
+
+/** Counts nodes tagged [tagName] that sit inside the node tagged [parentTag]. */
+@OptIn(ExperimentalTestApi::class)
+fun ComposeUiTest.countTaggedUnder(parentTag: String, tagName: String): Int =
+    onAllNodes(hasTestTag(tagName) and hasAnyAncestor(hasTestTag(parentTag)), useUnmergedTree = true)
+        .fetchSemanticsNodes(atLeastOneRootRequired = false).size
 
 /** Tags of student class cards that are on screen, top to bottom. */
 @OptIn(ExperimentalTestApi::class)
