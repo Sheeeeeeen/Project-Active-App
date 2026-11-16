@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder: TRX monogram, replace with the real logo -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="288"
+    android:viewportHeight="288">
+    <path android:fillColor="#FFC20E" android:pathData="M71.00,112.00 h44.00 v12.00 h-44.00 z M87.00,112.00 h12.00 v64.00 h-12.00 z M125.00,112.00 h12.00 v64.00 h-12.00 z M125.00,112.00 h38.00 v12.00 h-38.00 z M151.00,112.00 h12.00 v36.00 h-12.00 z M125.00,136.00 h38.00 v12.00 h-38.00 z"/>
+    <path android:fillColor="#FFC20E" android:pathData="M137.00,148.00 151.00,148.00 163.00,176.00 151.00,176.00 Z"/>
+    <path android:fillColor="#FFC20E" android:pathData="M168.06,115.40 212.06,179.40 221.94,172.60 177.94,108.60 Z"/>
+    <path android:fillColor="#FFC20E" android:pathData="M212.06,108.60 168.06,172.60 177.94,179.40 221.94,115.40 Z"/>
+</vector>
