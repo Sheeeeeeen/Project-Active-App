@@ -97,8 +97,8 @@ fun ClassDetailScreen(
 ) {
     val colors = LocalTrxColors.current
     val content = state.content?.takeUnless { state.unavailable }
-    val showsBar = content != null && showsRequestButton(state, content)
     LightStatusBarIcons(lightIcons = content != null)
+    val barContent = content?.takeIf { showsRequestButton(state, it) }
     Column(
         modifier
             .fillMaxSize()
@@ -126,11 +126,9 @@ fun ClassDetailScreen(
                 Details(content)
             }
             state.error?.let { error -> FormRow(UiCopy.uiError(error), ClassDetailTestTags.formError) }
-            if (!showsBar) Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+            if (barContent == null) Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
         }
-        if (showsBar && content != null) {
-            BottomBar(state, content, onRequestToJoin)
-        }
+        barContent?.let { BottomBar(state, it, onRequestToJoin) }
     }
 }
 
@@ -370,12 +368,13 @@ private fun BottomBar(
     Column(
         Modifier
             .fillMaxWidth()
-            .background(colors.surface)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
+            .background(colors.surface),
     ) {
         HorizontalDivider(color = colors.borderDefault)
         Column(
-            Modifier.padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16),
+            Modifier
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+                .padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             TrxLargeButton(

@@ -9,7 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import ph.project.active.ui.components.Placeholder
+import ph.project.active.ui.platform.LightStatusBarIcons
 import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTypography
@@ -21,6 +23,7 @@ fun StudentHomePlaceholder(
     modifier: Modifier = Modifier,
 ) {
     // Placeholder: the student class list replaces this in flow 3.
+    LightStatusBarIcons(lightIcons = false)
     val colors = LocalTrxColors.current
     Placeholder(modifier) {
         Column(
@@ -32,7 +35,9 @@ fun StudentHomePlaceholder(
                 text = name,
                 color = colors.textPrimary,
                 style = TrxTypography.title,
-                modifier = Modifier.testTag(HomeTestTags.studentHome),
+                modifier = Modifier
+                    .padding(end = PlaceholderTagClearance)
+                    .testTag(HomeTestTags.studentHome),
             )
             if (openClassId != null) {
                 Text(
@@ -47,3 +52,5 @@ fun StudentHomePlaceholder(
         }
     }
 }
+
+private val PlaceholderTagClearance = 96.dp
