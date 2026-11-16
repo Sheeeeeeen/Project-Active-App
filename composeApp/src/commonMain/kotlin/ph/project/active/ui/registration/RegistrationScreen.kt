@@ -27,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role as ButtonRole
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import org.jetbrains.compose.resources.DrawableResource
@@ -108,8 +107,7 @@ fun RegistrationScreen(
                         .fillMaxWidth()
                         .heightIn(min = TrxSpacing.touchTarget)
                         .testTag(RegistrationTestTags.back)
-                        .clickable(onClick = onBack)
-                        .semantics { role = ButtonRole.Button }
+                        .clickable(role = ButtonRole.Button, onClick = onBack)
                         .padding(vertical = TrxSpacing.s12),
                 )
                 state.requestingClass?.let { header ->

@@ -12,8 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import ph.project.active.presentation.common.UiCopy
 import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
@@ -32,8 +30,7 @@ fun GuestHomePlaceholder(onRegisterOrSignIn: () -> Unit, modifier: Modifier = Mo
             .fillMaxWidth()
             .heightIn(min = TrxSpacing.touchTarget)
             .testTag(HomeTestTags.guestRegister)
-            .clickable(onClick = onRegisterOrSignIn)
-            .semantics { role = Role.Button }
+            .clickable(role = Role.Button, onClick = onRegisterOrSignIn)
             .padding(vertical = TrxSpacing.s12),
     )
 }

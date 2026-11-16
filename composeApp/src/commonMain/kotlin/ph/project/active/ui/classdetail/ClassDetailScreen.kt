@@ -34,7 +34,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
@@ -142,9 +141,8 @@ private fun BackRow(onBack: () -> Unit, tint: Color, modifier: Modifier = Modifi
             .fillMaxWidth()
             .heightIn(min = TrxSpacing.touchTarget)
             .testTag(ClassDetailTestTags.back)
-            .clickable(onClick = onBack)
+            .clickable(role = Role.Button, onClick = onBack)
             .semantics {
-                role = Role.Button
                 this[SemanticsProperties.Text] = listOf(AnnotatedString(UiCopy.guestListTitle()))
             }
             .padding(horizontal = TrxSpacing.s16),

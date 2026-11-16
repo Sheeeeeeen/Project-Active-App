@@ -29,7 +29,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
@@ -219,10 +218,9 @@ private fun ClassCard(
             .clip(shape)
             .background(colors.surface)
             .border(1.dp, colors.borderDefault, shape)
-            .clickable { onClassTapped(item.classId) }
+            .clickable(role = Role.Button) { onClassTapped(item.classId) }
             .testTag(GuestClassListTestTags.card(item.classId))
             .semantics(mergeDescendants = true) {
-                role = Role.Button
                 contentDescription = spoken
                 this[SemanticsProperties.Text] = listOf(item.name, coach, days, time).map { AnnotatedString(it) }
             }

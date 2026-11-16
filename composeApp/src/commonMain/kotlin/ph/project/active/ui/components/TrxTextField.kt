@@ -33,7 +33,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.password
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
@@ -148,11 +147,8 @@ fun TrxTextField(
                     modifier = Modifier
                         .size(TrxSpacing.touchTarget)
                         .testTag(passwordToggleTag)
-                        .clickable(enabled = enabled, onClick = onTogglePassword)
-                        .semantics {
-                            role = Role.Button
-                            contentDescription = description
-                        },
+                        .clickable(enabled = enabled, role = Role.Button, onClick = onTogglePassword)
+                        .semantics { contentDescription = description },
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
