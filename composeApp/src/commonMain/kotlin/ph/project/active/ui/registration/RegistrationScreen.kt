@@ -120,7 +120,7 @@ fun RegistrationScreen(
                 }
                 Text(
                     text = UiCopy.registrationOverline(state.mode),
-                    color = if (dark) colors.accentText else colors.textSecondary,
+                    color = colors.accentText,
                     style = TrxTypography.overline,
                     modifier = Modifier.padding(top = TrxSpacing.s16),
                 )
