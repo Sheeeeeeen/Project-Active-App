@@ -16,6 +16,7 @@ object TrxSpacing {
     val buttonHeight = 52.dp
     val bottomBarButtonHeight = 56.dp
     val iconSmall = 16.dp
+    val iconMedium = 22.dp
     val avatar = 40.dp
     val touchTarget = 48.dp
     val coachBand = 6.dp

@@ -13,9 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
-import ph.project.active.domain.model.Role
 import ph.project.active.presentation.common.UiCopy
 import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
@@ -39,7 +37,7 @@ fun LargeTitleHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = UiCopy.registrationOverline(Role.STUDENT),
+            text = UiCopy.largeTitleEyebrow(),
             color = colors.accentText,
             style = TrxTypography.overline,
             modifier = Modifier.weight(1f),
@@ -55,7 +53,7 @@ fun LargeTitleHeader(
                 painter = painterResource(Res.drawable.user),
                 contentDescription = UiCopy.account(),
                 tint = colors.textPrimary,
-                modifier = Modifier.size(22.dp),
+                modifier = Modifier.size(TrxSpacing.iconMedium),
             )
         }
     }

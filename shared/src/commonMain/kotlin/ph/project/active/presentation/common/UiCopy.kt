@@ -267,6 +267,8 @@ object UiCopy {
         JoinOutcome.ClassUnavailable -> accountReadyClassUnavailable()
     }
 
+    fun largeTitleEyebrow(): String = "TRX ATTENDANCE"
+
     fun classesTitle(): String = "Classes"
 
     fun classesGreeting(name: String, employeeId: String?): String {
