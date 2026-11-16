@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Spacer
@@ -15,18 +16,21 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role as ButtonRole
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
+import org.jetbrains.compose.resources.DrawableResource
 import ph.project.active.domain.model.Role
 import ph.project.active.presentation.common.Field
 import ph.project.active.presentation.common.RegistrationOrigin
@@ -43,6 +47,11 @@ import ph.project.active.ui.theme.TrxTheme
 import ph.project.active.ui.theme.TrxThemeMode
 import ph.project.active.ui.theme.TrxThemeModeKey
 import ph.project.active.ui.theme.TrxTypography
+import projectactive.composeapp.generated.resources.Res
+import projectactive.composeapp.generated.resources.id_card
+import projectactive.composeapp.generated.resources.lock
+import projectactive.composeapp.generated.resources.mail
+import projectactive.composeapp.generated.resources.user
 
 @Composable
 fun RegistrationScreen(
@@ -101,6 +110,12 @@ fun RegistrationScreen(
                         .semantics { role = ButtonRole.Button }
                         .padding(vertical = TrxSpacing.s12),
                 )
+                state.requestingClass?.let { header ->
+                    RequestingClassCard(
+                        header = header,
+                        modifier = Modifier.padding(top = TrxSpacing.s8),
+                    )
+                }
                 Text(
                     text = UiCopy.registrationOverline(state.mode),
                     color = if (dark) colors.accentText else colors.textSecondary,
@@ -121,12 +136,6 @@ fun RegistrationScreen(
                     style = TrxTypography.body,
                     modifier = Modifier.padding(top = TrxSpacing.s8),
                 )
-                state.requestingClass?.let { header ->
-                    RequestingClassCard(
-                        header = header,
-                        modifier = Modifier.padding(top = TrxSpacing.s16),
-                    )
-                }
                 AccountField(
                     field = Field.NAME,
                     value = state.name,
@@ -196,29 +205,28 @@ fun RegistrationScreen(
                     loading = registerLoading,
                     progressTag = RegistrationTestTags.submitProgress,
                 )
-                Text(
+                DividerCaption(
                     text = UiCopy.alreadyHaveAccount(),
-                    color = colors.textSecondary,
-                    style = TrxTypography.body,
                     modifier = Modifier.padding(top = TrxSpacing.s32),
-                )
-                Text(
-                    text = UiCopy.signInHeading(),
-                    color = colors.textPrimary,
-                    style = TrxTypography.title,
-                    modifier = Modifier.padding(top = TrxSpacing.s16),
                 )
                 val requestingClass = state.requestingClass
                 if (state.origin is RegistrationOrigin.FromRequestToJoin && requestingClass != null) {
                     Text(
                         text = UiCopy.signInAlsoSends(requestingClass.name),
                         color = colors.textSecondary,
-                        style = TrxTypography.body,
+                        style = TrxTypography.footnote,
                         modifier = Modifier
-                            .padding(top = TrxSpacing.s8)
+                            .fillMaxWidth()
+                            .padding(top = TrxSpacing.s16)
                             .testTag(RegistrationTestTags.signInNote),
                     )
                 }
+                Text(
+                    text = UiCopy.signInHeading(),
+                    color = colors.textPrimary,
+                    style = TrxTypography.sectionTitle,
+                    modifier = Modifier.padding(top = TrxSpacing.s16),
+                )
                 AccountField(
                     field = Field.SIGN_IN_EMAIL,
                     value = state.signInEmail,
@@ -301,6 +309,29 @@ private fun AccountField(
         passwordVisible = passwordVisible,
         passwordToggleTag = passwordToggleTag,
         onTogglePassword = onTogglePassword,
+        leadingIcon = fieldIcon(field),
         modifier = modifier,
     )
+}
+
+@Composable
+private fun DividerCaption(text: String, modifier: Modifier = Modifier) {
+    val colors = LocalTrxColors.current
+    Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        HorizontalDivider(Modifier.weight(1f), color = colors.borderDefault)
+        Text(
+            text = text,
+            color = colors.textTertiary,
+            style = TrxTypography.footnote,
+            modifier = Modifier.padding(horizontal = TrxSpacing.s12),
+        )
+        HorizontalDivider(Modifier.weight(1f), color = colors.borderDefault)
+    }
+}
+
+private fun fieldIcon(field: Field): DrawableResource = when (field) {
+    Field.NAME -> Res.drawable.user
+    Field.EMAIL, Field.SIGN_IN_EMAIL -> Res.drawable.mail
+    Field.PASSWORD, Field.SIGN_IN_PASSWORD -> Res.drawable.lock
+    Field.EMPLOYEE_ID -> Res.drawable.id_card
 }
