@@ -2,14 +2,10 @@ package ph.project.active.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -140,21 +136,7 @@ fun AppNavHost(
                 )
             }
             composable<StudentHome>(typeMap = joinOutcomeType) { entry ->
-                val route = entry.toRoute<StudentHome>()
-                val openClassId = route.openClassId
-                val alreadyOpened = navController.getBackStackEntry<StudentHome>()
-                    .savedStateHandle
-                    .get<Boolean>("opened") == true
-                var opened by rememberSaveable { mutableStateOf(alreadyOpened) }
-                LaunchedEffect(openClassId) {
-                    if (openClassId != null && !opened) {
-                        opened = true
-                        navController.getBackStackEntry<StudentHome>().savedStateHandle["opened"] = true
-                        navController.navigate(ClassDetail(openClassId, route.joinOutcome)) {
-                            launchSingleTop = true
-                        }
-                    }
-                }
+                val openClassId = entry.toRoute<StudentHome>().openClassId
                 val name = (rootState.root as? Root.Student)?.account?.name.orEmpty()
                 StudentHomePlaceholder(name = name, openClassId = openClassId)
             }
@@ -201,7 +183,6 @@ private fun NavHostController.follow(
             }
             val classId = event.openClassId
             if (event.role == Role.STUDENT && classId != null) {
-                getBackStackEntry<StudentHome>().savedStateHandle["opened"] = true
                 navigate(ClassDetail(classId, event.joinOutcome)) { launchSingleTop = true }
             }
         }
