@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -26,28 +26,33 @@ fun StudentHomePlaceholder(
     LightStatusBarIcons(lightIcons = false)
     val colors = LocalTrxColors.current
     Placeholder(modifier) {
-        Column(
-            Modifier
-                .windowInsetsPadding(WindowInsets.safeDrawing)
-                .padding(TrxSpacing.screenHorizontal),
-        ) {
-            Text(
-                text = name,
-                color = colors.textPrimary,
-                style = TrxTypography.title,
-                modifier = Modifier
-                    .padding(end = PlaceholderTagClearance)
-                    .testTag(HomeTestTags.studentHome),
-            )
-            if (openClassId != null) {
+        Scaffold(
+            containerColor = colors.canvas,
+            contentWindowInsets = WindowInsets.safeDrawing,
+        ) { innerPadding ->
+            Column(
+                Modifier
+                    .padding(innerPadding)
+                    .padding(TrxSpacing.screenHorizontal),
+            ) {
                 Text(
-                    text = openClassId,
-                    color = colors.textSecondary,
-                    style = TrxTypography.body,
+                    text = name,
+                    color = colors.textPrimary,
+                    style = TrxTypography.title,
                     modifier = Modifier
-                        .padding(top = TrxSpacing.s8)
-                        .testTag(HomeTestTags.studentOpenClass),
+                        .padding(end = PlaceholderTagClearance)
+                        .testTag(HomeTestTags.studentHome),
                 )
+                if (openClassId != null) {
+                    Text(
+                        text = openClassId,
+                        color = colors.textSecondary,
+                        style = TrxTypography.body,
+                        modifier = Modifier
+                            .padding(top = TrxSpacing.s8)
+                            .testTag(HomeTestTags.studentOpenClass),
+                    )
+                }
             }
         }
     }

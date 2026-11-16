@@ -3,7 +3,7 @@ package ph.project.active.ui.home
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,14 +20,19 @@ fun CoachHomePlaceholder(name: String, modifier: Modifier = Modifier) {
     LightStatusBarIcons(lightIcons = false)
     val colors = LocalTrxColors.current
     Placeholder(modifier) {
-        Text(
-            text = name,
-            color = colors.textPrimary,
-            style = TrxTypography.title,
-            modifier = Modifier
-                .windowInsetsPadding(WindowInsets.safeDrawing)
-                .padding(TrxSpacing.screenHorizontal)
-                .testTag(HomeTestTags.coachHome),
-        )
+        Scaffold(
+            containerColor = colors.canvas,
+            contentWindowInsets = WindowInsets.safeDrawing,
+        ) { innerPadding ->
+            Text(
+                text = name,
+                color = colors.textPrimary,
+                style = TrxTypography.title,
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(TrxSpacing.screenHorizontal)
+                    .testTag(HomeTestTags.coachHome),
+            )
+        }
     }
 }

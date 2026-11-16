@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -25,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -99,15 +98,18 @@ fun ClassDetailScreen(
     val content = state.content?.takeUnless { state.unavailable }
     LightStatusBarIcons(lightIcons = content != null)
     val barContent = content?.takeIf { showsRequestButton(state, it) }
-    Column(
+    Scaffold(
         modifier
             .fillMaxSize()
-            .background(colors.canvas)
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-    ) {
+        containerColor = colors.canvas,
+        contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
+        bottomBar = { barContent?.let { BottomBar(state, it, onRequestToJoin) } },
+    ) { innerPadding ->
         Column(
             Modifier
-                .weight(1f)
+                .fillMaxSize()
+                .padding(innerPadding)
                 .verticalScroll(rememberScrollState()),
         ) {
             if (content == null) {
@@ -126,9 +128,7 @@ fun ClassDetailScreen(
                 Details(content)
             }
             state.error?.let { error -> FormRow(UiCopy.uiError(error), ClassDetailTestTags.formError) }
-            if (barContent == null) Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
         }
-        barContent?.let { BottomBar(state, it, onRequestToJoin) }
     }
 }
 
