@@ -45,8 +45,8 @@ fun PlaceholderTag(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun Placeholder(content: @Composable () -> Unit) {
-    Box(Modifier.fillMaxWidth()) {
+fun Placeholder(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Box(modifier.fillMaxWidth()) {
         content()
         PlaceholderTag(
             Modifier

@@ -3,8 +3,10 @@ package ph.project.active.ui.registration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -55,11 +57,12 @@ fun RegistrationRoute(
         onNavigate(event)
     }
 
+    val currentOnNavigate by rememberUpdatedState(onNavigate)
     LaunchedEffect(viewModel) {
         viewModel.state.collect { current ->
             val event = current.navigation ?: return@collect
             viewModel.onNavigationHandled()
-            onNavigate(event)
+            currentOnNavigate(event)
         }
     }
     RegistrationScreen(
