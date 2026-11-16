@@ -50,7 +50,7 @@ fun AppNavHost(
     val shakes = remember { RegistrationShakeCollection() }
     SideEffect { onNavController(navController) }
     val startDestination = remember {
-        when (rootViewModel.state.value.root) {
+        when (rootViewModel.startRoot) {
             Root.Guest -> GuestGraph
             is Root.Student -> StudentHome(openClassId = null)
             is Root.Coach -> CoachHome

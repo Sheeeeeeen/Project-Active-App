@@ -28,6 +28,7 @@ class RootViewModel(
         ),
     )
     val state: StateFlow<RootUiState> = _state.asStateFlow()
+    val startRoot: Root = _state.value.root
 
     init {
         viewModelScope.launch {
