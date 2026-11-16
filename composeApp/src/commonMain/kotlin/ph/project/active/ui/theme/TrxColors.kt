@@ -20,6 +20,12 @@ data class TrxColors(
     val textOnAccent: Color,
     val surfaceInverse: Color,
     val textInverse: Color,
+    val warningFg: Color,
+    val warningBg: Color,
+    val successFg: Color,
+    val successBg: Color,
+    val infoFg: Color,
+    val infoBg: Color,
 ) {
     companion object {
         val Light = TrxColors(
@@ -40,6 +46,12 @@ data class TrxColors(
             textOnAccent = Color(0xFF0B0B0C),
             surfaceInverse = Color(0xFF0B0B0C),
             textInverse = Color(0xFFFFFFFF),
+            warningFg = Color(0xFF8A4B00),
+            warningBg = Color(0xFFFFEBC7),
+            successFg = Color(0xFF16794A),
+            successBg = Color(0xFFDDF3E6),
+            infoFg = Color(0xFF1F57C3),
+            infoBg = Color(0xFFE1EBFC),
         )
 
         val Dark = TrxColors(
@@ -60,6 +72,12 @@ data class TrxColors(
             textOnAccent = Color(0xFF0B0B0C),
             surfaceInverse = Color(0xFFFFFFFF),
             textInverse = Color(0xFF0B0B0C),
+            warningFg = Color(0xFFFFC266),
+            warningBg = Color(0xFF3D2A05),
+            successFg = Color(0xFF5BE08F),
+            successBg = Color(0xFF0F3A22),
+            infoFg = Color(0xFF8DB4FF),
+            infoBg = Color(0xFF13254A),
         )
     }
 }

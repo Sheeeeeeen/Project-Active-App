@@ -3,9 +3,12 @@ package ph.project.active.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,6 +50,7 @@ fun Placeholder(content: @Composable () -> Unit) {
         PlaceholderTag(
             Modifier
                 .align(Alignment.TopEnd)
+                .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(top = 8.dp, end = 16.dp)
                 .zIndex(1f),
         )

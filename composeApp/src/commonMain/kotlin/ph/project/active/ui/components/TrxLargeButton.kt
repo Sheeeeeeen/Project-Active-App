@@ -4,11 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,13 +19,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTypography
@@ -37,6 +44,8 @@ fun TrxLargeButton(
     modifier: Modifier = Modifier,
     loading: Boolean = false,
     progressTag: String? = null,
+    icon: DrawableResource? = null,
+    height: Dp = TrxSpacing.buttonHeight,
 ) {
     val colors = LocalTrxColors.current
     val shape = RoundedCornerShape(TrxSpacing.radiusMd)
@@ -54,11 +63,11 @@ fun TrxLargeButton(
     Box(
         modifier
             .fillMaxWidth()
-            .height(TrxSpacing.buttonHeight)
+            .height(height)
             .clip(shape)
             .background(background)
             .border(width = 1.dp, color = borderColor, shape = shape)
-            .clickable(enabled = enabled, onClick = onClick)
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .testTag(tag)
             .semantics(mergeDescendants = true) {
                 text = AnnotatedString(label)
@@ -75,11 +84,23 @@ fun TrxLargeButton(
                 strokeWidth = 2.dp,
             )
         }
-        Text(
-            text = label,
-            color = content,
-            style = TrxTypography.button,
-            modifier = Modifier.clearAndSetSemantics {},
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (icon != null && !loading) {
+                Icon(
+                    painter = painterResource(icon),
+                    contentDescription = null,
+                    tint = content,
+                    modifier = Modifier
+                        .padding(end = TrxSpacing.s8)
+                        .size(20.dp),
+                )
+            }
+            Text(
+                text = label,
+                color = content,
+                style = TrxTypography.button,
+                modifier = Modifier.clearAndSetSemantics {},
+            )
+        }
     }
 }
