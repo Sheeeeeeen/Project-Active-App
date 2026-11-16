@@ -66,13 +66,6 @@ fun AppNavHost(
                         guestClassListViewModel.refresh()
                         onPauseOrDispose {}
                     }
-                    LaunchedEffect(guestClassListViewModel) {
-                        guestClassListViewModel.state.collect { state ->
-                            val event = state.navigation ?: return@collect
-                            guestClassListViewModel.onNavigationHandled()
-                            navController.follow(event, shakes, scope, shakeSource, registrationViewModel)
-                        }
-                    }
                     val listState by guestClassListViewModel.state.collectAsStateWithLifecycle()
                     GuestClassListScreen(
                         state = listState,
@@ -133,13 +126,6 @@ fun AppNavHost(
                     viewer = viewer,
                     joinOutcome = route.joinOutcome,
                 )
-                LaunchedEffect(detailViewModel) {
-                    detailViewModel.state.collect { state ->
-                        val event = state.navigation ?: return@collect
-                        detailViewModel.onNavigationHandled()
-                        navController.follow(event, shakes, scope, shakeSource, registrationViewModel)
-                    }
-                }
                 val detailState by detailViewModel.state.collectAsStateWithLifecycle()
                 ClassDetailScreen(
                     state = detailState,
