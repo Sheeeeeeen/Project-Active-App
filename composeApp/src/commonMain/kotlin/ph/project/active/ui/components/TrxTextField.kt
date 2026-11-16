@@ -2,7 +2,6 @@ package ph.project.active.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
@@ -16,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,8 +28,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.password
@@ -143,19 +141,18 @@ fun TrxTextField(
             )
             if (password && passwordToggleTag != null && onTogglePassword != null) {
                 val description = if (passwordVisible) UiCopy.hidePassword() else UiCopy.showPassword()
-                Box(
+                IconButton(
+                    onClick = onTogglePassword,
+                    enabled = enabled,
                     modifier = Modifier
                         .size(TrxSpacing.touchTarget)
-                        .testTag(passwordToggleTag)
-                        .clickable(enabled = enabled, role = Role.Button, onClick = onTogglePassword)
-                        .semantics { contentDescription = description },
-                    contentAlignment = Alignment.Center,
+                        .testTag(passwordToggleTag),
                 ) {
                     Icon(
                         painter = painterResource(
                             if (passwordVisible) Res.drawable.eye_off else Res.drawable.eye,
                         ),
-                        contentDescription = null,
+                        contentDescription = description,
                         tint = colors.textSecondary,
                         modifier = Modifier.size(24.dp),
                     )
