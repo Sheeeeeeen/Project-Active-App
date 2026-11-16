@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -97,11 +99,12 @@ fun ClassDetailScreen(
     val colors = LocalTrxColors.current
     val content = state.content?.takeUnless { state.unavailable }
     LightStatusBarIcons(lightIcons = content != null)
+    val barContent = content?.takeIf { showsRequestButton(state, it) }
     Column(
         modifier
             .fillMaxSize()
             .background(colors.canvas)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)),
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
         Column(
             Modifier
@@ -124,10 +127,9 @@ fun ClassDetailScreen(
                 Details(content)
             }
             state.error?.let { error -> FormRow(UiCopy.uiError(error), ClassDetailTestTags.formError) }
+            if (barContent == null) Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
         }
-        if (content != null && showsRequestButton(state, content)) {
-            BottomBar(state, content, onRequestToJoin)
-        }
+        barContent?.let { BottomBar(state, it, onRequestToJoin) }
     }
 }
 
@@ -372,7 +374,9 @@ private fun BottomBar(
     ) {
         HorizontalDivider(color = colors.borderDefault)
         Column(
-            Modifier.padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16),
+            Modifier
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+                .padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             TrxLargeButton(
