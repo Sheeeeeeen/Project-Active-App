@@ -2,6 +2,7 @@ package ph.project.active.presentation.common
 
 import kotlinx.datetime.LocalDate
 import ph.project.active.domain.model.Role
+import ph.project.active.presentation.classdetail.JoinOutcome
 
 object UiCopy {
     fun offlineBanner(): String = "No internet connection"
@@ -138,8 +139,8 @@ object UiCopy {
     fun uiError(error: UiError): String = when (error) {
         UiError.AuthFailed -> authFailed()
         UiError.Offline -> offlineNothingSaved()
-        UiError.ClassCancelled -> sessionCancelled()
-        UiError.PrivateClass -> "This class is private."
+        UiError.ClassCancelled -> "This class has been cancelled. Nothing was sent."
+        UiError.PrivateClass -> "This class is private. Joining is by coach invite only."
         UiError.EndDateInPast -> "End date cannot be in the past."
         UiError.PastDate -> "Cannot cancel a past date."
         UiError.InvalidState -> "That action is not available."
@@ -198,4 +199,71 @@ object UiCopy {
     fun dayEnded(): String = "Day ended"
 
     fun inProgress(): String = "Today \u00B7 in progress"
+
+    fun guestListTitle(): String = "Classes"
+
+    fun guestListSubtitle(): String = "Public TRX classes. No account needed."
+
+    fun publicClassesHeader(): String = "PUBLIC CLASSES"
+
+    fun classCount(count: Int): String = if (count == 1) "1 class" else "$count classes"
+
+    fun guestListEmptyTitle(): String = "No public classes yet"
+
+    fun guestListEmptyBody(): String = "When a coach creates a public class, it shows up here."
+
+    fun createAccountToRequest(): String = "Create an account to request a class."
+
+    fun classDetailsHeading(): String = "Class details"
+
+    fun detailCoachLabel(): String = "Coach"
+
+    fun detailDaysLabel(): String = "Days"
+
+    fun detailTimeLabel(): String = "Time"
+
+    fun detailRunsLabel(): String = "Runs"
+
+    fun runsUntil(date: LocalDate): String = "Until ${formatDate(date)}"
+
+    fun noEndDate(): String = "No end date"
+
+    fun requestToJoinGuestNote(): String =
+        "You\u2019ll create a student account first. Your request is sent after the account exists."
+
+    fun requestToJoinStudentNote(coachName: String): String =
+        "Your request goes to Coach $coachName for approval."
+
+    fun pendingApprovalBody(coachName: String): String =
+        "Coach $coachName will approve or decline your request. You don\u2019t need to send it again."
+
+    fun requestAgainBody(): String =
+        "You can send a new request. The coach will need to approve it again."
+
+    fun joinedTitle(): String = "You\u2019re on this class"
+
+    fun joinedBody(): String =
+        "Record attendance from the Attend tab during each session. Your dates are in Sessions."
+
+    fun invitedBody(coachName: String): String =
+        "Coach $coachName invited you. Accept or decline it in Invites."
+
+    fun classCancelledBody(): String = "This class has been cancelled."
+
+    fun classEndedOn(date: LocalDate): String = "This class ended on ${formatDate(date)}."
+
+    fun classUnavailableTitle(): String = "Class not available"
+
+    fun classUnavailableBody(): String = "It may be private or no longer listed."
+
+    fun accountReadyClassCancelled(): String =
+        "Your account is ready, but no request was sent because this class was cancelled."
+
+    fun accountReadyClassUnavailable(): String =
+        "Your account is ready, but no request was sent because this class isn\u2019t available."
+
+    fun joinNotice(outcome: JoinOutcome): String = when (outcome) {
+        JoinOutcome.ClassCancelled -> accountReadyClassCancelled()
+        JoinOutcome.ClassUnavailable -> accountReadyClassUnavailable()
+    }
 }

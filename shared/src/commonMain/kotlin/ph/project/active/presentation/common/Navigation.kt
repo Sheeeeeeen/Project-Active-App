@@ -1,6 +1,7 @@
 package ph.project.active.presentation.common
 
 import ph.project.active.domain.model.Role
+import ph.project.active.presentation.classdetail.JoinOutcome
 
 sealed interface Navigation {
     data class OpenRegistration(val origin: RegistrationOrigin) : Navigation
@@ -8,5 +9,9 @@ sealed interface Navigation {
     data object OpenCreateClass : Navigation
     data class OpenManage(val classId: String) : Navigation
     data object Back : Navigation
-    data class OpenSignedInRoot(val role: Role, val openClassId: String?) : Navigation
+    data class OpenSignedInRoot(
+        val role: Role,
+        val openClassId: String?,
+        val joinOutcome: JoinOutcome? = null,
+    ) : Navigation
 }
