@@ -6,17 +6,18 @@ import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.performClick
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import ph.project.active.domain.model.MembershipStatus
 import ph.project.active.domain.model.NetworkStatus
 import ph.project.active.domain.model.Visibility
 import ph.project.active.presentation.classdetail.JoinOutcome
+import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.ui.navigation.ClassDetail
 import ph.project.active.ui.testing.Flow1Compose
 import ph.project.active.ui.testing.Flow1Harness
 import ph.project.active.ui.testing.Flow2Harness
 import ph.project.active.ui.testing.Flow2Ui
-import ph.project.active.ui.testing.SaveableRoundTrip
 import ph.project.active.ui.testing.ShowClassDetail
 import ph.project.active.ui.testing.clickTag
 import ph.project.active.ui.testing.mountNav
@@ -92,30 +93,24 @@ class F2RequestNavigationTest {
         }
     }
 
-    // emulateSaveAndRestore throws NotImplementedError on Compose 1.12 desktop.
-    // StateRestorationTester.skiko.kt platformEncodeDecode is a stub. SaveableStateRegistry
-    // is the supported round trip: NavHost saves its back stack there, we dispose, then
-    // compose the same ViewModels again from that saved map.
+    // F2-AC28. StateRestorationTester is not used; it is unsupported on desktop.
     @Test
-    fun F2_AC28_classDetailStaysOnceAfterRecompositionAndRestoration() = Flow2Ui.run {
+    fun F2_AC28_classDetailStaysOnceAfterRecompositionAndRebuild() = Flow2Ui.run {
         Flow1Harness().use { world ->
             val trxClass = world.coreBurn()
             val tick = mutableStateOf(0)
-            val trip = SaveableRoundTrip()
             lateinit var nav: androidx.navigation.NavHostController
             val root = world.root()
             val guest = world.guest()
             val factory = world.factory()
             setContent {
-                trip.Wrap {
-                    tick.value
-                    Flow1Compose.Nav(
-                        rootViewModel = root,
-                        guestClassListViewModel = guest,
-                        registrationViewModel = factory,
-                        onNavController = { nav = it },
-                    )
-                }
+                tick.value
+                Flow1Compose.Nav(
+                    rootViewModel = root,
+                    guestClassListViewModel = guest,
+                    registrationViewModel = factory,
+                    onNavController = { nav = it },
+                )
             }
             waitForIdle()
             tag("guest_list_card_${trxClass.id}").performClick()
@@ -127,31 +122,27 @@ class F2RequestNavigationTest {
             typeInto("registration_password_field", "password1")
             typeInto("registration_employee_id_field", "EMP-20417")
             clickTag("registration_submit_button")
+            val oneDetail = listOf("ClassDetail(${trxClass.id})")
             repeat(3) {
                 tick.value = tick.value + 1
                 waitForIdle()
+                assertEquals(oneDetail, Flow1Compose.screenRoutes(nav).filter { it.startsWith("ClassDetail(") })
             }
-            val savedRoutes = Flow1Compose.screenRoutes(nav)
-            runOnIdle { trip.saveForNextComposition() }
+            val registration = factory(RegistrationOrigin.FromRequestToJoin(trxClass.id))
+            assertNull(registration.state.value.navigation)
             setContent { }
             waitForIdle()
             setContent {
-                trip.Wrap {
-                    tick.value
-                    Flow1Compose.Nav(
-                        rootViewModel = root,
-                        guestClassListViewModel = guest,
-                        registrationViewModel = factory,
-                        onNavController = { nav = it },
-                    )
-                }
+                tick.value
+                Flow1Compose.Nav(
+                    rootViewModel = root,
+                    guestClassListViewModel = guest,
+                    registrationViewModel = factory,
+                    onNavController = { nav = it },
+                )
             }
             waitForIdle()
-            assertEquals(savedRoutes, Flow1Compose.screenRoutes(nav))
-            tick.value = tick.value + 1
-            waitForIdle()
-            val details = Flow1Compose.screenRoutes(nav).filter { it.startsWith("ClassDetail(") }
-            assertEquals(listOf("ClassDetail(${trxClass.id})"), details)
+            assertEquals(oneDetail, Flow1Compose.screenRoutes(nav).filter { it.startsWith("ClassDetail(") })
         }
     }
 

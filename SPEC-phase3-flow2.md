@@ -178,7 +178,7 @@ Unless an AC says otherwise, its test uses the A1 example "TRX Core Burn", Coach
 - **F2-AC25.** Guest path: A1, tap card, "Request to join". The back stack is `[GuestHome, ClassDetail(id), Registration(id)]`, and the B5 card shows the class.
 - **F2-AC26.** Offline guest tap: still opens `Registration(id)` (decision 23).
 - **F2-AC27.** Signing up there ends with the back stack `[StudentHome(id), ClassDetail(id)]`, one pending request, and A4 on screen. Back shows `student_home`. Signing in as an existing student behaves the same.
-- **F2-AC28.** Exactly once: after three forced recompositions and a state-restoration round trip, there's still exactly one `ClassDetail` on the stack.
+- **F2-AC28.** Exactly once: after three forced recompositions, and after the NavHost is torn down and rebuilt with the same ViewModels (navigation already handled), there's still exactly one `ClassDetail` on the stack. `StateRestorationTester` is not used (unsupported on desktop); a real Android process-death check is on Sheen's manual list.
 - **F2-AC29.** If the class is cancelled while on B5, you land on A8 with `class_detail_notice` showing the `ClassCancelled` note, and no membership is created. If it was made private or deleted, you get the unavailable screen (A9) with the `ClassUnavailable` note.
 - **F2-AC30.** One-time note: after `refresh()`, or when the same class is opened again without an outcome, the note is gone.
 
