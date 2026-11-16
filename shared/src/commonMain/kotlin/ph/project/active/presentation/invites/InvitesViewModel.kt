@@ -15,7 +15,7 @@ import ph.project.active.presentation.common.watchConnection
 import ph.project.active.data.repository.NetworkMonitor
 import ph.project.active.presentation.common.requireStudent
 import ph.project.active.domain.usecase.DeclineInvite
-import ph.project.active.domain.repository.currentStatus
+import ph.project.active.domain.repository.current
 import ph.project.active.domain.usecase.AcceptInvite
 import ph.project.active.presentation.common.ConnectionUi
 import ph.project.active.presentation.common.toConnection
@@ -49,7 +49,7 @@ class InvitesViewModel(
 
     fun onAccept(classId: String) {
         if (network.isOffline()) {
-            _state.update { it.copy(error = UiError.Offline) }
+            _state.update { it.copy(error = UiError.Offline, confirmation = null) }
             return
         }
         try {
@@ -70,13 +70,13 @@ class InvitesViewModel(
 
     fun onDecline(classId: String) {
         if (network.isOffline()) {
-            _state.update { it.copy(error = UiError.Offline) }
+            _state.update { it.copy(error = UiError.Offline, confirmation = null) }
             return
         }
         try {
             declineInvite(classId = classId, studentId = studentId)
             _state.value = load(
-                confirmation = null,
+                confirmation = InviteConfirmation.InviteDeclined,
                 error = null,
                 navigation = _state.value.navigation,
                 connection = _state.value.connection,
@@ -86,6 +86,19 @@ class InvitesViewModel(
         } catch (e: IllegalArgumentException) {
             showFailure(e)
         }
+    }
+
+    fun refresh() {
+        _state.value = load(
+            confirmation = _state.value.confirmation,
+            error = null,
+            navigation = _state.value.navigation,
+            connection = _state.value.connection,
+        )
+    }
+
+    fun onConfirmationHandled() {
+        _state.update { it.copy(confirmation = null) }
     }
 
     fun onNavigationHandled() {
@@ -107,8 +120,11 @@ class InvitesViewModel(
         navigation: Navigation?,
         connection: ConnectionUi,
     ): InvitesUiState {
-        val invites = classes.allClasses()
-            .filter { memberships.currentStatus(it.id, studentId) == MembershipStatus.INVITED }
+        val invites = memberships.all()
+            .filter { it.studentId == studentId && it.status == MembershipStatus.INVITED }
+            .filter { memberships.current(it.classId, studentId)?.id == it.id }
+            .reversed()
+            .mapNotNull { classes.findClass(it.classId) }
             .map { trxClass ->
                 InviteRow(
                     classId = trxClass.id,
