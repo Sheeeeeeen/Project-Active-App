@@ -80,7 +80,7 @@ fun InvitesScreen(
     val colors = LocalTrxColors.current
     val confirmation = state.confirmation
     if (confirmation != null) {
-        LaunchedEffect(confirmation) {
+        LaunchedEffect(state.confirmationId) {
             delay(TOAST_MILLIS)
             onConfirmationHandled()
         }

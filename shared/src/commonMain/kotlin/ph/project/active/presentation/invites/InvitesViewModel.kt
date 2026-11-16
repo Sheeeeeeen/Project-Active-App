@@ -39,7 +39,13 @@ class InvitesViewModel(
 
     private val studentId = account.id
     private val _state = MutableStateFlow(
-        load(confirmation = null, error = null, navigation = null, connection = network.status.value.toConnection()),
+        load(
+            confirmation = null,
+            error = null,
+            navigation = null,
+            connection = network.status.value.toConnection(),
+            confirmationId = 0,
+        ),
     )
     val state: StateFlow<InvitesUiState> = _state.asStateFlow()
 
@@ -57,6 +63,7 @@ class InvitesViewModel(
             val name = classes.findClass(classId)?.name.orEmpty()
             _state.value = load(
                 confirmation = InviteConfirmation.InviteAccepted(name),
+                confirmationId = _state.value.confirmationId + 1,
                 error = null,
                 navigation = _state.value.navigation,
                 connection = _state.value.connection,
@@ -77,6 +84,7 @@ class InvitesViewModel(
             declineInvite(classId = classId, studentId = studentId)
             _state.value = load(
                 confirmation = InviteConfirmation.InviteDeclined,
+                confirmationId = _state.value.confirmationId + 1,
                 error = null,
                 navigation = _state.value.navigation,
                 connection = _state.value.connection,
@@ -119,6 +127,7 @@ class InvitesViewModel(
         error: UiError?,
         navigation: Navigation?,
         connection: ConnectionUi,
+        confirmationId: Int = _state.value.confirmationId,
     ): InvitesUiState {
         val invites = memberships.all()
             .filter { it.studentId == studentId && it.status == MembershipStatus.INVITED }
@@ -142,6 +151,7 @@ class InvitesViewModel(
             error = error,
             connection = connection,
             navigation = navigation,
+            confirmationId = confirmationId,
         )
     }
 }
