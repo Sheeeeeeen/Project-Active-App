@@ -21,7 +21,7 @@ import ph.project.active.ui.testing.assertTextShown
 import ph.project.active.ui.testing.assertTextUnder
 import ph.project.active.ui.testing.clickText
 import ph.project.active.ui.testing.coachRoutes
-import ph.project.active.ui.testing.confirmIfAsked
+import ph.project.active.ui.testing.confirmTheDialog
 import ph.project.active.ui.testing.mountFlow4
 import ph.project.active.ui.testing.openCoachCard
 import ph.project.active.ui.testing.openManageTab
@@ -99,7 +99,7 @@ class F4ManageOfflineTest {
 
             tag("manage_remove_${d1.gia.id}").performClick()
             waitForIdle()
-            confirmIfAsked()
+            confirmTheDialog() // section 10 Q7: dialog first, then the error
             assertTextUnder("manage_form_error", OFFLINE_NOTHING_SAVED)
             assertEquals(MembershipStatus.ACTIVE, status(world, d1, d1.gia))
             tag("manage_remove_${d1.gia.id}").assertExists()
@@ -184,7 +184,7 @@ class F4ManageOfflineTest {
             tag("manage_class_options").performClick()
             waitForIdle()
             clickText("Cancel whole class")
-            confirmIfAsked()
+            confirmTheDialog() // section 10 Q7: dialog first, then the error
             assertTextUnder("manage_form_error", OFFLINE_NOTHING_SAVED)
             assertFalse(world.classes.findClass(d1.coreBurn.id)!!.isCancelled)
             assertEquals(listOf("CoachHome", "ManageClass(${d1.coreBurn.id})"), coachRoutes(nav))

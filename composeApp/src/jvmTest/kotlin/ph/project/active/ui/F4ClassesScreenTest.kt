@@ -191,7 +191,7 @@ class F4ClassesScreenTest {
 
             assertEquals(listOf(ended.id, cancelled.id), cardIdsTopToBottom("coach_class_card_"))
             assertTextUnder("coach_class_card_${cancelled.id}", "Cancelled")
-            assertNoTextUnder("coach_class_card_${ended.id}", "Ended")
+            assertNoTextUnder("coach_class_card_${ended.id}", "Ended") // section 10 Q14: no Ended chip
 
             openCoachCard(ended.id)
             assertEquals(listOf("CoachHome", "ManageClass(${ended.id})"), coachRoutes(nav))
@@ -302,6 +302,13 @@ class F4ClassesScreenTest {
                 mergedTag(card).assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button))
             }
             assertEquals(d1.classIds, items.map { it.classId })
+            // Section 10 Q8: exact spoken text for two seeded cards.
+            mergedTag("coach_class_card_${d1.coreBurn.id}").assertContentDescriptionEquals(
+                "TRX Core Burn, Public, Monday and Wednesday, 5:30 PM to 6:30 PM, 4 students, 3 requests",
+            )
+            mergedTag("coach_class_card_${d1.privateClass.id}").assertContentDescriptionEquals(
+                "TRX Private Strength, Private, Tuesday and Thursday, 7:00 PM to 8:00 PM, 0 students",
+            )
         }
     }
 }

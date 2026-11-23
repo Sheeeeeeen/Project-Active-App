@@ -117,7 +117,7 @@ class F4ManageScheduleTest {
             assertTextUnder(
                 "manage_dialog",
                 "Session 3 of TRX Core Burn will show as Cancelled and won\u2019t accept attendance. " +
-                    "Mon 12 Oct and every other date stay scheduled.",
+                    "Wed 7 Oct and every other date stay scheduled.", // section 10 Q4: next scheduled date (Session 4)
             )
             assertTextUnder("manage_dialog_keep", "Keep date")
             assertTextUnder("manage_dialog_confirm", "Cancel date")
@@ -136,7 +136,9 @@ class F4ManageScheduleTest {
             tag("manage_dialog").assertDoesNotExist()
             assertEquals(SessionStatus.CANCELLED, statusOn(world, d1, MON_5_OCT_2026))
             assertTextUnder("manage_date_row_2026-10-05", "Cancelled")
-            assertEquals(SessionStatus.SCHEDULED, statusOn(world, d1, LocalDate(2026, 10, 12)))
+            assertEquals(SessionStatus.SCHEDULED, statusOn(world, d1, LocalDate(2026, 10, 7)), "Session 4 stays Scheduled")
+            assertEquals(SessionStatus.SCHEDULED, statusOn(world, d1, LocalDate(2026, 10, 12)), "Session 5 stays Scheduled")
+            assertTextUnder("manage_date_row_2026-10-07", "Scheduled")
             assertTextUnder("manage_date_row_2026-10-12", "Scheduled")
             assertTextUnder("manage_toast", "Mon 5 Oct cancelled. Other dates stay scheduled.")
             assertNoUndo()

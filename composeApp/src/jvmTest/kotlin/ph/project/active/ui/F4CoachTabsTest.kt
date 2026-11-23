@@ -51,6 +51,7 @@ class F4CoachTabsTest {
             assertTextUnder("coach_qr", "QR")
             assertEquals(1, countTaggedUnder("coach_qr", "placeholder_tag"), "the QR screen's own placeholder")
             assertEquals(2, countTagged("placeholder_tag"), "plus the account button's")
+            assertEquals(1, countTaggedUnder("coach_qr_account", "placeholder_tag"), "section 10 Q9: QR account button")
 
             openCoachTab("attendance")
             tag("coach_tab_attendance").assertIsSelected()
@@ -58,6 +59,7 @@ class F4CoachTabsTest {
             assertTextUnder("coach_attendance", "Attendance")
             assertEquals(1, countTaggedUnder("coach_attendance", "placeholder_tag"))
             assertEquals(2, countTagged("placeholder_tag"))
+            assertEquals(1, countTaggedUnder("coach_attendance_account", "placeholder_tag"), "section 10 Q9: Attendance account button")
 
             openCoachTab("classes")
             assertEquals(listOf("CoachHome"), coachRoutes(nav), "switching tabs does not change the back stack")

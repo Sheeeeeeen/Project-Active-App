@@ -13,14 +13,19 @@ import ph.project.active.presentation.coachclasses.timeLine
 import ph.project.active.testkit.EVENING
 
 class F4P2CoachCardHelpersTest {
-    private fun coreBurn(students: Int, requests: Int) = CoachClassItem(
+    private fun coreBurn(
+        students: Int,
+        requests: Int,
+        visibility: Visibility = Visibility.PUBLIC,
+        cancelled: Boolean = false,
+    ) = CoachClassItem(
         classId = "class-1",
         name = "TRX Core Burn",
-        visibility = Visibility.PUBLIC,
+        visibility = visibility,
         slotsByWeekday = mapOf(DayOfWeek.MONDAY to listOf(EVENING), DayOfWeek.WEDNESDAY to listOf(EVENING)),
         rosterCount = students,
         pendingRequestCount = requests,
-        isCancelled = false,
+        isCancelled = cancelled,
     )
 
     @Test
@@ -47,5 +52,22 @@ class F4P2CoachCardHelpersTest {
         assertTrue("Monday and Wednesday" in spoken, spoken)
         assertTrue("5:30 PM to 6:30 PM" in spoken, spoken)
         assertTrue("\u2013" !in spoken, spoken)
+    }
+
+    @Test
+    fun F4_P2_Q8_spokenCardIsExactInTheGuestCardOrder() {
+        // Section 10 Q8: name, Public / Private / Cancelled, long days, time with "to", students, requests only when > 0.
+        assertEquals(
+            "TRX Core Burn, Public, Monday and Wednesday, 5:30 PM to 6:30 PM, 4 students, 3 requests",
+            coreBurn(students = 4, requests = 3).spokenCard(),
+        )
+        assertEquals(
+            "TRX Core Burn, Private, Monday and Wednesday, 5:30 PM to 6:30 PM, 1 student",
+            coreBurn(students = 1, requests = 0, visibility = Visibility.PRIVATE).spokenCard(),
+        )
+        assertEquals(
+            "TRX Core Burn, Cancelled, Monday and Wednesday, 5:30 PM to 6:30 PM, 0 students, 1 request",
+            coreBurn(students = 0, requests = 1, cancelled = true).spokenCard(),
+        )
     }
 }

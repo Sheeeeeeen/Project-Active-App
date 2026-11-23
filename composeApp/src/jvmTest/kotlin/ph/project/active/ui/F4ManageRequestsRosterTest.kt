@@ -9,6 +9,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.datetime.LocalDate
 import ph.project.active.domain.model.MembershipStatus
+import ph.project.active.domain.model.UploadState
 import ph.project.active.domain.model.User
 import ph.project.active.domain.repository.currentStatus
 import ph.project.active.ui.testing.Flow4Example
@@ -148,7 +149,10 @@ class F4ManageRequestsRosterTest {
             tag("manage_remove_${d1.gia.id}").assertDoesNotExist()
             assertEquals(MembershipStatus.REMOVED, status(world, d1, d1.gia))
             assertTextShown("3 students")
-            assertEquals(pastRecord, world.attendance.find(pastRecord.sessionId, d1.gia.id))
+            // Past attendance unchanged: student, session, class, scan time, status (and SYNCED upload state).
+            val after = world.attendance.find(pastRecord.sessionId, d1.gia.id)
+            assertEquals(pastRecord, after)
+            assertEquals(UploadState.SYNCED, after?.uploadState)
             assertNoUndo()
         }
     }

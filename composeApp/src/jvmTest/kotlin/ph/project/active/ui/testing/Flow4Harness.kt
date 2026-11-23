@@ -23,6 +23,7 @@ import ph.project.active.data.repository.SqlSessionStore
 import ph.project.active.data.sync.OutboxSync
 import ph.project.active.domain.model.AttendanceRecord
 import ph.project.active.domain.model.NetworkStatus
+import ph.project.active.domain.model.UploadState
 import ph.project.active.domain.model.TimeSlot
 import ph.project.active.domain.model.TrxClass
 import ph.project.active.domain.model.User
@@ -187,6 +188,7 @@ class Flow4Harness : AutoCloseable {
     }
 
     /** A past attendance record, saved straight to the repository. */
+    /** A past scan that was already uploaded (SYNCED), so the start-up outbox sync leaves it alone (F4-AC20). */
     fun recordAttendance(classId: String, student: User, date: LocalDate): AttendanceRecord {
         val session = classes.sessionsOf(classId).first { it.date == date }
         val record = AttendanceRecord(
@@ -195,6 +197,7 @@ class Flow4Harness : AutoCloseable {
             classId = classId,
             studentId = student.id,
             scannedAt = LocalDateTime(date.year, date.month, date.day, 17, 35).toInstant(timeZone),
+            uploadState = UploadState.SYNCED,
         )
         attendance.add(record)
         return record

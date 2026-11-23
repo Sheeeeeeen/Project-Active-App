@@ -21,7 +21,7 @@ import ph.project.active.ui.testing.assertTextUnder
 import ph.project.active.ui.testing.cardIdsTopToBottom
 import ph.project.active.ui.testing.clickText
 import ph.project.active.ui.testing.coachRoutes
-import ph.project.active.ui.testing.confirmIfAsked
+import ph.project.active.ui.testing.confirmTheDialog
 import ph.project.active.ui.testing.countTagged
 import ph.project.active.ui.testing.mountFlow4
 import ph.project.active.ui.testing.openCoachCard
@@ -126,7 +126,7 @@ class F4ManageOptionsTest {
             openManageTab("roster")
             tag("manage_remove_${d1.gia.id}").performClick()
             waitForIdle()
-            confirmIfAsked()
+            confirmTheDialog() // section 10 Q7: dialog first, then the error
             assertBlocked()
             assertEquals(MembershipStatus.ACTIVE, status(world, d1, d1.gia))
         }

@@ -109,13 +109,12 @@ fun ComposeUiTest.submitInviteSearch(query: String) {
     waitForIdle()
 }
 
-/** Accepts the confirm dialog if one is showing. Used where the spec does not say whether a blocked action asks first. */
+/** Section 10 Q7: the confirm dialog is always shown first (even offline or on a cancelled class); confirm it. */
 @OptIn(ExperimentalTestApi::class)
-fun ComposeUiTest.confirmIfAsked() {
-    if (countTagged("manage_dialog_confirm") > 0) {
-        tag("manage_dialog_confirm").performClick()
-        waitForIdle()
-    }
+fun ComposeUiTest.confirmTheDialog() {
+    onNodeWithTag("manage_dialog", useUnmergedTree = true).assertExists()
+    onNodeWithTag("manage_dialog_confirm", useUnmergedTree = true).performClick()
+    waitForIdle()
 }
 
 /** Passes when the texts under [tagName], joined either way, contain [expected] (a line may be split in two Text nodes). */
