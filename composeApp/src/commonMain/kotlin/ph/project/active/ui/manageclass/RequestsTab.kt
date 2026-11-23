@@ -39,8 +39,9 @@ internal fun RequestsTab(state: ManageClassUiState, onApprove: (String) -> Unit,
 private fun RequestCard(row: RequestRow, onApprove: (String) -> Unit, onDecline: (String) -> Unit) {
     val colors = LocalTrxColors.current
     TrxCard(Modifier.padding(top = TrxSpacing.s12)) {
-        Text(row.name, color = colors.textPrimary, style = TrxTypography.headline)
-        Text(row.employeeId, color = colors.textSecondary, style = TrxTypography.subhead)
+        PersonLine(row.name) {
+            Text(row.employeeId, color = colors.textSecondary, style = TrxTypography.subhead)
+        }
         Row(Modifier.padding(top = TrxSpacing.s12), horizontalArrangement = Arrangement.spacedBy(TrxSpacing.s8)) {
             TrxLargeButton(
                 label = UiCopy.decline(),

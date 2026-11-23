@@ -21,6 +21,7 @@ import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTypography
 import projectactive.composeapp.generated.resources.Res
 import projectactive.composeapp.generated.resources.id_card
+import projectactive.composeapp.generated.resources.mail
 import projectactive.composeapp.generated.resources.user
 
 @Composable
@@ -60,14 +61,15 @@ internal fun InviteTab(
 @Composable
 private fun MatchCard(match: InviteMatch, inviteSent: Boolean, onSendInvite: () -> Unit) {
     val colors = LocalTrxColors.current
-    ManageSectionHeader(UiCopy.matchCount(1), "", Modifier.padding(top = TrxSpacing.s16))
-    TrxCard(Modifier.padding(top = TrxSpacing.s8)) {
-        Text(match.name, color = colors.textPrimary, style = TrxTypography.headline)
-        Text(
-            text = UiCopy.matchLine(match.employeeId, match.currentMembershipStatus.matchStatus()),
-            color = colors.textSecondary,
-            style = TrxTypography.subhead,
-        )
+    TrxCard(Modifier.padding(top = TrxSpacing.s16)) {
+        Text(UiCopy.matchCount(1), color = colors.textSecondary, style = TrxTypography.overline)
+        PersonLine(match.name, Modifier.padding(top = TrxSpacing.s8)) {
+            Text(
+                text = UiCopy.matchLine(match.employeeId, match.currentMembershipStatus.matchStatus()),
+                color = colors.textSecondary,
+                style = TrxTypography.subhead,
+            )
+        }
         // An invited, requested or rostered student still shows Send invite; the send is refused with its line.
         TrxLargeButton(
             label = if (inviteSent) UiCopy.inviteSentButton() else UiCopy.sendInvite(),
@@ -76,6 +78,7 @@ private fun MatchCard(match: InviteMatch, inviteSent: Boolean, onSendInvite: () 
             onClick = onSendInvite,
             enabled = !inviteSent,
             modifier = Modifier.padding(top = TrxSpacing.s12),
+            icon = Res.drawable.mail,
             height = TrxSpacing.touchTarget,
             textStyle = TrxTypography.subheadStrong,
         )

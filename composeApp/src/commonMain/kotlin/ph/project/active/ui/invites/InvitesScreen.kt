@@ -39,6 +39,7 @@ import ph.project.active.presentation.invites.timeLine
 import ph.project.active.presentation.manageclass.InviteConfirmation
 import ph.project.active.ui.components.EmptyState
 import ph.project.active.ui.components.FormError
+import ph.project.active.ui.components.InitialsAvatar
 import ph.project.active.ui.components.LargeTitleHeader
 import ph.project.active.ui.components.OfflineBanner
 import ph.project.active.ui.components.StatusChip
@@ -145,7 +146,7 @@ private fun InviteCard(invite: InviteRow, onAccept: (String) -> Unit, onDecline:
             .testTag(InvitesTestTags.card(invite.classId)),
     ) {
         Row(verticalAlignment = Alignment.Top) {
-            Initials(invite.coachName)
+            InitialsAvatar(invite.coachName)
             Column(
                 Modifier
                     .weight(1f)
@@ -188,24 +189,6 @@ private fun InviteCard(invite: InviteRow, onAccept: (String) -> Unit, onDecline:
                 textStyle = TrxTypography.subheadStrong,
             )
         }
-    }
-}
-
-@Composable
-private fun Initials(name: String) {
-    val colors = LocalTrxColors.current
-    Box(
-        Modifier
-            .size(TrxSpacing.avatar)
-            .background(colors.accentSubtle, CircleShape),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = name.split(" ").filter { it.isNotBlank() }.take(2).joinToString("") { it.first().uppercase() },
-            color = colors.accentText,
-            style = TrxTypography.headline,
-            modifier = Modifier.clearAndSetSemantics {},
-        )
     }
 }
 

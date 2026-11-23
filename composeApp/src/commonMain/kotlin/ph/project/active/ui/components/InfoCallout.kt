@@ -21,7 +21,7 @@ import ph.project.active.ui.theme.TrxTypography
 import projectactive.composeapp.generated.resources.Res
 import projectactive.composeapp.generated.resources.info
 
-/** Tinted info box with a bold title and a body line. Not tappable or dismissible. */
+/** Tinted box with an icon, a bold title and a body line. Not tappable or dismissible. */
 @Composable
 fun InfoCallout(
     title: String,
@@ -29,12 +29,23 @@ fun InfoCallout(
     modifier: Modifier = Modifier,
     tag: String? = null,
     icon: DrawableResource = Res.drawable.info,
+    style: InfoCalloutStyle = InfoCalloutStyle.Info,
 ) {
     val colors = LocalTrxColors.current
+    val background = when (style) {
+        InfoCalloutStyle.Info -> colors.infoBg
+        InfoCalloutStyle.Neutral -> colors.surfaceAlt
+        InfoCalloutStyle.Accent -> colors.accentSubtle
+    }
+    val iconTint = when (style) {
+        InfoCalloutStyle.Info -> colors.infoFg
+        InfoCalloutStyle.Neutral -> colors.textSecondary
+        InfoCalloutStyle.Accent -> colors.accentText
+    }
     Row(
         modifier
             .fillMaxWidth()
-            .background(colors.infoBg, RoundedCornerShape(TrxSpacing.radiusMd))
+            .background(background, RoundedCornerShape(TrxSpacing.radiusMd))
             .then(if (tag != null) Modifier.testTag(tag) else Modifier)
             .padding(TrxSpacing.s16),
         verticalAlignment = Alignment.Top,
@@ -42,7 +53,7 @@ fun InfoCallout(
         Icon(
             painter = painterResource(icon),
             contentDescription = null,
-            tint = colors.infoFg,
+            tint = iconTint,
             modifier = Modifier
                 .padding(end = TrxSpacing.s12)
                 .size(TrxSpacing.s20),

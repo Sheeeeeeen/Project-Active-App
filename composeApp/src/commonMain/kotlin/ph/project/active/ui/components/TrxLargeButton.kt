@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -31,7 +30,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
-import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTypography
 
@@ -49,26 +47,16 @@ fun TrxLargeButton(
     height: Dp = TrxSpacing.buttonHeight,
     textStyle: TextStyle = TrxTypography.button,
 ) {
-    val colors = LocalTrxColors.current
     val shape = RoundedCornerShape(TrxSpacing.radiusMd)
-    val background = when {
-        !enabled && kind == TrxButtonKind.Primary -> colors.surfaceAlt
-        kind == TrxButtonKind.Primary -> colors.accentDefault
-        else -> colors.surface
-    }
-    val content = when {
-        !enabled && kind == TrxButtonKind.Primary -> colors.textTertiary
-        kind == TrxButtonKind.Primary -> colors.textOnAccent
-        else -> colors.textPrimary
-    }
-    val borderColor = if (kind == TrxButtonKind.Secondary) colors.borderStrong else Color.Transparent
+    val buttonColors = trxButtonColors(kind, enabled)
+    val content = buttonColors.content
     Box(
         modifier
             .fillMaxWidth()
             .height(height)
             .clip(shape)
-            .background(background)
-            .border(width = 1.dp, color = borderColor, shape = shape)
+            .background(buttonColors.background)
+            .border(width = 1.dp, color = buttonColors.border, shape = shape)
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .testTag(tag)
             .semantics(mergeDescendants = true) {

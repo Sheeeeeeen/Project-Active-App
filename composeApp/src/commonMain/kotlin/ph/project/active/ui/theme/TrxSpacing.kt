@@ -3,6 +3,7 @@ package ph.project.active.ui.theme
 import androidx.compose.ui.unit.dp
 
 object TrxSpacing {
+    val s0 = 0.dp
     val s4 = 4.dp
     val s8 = 8.dp
     val s12 = 12.dp
