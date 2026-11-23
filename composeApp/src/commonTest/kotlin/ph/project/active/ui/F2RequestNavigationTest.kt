@@ -117,6 +117,9 @@ class F2RequestNavigationTest {
                     classDetailViewModel = detail,
                     studentClassesViewModel = world.studentClassesFactory(),
                     invitesViewModel = world.invitesFactory(),
+                    coachClassesViewModel = world.coachClassesFactory(),
+                    createClassViewModel = world.createClassFactory(),
+                    manageClassViewModel = world.manageClassFactory(),
                     navController = nav,
                     onNavController = {},
                 )
@@ -151,6 +154,9 @@ class F2RequestNavigationTest {
                     classDetailViewModel = detail,
                     studentClassesViewModel = world.studentClassesFactory(),
                     invitesViewModel = world.invitesFactory(),
+                    coachClassesViewModel = world.coachClassesFactory(),
+                    createClassViewModel = world.createClassFactory(),
+                    manageClassViewModel = world.manageClassFactory(),
                     navController = sameNav,
                     onNavController = {},
                 )

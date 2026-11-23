@@ -24,6 +24,9 @@ import ph.project.active.data.model.SignedInAccount
 import ph.project.active.data.repository.AuthRepository
 import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
+import ph.project.active.presentation.coachclasses.CoachClassesViewModel
+import ph.project.active.presentation.createclass.CreateClassViewModel
+import ph.project.active.presentation.manageclass.ManageClassViewModel
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.guestclasses.GuestClassListViewModel
 import ph.project.active.presentation.invites.InvitesViewModel
@@ -112,6 +115,9 @@ object Flow1Compose {
         classDetailViewModel: (String, SignedInAccount?, JoinOutcome?) -> ClassDetailViewModel,
         studentClassesViewModel: (SignedInAccount) -> StudentClassesViewModel,
         invitesViewModel: (SignedInAccount) -> InvitesViewModel,
+        coachClassesViewModel: (SignedInAccount) -> CoachClassesViewModel,
+        createClassViewModel: (SignedInAccount) -> CreateClassViewModel,
+        manageClassViewModel: (SignedInAccount, String) -> ManageClassViewModel,
         shakeSource: ShakeSource = NoShakeSource,
         navController: NavHostController? = null,
         onNavController: (NavHostController) -> Unit,
@@ -126,6 +132,9 @@ object Flow1Compose {
                 classDetailViewModel = classDetailViewModel,
                 studentClassesViewModel = studentClassesViewModel,
                 invitesViewModel = invitesViewModel,
+                coachClassesViewModel = coachClassesViewModel,
+                createClassViewModel = createClassViewModel,
+                manageClassViewModel = manageClassViewModel,
             )
         } else {
             AppNavHost(
@@ -137,6 +146,9 @@ object Flow1Compose {
                 classDetailViewModel = classDetailViewModel,
                 studentClassesViewModel = studentClassesViewModel,
                 invitesViewModel = invitesViewModel,
+                coachClassesViewModel = coachClassesViewModel,
+                createClassViewModel = createClassViewModel,
+                manageClassViewModel = manageClassViewModel,
                 navController = navController,
             )
         }
@@ -150,6 +162,9 @@ object Flow1Compose {
         classDetailViewModel: (String, SignedInAccount?, JoinOutcome?) -> ClassDetailViewModel,
         studentClassesViewModel: (SignedInAccount) -> StudentClassesViewModel,
         invitesViewModel: (SignedInAccount) -> InvitesViewModel,
+        coachClassesViewModel: (SignedInAccount) -> CoachClassesViewModel,
+        createClassViewModel: (SignedInAccount) -> CreateClassViewModel,
+        manageClassViewModel: (SignedInAccount, String) -> ManageClassViewModel,
         shakeSource: ShakeSource = NoShakeSource,
     ) {
         TrxApp(
@@ -160,6 +175,9 @@ object Flow1Compose {
             classDetailViewModel = classDetailViewModel,
             studentClassesViewModel = studentClassesViewModel,
             invitesViewModel = invitesViewModel,
+            coachClassesViewModel = coachClassesViewModel,
+            createClassViewModel = createClassViewModel,
+            manageClassViewModel = manageClassViewModel,
         )
     }
 
@@ -240,6 +258,9 @@ fun ComposeUiTest.mountNav(
             classDetailViewModel = world.detailFactory(),
             studentClassesViewModel = world.studentClassesFactory(),
             invitesViewModel = world.invitesFactory(),
+            coachClassesViewModel = world.coachClassesFactory(),
+            createClassViewModel = world.createClassFactory(),
+            manageClassViewModel = world.manageClassFactory(),
             shakeSource = shakeSource,
             onNavController = { nav = it },
         )
@@ -261,6 +282,9 @@ fun ComposeUiTest.showApp(world: Flow1Harness, shakeSource: ShakeSource = NoShak
             classDetailViewModel = world.detailFactory(),
             studentClassesViewModel = world.studentClassesFactory(),
             invitesViewModel = world.invitesFactory(),
+            coachClassesViewModel = world.coachClassesFactory(),
+            createClassViewModel = world.createClassFactory(),
+            manageClassViewModel = world.manageClassFactory(),
             shakeSource = shakeSource,
         )
     }

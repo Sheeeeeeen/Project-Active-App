@@ -30,15 +30,20 @@ import ph.project.active.domain.repository.inmemory.InMemoryUserRepository
 import ph.project.active.domain.usecase.AcceptInvite
 import ph.project.active.domain.usecase.ApproveRequest
 import ph.project.active.domain.usecase.CancelClass
+import ph.project.active.domain.usecase.CancelDate
 import ph.project.active.domain.usecase.CreateClass
 import ph.project.active.domain.usecase.DeclineInvite
 import ph.project.active.domain.usecase.DeclineRequest
 import ph.project.active.domain.usecase.InviteByEmployeeId
 import ph.project.active.domain.usecase.RegisterCoach
 import ph.project.active.domain.usecase.RegisterStudent
+import ph.project.active.domain.usecase.RemoveFromRoster
 import ph.project.active.domain.usecase.RequestToJoin
 import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
+import ph.project.active.presentation.coachclasses.CoachClassesViewModel
+import ph.project.active.presentation.createclass.CreateClassViewModel
+import ph.project.active.presentation.manageclass.ManageClassViewModel
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.guestclasses.GuestClassListViewModel
 import ph.project.active.presentation.invites.InvitesViewModel
@@ -275,6 +280,41 @@ class Flow3Harness : AutoCloseable {
         people = people,
         acceptInvite = AcceptInvite(memberships),
         declineInvite = DeclineInvite(memberships),
+        network = network,
+    )
+
+    // Flow 4: CoachHome's tabs need their own factories on the NavHost; flow 3 tests never open them.
+    fun coachClasses(account: SignedInAccount): CoachClassesViewModel = CoachClassesViewModel(
+        account = account,
+        classes = classes,
+        memberships = memberships,
+        network = network,
+    )
+
+    fun createClass(account: SignedInAccount): CreateClassViewModel = CreateClassViewModel(
+        account = account,
+        classes = classes,
+        clock = clock,
+        timeZone = timeZone,
+        network = network,
+    )
+
+    fun manageClass(account: SignedInAccount, classId: String): ManageClassViewModel = ManageClassViewModel(
+        account = account,
+        classId = classId,
+        classes = classes,
+        memberships = memberships,
+        attendance = SqlAttendanceRepository(database),
+        people = people,
+        users = users,
+        approveRequest = ApproveRequest(memberships),
+        declineRequest = DeclineRequest(memberships),
+        removeFromRoster = RemoveFromRoster(memberships),
+        inviteByEmployeeId = InviteByEmployeeId(users, classes, memberships),
+        cancelDate = CancelDate(classes, clock, timeZone),
+        cancelClass = CancelClass(classes, clock, timeZone),
+        clock = clock,
+        timeZone = timeZone,
         network = network,
     )
 
