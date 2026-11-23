@@ -40,11 +40,14 @@ class DailyQrViewModel(
     private val coachId = account.id
     private val fallbackName = account.name
     private val generate = GenerateDailyCode(keys)
+    private var hasClasses = false
     private val _state = MutableStateFlow(load(network.status.value.toConnection(), navigation = null))
     val state: StateFlow<DailyQrUiState> = _state.asStateFlow()
 
     init {
-        watchConnection(network, _state) { copy(connection = it) }
+        watchConnection(network, _state) {
+            copy(connection = it, classListUnavailable = it.isOffline && !hasClasses)
+        }
     }
 
     fun refresh() {
@@ -70,13 +73,14 @@ class DailyQrViewModel(
                 TodaySessionRow(className = trxClass.name, slot = session.slot, status = session.status)
             }
         }.sortedWith(compareBy({ it.slot.start }, { it.className }))
+        hasClasses = owned.isNotEmpty()
         return DailyQrUiState(
             today = today,
             coachName = people.find(coachId)?.name ?: fallbackName,
             validFor = today,
             code = generate(coachId, today),
             todaysSessions = sessions,
-            classListUnavailable = owned.isEmpty(),
+            classListUnavailable = connection.isOffline && owned.isEmpty(),
             error = null,
             connection = connection,
             navigation = navigation,
