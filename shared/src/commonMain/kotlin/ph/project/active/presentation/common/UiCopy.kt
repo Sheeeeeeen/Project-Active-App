@@ -469,6 +469,9 @@ object UiCopy {
 
     fun inlineSeparator(): String = " \u00B7 "
 
+    /** A count in a small pill: the number up to 99, then "99+". */
+    fun countBadge(count: Int): String = if (count > 99) "99+" else count.toString()
+
     fun notOnThisClass(): String = "Not on this class"
 
     fun requested(): String = "Requested"

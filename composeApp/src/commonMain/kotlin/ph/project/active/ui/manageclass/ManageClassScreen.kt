@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -255,13 +257,15 @@ private fun Tabs(state: ManageClassUiState, onSelect: (ManageTab) -> Unit) {
                         Box(
                             Modifier
                                 .padding(start = TrxSpacing.s4)
-                                .size(TrxSpacing.s20)
+                                .height(TrxSpacing.s20)
+                                .widthIn(min = TrxSpacing.s20)
                                 .background(colors.accentDefault, CircleShape)
-                                .testTag(ManageClassTestTags.requestsBadge),
+                                .testTag(ManageClassTestTags.requestsBadge)
+                                .padding(horizontal = TrxSpacing.s4),
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text = state.pendingRequestCount.toString(),
+                                text = UiCopy.countBadge(state.pendingRequestCount),
                                 color = colors.textOnAccent,
                                 style = TrxTypography.label,
                                 maxLines = 1,
