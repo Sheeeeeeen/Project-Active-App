@@ -9,12 +9,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
 
 @Composable
-fun TrxCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+fun TrxCard(
+    modifier: Modifier = Modifier,
+    contentPadding: Dp = TrxSpacing.s16,
+    content: @Composable ColumnScope.() -> Unit,
+) {
     val colors = LocalTrxColors.current
     val shape = RoundedCornerShape(TrxSpacing.radiusLg)
     Column(
@@ -22,7 +27,7 @@ fun TrxCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -
             .fillMaxWidth()
             .background(colors.surface, shape)
             .border(1.dp, colors.borderDefault, shape)
-            .padding(TrxSpacing.s16),
+            .padding(contentPadding),
         content = content,
     )
 }
