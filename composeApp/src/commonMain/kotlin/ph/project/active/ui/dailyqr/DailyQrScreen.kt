@@ -3,6 +3,7 @@ package ph.project.active.ui.dailyqr
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -10,14 +11,17 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,8 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextAlign
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 import ph.project.active.domain.model.SessionStatus
 import ph.project.active.presentation.attend.TodaySessionRow
 import ph.project.active.presentation.common.UiCopy
@@ -50,6 +56,8 @@ import ph.project.active.ui.theme.TrxTypography
 import projectactive.composeapp.generated.resources.Res
 import projectactive.composeapp.generated.resources.ban
 import projectactive.composeapp.generated.resources.calendar_check
+import projectactive.composeapp.generated.resources.shield
+import projectactive.composeapp.generated.resources.smartphone
 import projectactive.composeapp.generated.resources.wifi_off
 
 /** D19–D20: today's code for every class, always dark, with today's sessions under it. */
@@ -76,15 +84,24 @@ fun DailyQrScreen(
                     .fillMaxSize()
                     .padding(innerPadding)
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16)
+                    .padding(start = TrxSpacing.screenHorizontal, end = TrxSpacing.screenHorizontal, bottom = TrxSpacing.s16)
                     .testTag(CoachTabBarTestTags.qrRoot),
             ) {
-                Text(
-                    text = UiCopy.dailyQrOverline(),
-                    color = colors.textSecondary,
-                    style = TrxTypography.overline,
-                    modifier = Modifier.testTag(DailyQrTestTags.overline),
-                )
+                // Same row height as the other tabs' top bar, so the title doesn't move between tabs.
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = TrxSpacing.s8)
+                        .heightIn(min = TrxSpacing.touchTarget),
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    Text(
+                        text = UiCopy.dailyQrOverline(),
+                        color = colors.accentText,
+                        style = TrxTypography.overline,
+                        modifier = Modifier.testTag(DailyQrTestTags.overline),
+                    )
+                }
                 LargeTitle(title = UiCopy.todaysCode(), tag = CoachTabBarTestTags.qrTitle)
                 Text(
                     text = UiCopy.dailyQrSubtitle(state.today, state.coachName),
@@ -101,18 +118,22 @@ fun DailyQrScreen(
                         subtitle = UiCopy.qrOfflineSubtitle(),
                     )
                 }
-                QrCard(state, Modifier.padding(top = TrxSpacing.s24))
-                Text(
-                    text = UiCopy.brightnessRaised(),
-                    color = colors.textTertiary,
-                    style = TrxTypography.footnote,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = TrxSpacing.s12)
-                        .testTag(DailyQrTestTags.brightness),
+                QrCard(
+                    state,
+                    Modifier.padding(
+                        top = if (state.connection.banner != null) TrxSpacing.s12 else TrxSpacing.s16,
+                        start = TrxSpacing.s20,
+                        end = TrxSpacing.s20,
+                    ),
                 )
-                SectionHeader(Modifier.padding(top = TrxSpacing.s32, bottom = TrxSpacing.s8))
+                Caption(
+                    text = UiCopy.brightnessRaised(),
+                    icon = Res.drawable.smartphone,
+                    color = colors.textSecondary,
+                    tag = DailyQrTestTags.brightness,
+                    modifier = Modifier.padding(top = TrxSpacing.s12),
+                )
+                SectionHeader(Modifier.padding(top = TrxSpacing.s16, bottom = TrxSpacing.s12))
                 if (state.classListUnavailable) {
                     InfoCallout(
                         title = UiCopy.classListUnavailableTitle(),
@@ -139,7 +160,7 @@ private fun QrCard(state: DailyQrUiState, modifier: Modifier = Modifier) {
         modifier
             .fillMaxWidth()
             .background(paper, RoundedCornerShape(TrxSpacing.radiusLg))
-            .padding(TrxSpacing.s16)
+            .padding(TrxSpacing.s24)
             .testTag(DailyQrTestTags.card),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -163,13 +184,12 @@ private fun QrCard(state: DailyQrUiState, modifier: Modifier = Modifier) {
                 }
             }
         }
-        Text(
+        Caption(
             text = UiCopy.validForDate(state.validFor),
-            color = ink,
-            style = TrxTypography.subheadStrong,
-            modifier = Modifier
-                .padding(top = TrxSpacing.s8)
-                .testTag(DailyQrTestTags.valid),
+            icon = Res.drawable.shield,
+            color = TrxColors.Light.textSecondary,
+            tag = DailyQrTestTags.valid,
+            modifier = Modifier.padding(top = TrxSpacing.s12),
         )
     }
 }
@@ -180,11 +200,31 @@ private fun SectionHeader(modifier: Modifier = Modifier) {
     Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = UiCopy.thisCodeCoversToday(),
-            color = colors.textPrimary,
-            style = TrxTypography.sectionTitle,
+            color = colors.textSecondary,
+            style = TrxTypography.overline,
+            maxLines = 1,
             modifier = Modifier.weight(1f),
         )
-        Text(text = UiCopy.oneCodeAllClasses(), color = colors.textTertiary, style = TrxTypography.footnote)
+        Text(text = UiCopy.oneCodeAllClasses(), color = colors.textTertiary, style = TrxTypography.footnote, maxLines = 1)
+    }
+}
+
+@Composable
+private fun Caption(text: String, icon: DrawableResource, color: Color, tag: String, modifier: Modifier = Modifier) {
+    Row(
+        modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            painter = painterResource(icon),
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier
+                .padding(end = TrxSpacing.s4)
+                .size(TrxSpacing.iconSmall),
+        )
+        Text(text = text, color = color, style = TrxTypography.footnote, modifier = Modifier.testTag(tag))
     }
 }
 
@@ -208,7 +248,7 @@ private fun SessionLine(row: TodaySessionRow) {
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(TrxSpacing.s16),
+            .padding(horizontal = TrxSpacing.s16, vertical = TrxSpacing.s12),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(TrxSpacing.s12),
     ) {
