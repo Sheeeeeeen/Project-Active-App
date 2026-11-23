@@ -74,7 +74,7 @@ private fun DateRow(row: ScheduleRow, onCancelDate: (LocalDate) -> Unit) {
             }
             Text(
                 text = formatDate(row.date),
-                color = if (dimmed) colors.textTertiary else colors.textPrimary,
+                color = if (dimmed && !cancelled) colors.textTertiary else colors.textPrimary,
                 style = TrxTypography.headline,
                 textDecoration = if (cancelled) TextDecoration.LineThrough else null,
             )
