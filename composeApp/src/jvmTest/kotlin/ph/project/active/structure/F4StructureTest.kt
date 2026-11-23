@@ -38,6 +38,18 @@ class F4StructureTest {
     }
 
     @Test
+    fun F4_Seed_marasRosterShowsBothJoinPaths() {
+        // Planner ruling (P7 / D12): Paolo and Hana joined by REQUEST, Dana and Gia by INVITE,
+        // so Mara's demo roster shows both "Joined by" lines.
+        val source = seedSource()
+        for (student in listOf("Paolo", "Hana", "Dana", "Gia")) {
+            assertTrue(source.contains(student), "the debug seed should include $student")
+        }
+        assertTrue(source.contains("JoinPath.REQUEST"), "the debug seed records a join by REQUEST (Paolo, Hana)")
+        assertTrue(source.contains("JoinPath.INVITE"), "the debug seed records a join by INVITE (Dana, Gia)")
+    }
+
+    @Test
     fun F4_AC28_newScreensRoutesAndTestTagObjectsHaveOnePublicTypeAndNoNestedClasses() {
         val mainFiles = listOf("commonMain", "androidMain", "iosMain", "jvmMain")
             .flatMap { SourceScan.sourcesIn(it) }
