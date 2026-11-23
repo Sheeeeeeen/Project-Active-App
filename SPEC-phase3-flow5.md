@@ -208,3 +208,11 @@ New `UiCopy` functions (names follow the existing style; tests assert the string
 1. **C4 migration keeps existing `joined_by` values.** Do not rebuild the table in a way that throws away a `joined_by` value that is already there. Use a code-side migration step: read `PRAGMA table_info(membership)`, add `joined_by` with a default of `REQUEST` only when it's missing, and then set the schema to v2. Tests check only the C4 outcomes: v1 without the column gets `REQUEST` on every row, v1 with the column keeps each row's value, and the version is 2 afterwards.
 2. **F5-AC3 seam.** Common `QrEncoder.encode(text: String): QrMatrix`, where `QrMatrix` has `size` and `isDark(x, y)`. Each type goes in its own file. The JVM tests decode the matrix with zxing `core`, added as a test-only dependency, and assert that it equals `state.code`. Production uses a small pure-Kotlin KMP encoder, which is Builder's choice.
 3. **Tester's questions.** There's one code for all of the coach's classes today, with no picker. The date changes on tab show or on foreground, never on a timer. QR tests check the text the code holds, not images. None of these change the spec.
+4. **Pinned names for PR #14 (confirmed 4:08 PM).**
+   - `NetworkMonitor.hasRealReading: StateFlow<Boolean>`. It's true from the start for the fakes, Android and desktop, and false on iOS until the first path update.
+   - `object TrxSchema` in `ph.project.active.data.db`. `migrate(driver, 1, 2)` does the ruling 1 step and leaves `PRAGMA user_version` at 2, and both phones' database setup uses it.
+   - `ph.project.active.ui.dailyqr.QrEncoder` in composeApp, with a 4-module blank border.
+   - `ph.project.active.ui.platform.ScreenBrightness`. `raise()` turns brightness up to full and keeps the screen awake, and `restore()` undoes both. `AppNavHost` gets two new last parameters, an optional `dailyQrViewModel` and `screenBrightness`. The default must not resolve from Koin eagerly.
+   - The D20 callout follows the connection live: it's on when offline with nothing saved and off when back online.
+   - The F5-AC12 Koin wiring is checked by a source scan.
+   - F5-AC4: the dark tab bar uses the dark canvas, surface or surfaceAlt colour, and the title uses the dark scheme's text colour.
