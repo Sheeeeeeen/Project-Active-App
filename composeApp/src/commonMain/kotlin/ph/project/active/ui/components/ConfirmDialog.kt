@@ -13,6 +13,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.paneTitle
+import androidx.compose.ui.semantics.semantics
 import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTypography
@@ -34,7 +36,9 @@ fun ConfirmDialog(
     val colors = LocalTrxColors.current
     BasicAlertDialog(onDismissRequest = onKeep) {
         Surface(
-            modifier = Modifier.testTag(tag),
+            modifier = Modifier
+                .testTag(tag)
+                .semantics { paneTitle = title },
             shape = RoundedCornerShape(TrxSpacing.radiusLg),
             color = colors.surface,
         ) {
