@@ -35,4 +35,5 @@ data class ManageClassUiState(
     val error: UiError? = null,
     val navigation: Navigation? = null,
     val isCancelled: Boolean = false,
+    val inviteSent: Boolean = false,
 )

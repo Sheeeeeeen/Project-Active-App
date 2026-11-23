@@ -162,6 +162,7 @@ class ManageClassViewModel(
             it.copy(
                 match = InviteMatch(student.name, student.employeeId.orEmpty(), status),
                 canSendInvite = status.canInvite(),
+                inviteSent = false,
                 noMatch = false,
                 searchedId = id,
                 error = null,
@@ -179,6 +180,7 @@ class ManageClassViewModel(
                     it.copy(
                         match = InviteMatch(name, id, MembershipStatus.INVITED),
                         canSendInvite = false,
+                        inviteSent = true,
                         noMatch = false,
                         confirmation = ManageConfirmation.InviteSent(name),
                         error = null,
