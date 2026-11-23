@@ -187,8 +187,10 @@ class Flow4Harness : AutoCloseable {
         accept(classId, student)
     }
 
-    /** A past attendance record, saved straight to the repository. */
-    /** A past scan that was already uploaded (SYNCED), so the start-up outbox sync leaves it alone (F4-AC20). */
+    /**
+     * A past attendance record, saved straight to the repository. It is already uploaded (SYNCED),
+     * so the start-up outbox sync leaves it alone (F4-AC20).
+     */
     fun recordAttendance(classId: String, student: User, date: LocalDate): AttendanceRecord {
         val session = classes.sessionsOf(classId).first { it.date == date }
         val record = AttendanceRecord(
