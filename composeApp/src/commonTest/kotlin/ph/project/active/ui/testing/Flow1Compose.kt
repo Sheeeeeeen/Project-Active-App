@@ -2,6 +2,7 @@ package ph.project.active.ui.testing
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -26,6 +27,7 @@ import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.coachclasses.CoachClassesViewModel
 import ph.project.active.presentation.createclass.CreateClassViewModel
+import ph.project.active.presentation.dailyqr.DailyQrViewModel
 import ph.project.active.presentation.manageclass.ManageClassViewModel
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.guestclasses.GuestClassListViewModel
@@ -43,6 +45,7 @@ import ph.project.active.ui.navigation.GuestHome
 import ph.project.active.ui.navigation.Registration
 import ph.project.active.ui.navigation.StudentHome
 import ph.project.active.ui.platform.NoShakeSource
+import ph.project.active.ui.platform.ScreenBrightness
 import ph.project.active.ui.platform.ShakeSource
 import ph.project.active.ui.registration.RegistrationRoute
 import ph.project.active.ui.registration.RegistrationScreen
@@ -120,6 +123,8 @@ object Flow1Compose {
         manageClassViewModel: (SignedInAccount, String) -> ManageClassViewModel,
         shakeSource: ShakeSource = NoShakeSource,
         navController: NavHostController? = null,
+        dailyQrViewModel: ((SignedInAccount) -> DailyQrViewModel)? = null,
+        screenBrightness: ScreenBrightness = remember { FakeScreenBrightness() },
         onNavController: (NavHostController) -> Unit,
     ) {
         if (navController == null) {
@@ -135,6 +140,8 @@ object Flow1Compose {
                 coachClassesViewModel = coachClassesViewModel,
                 createClassViewModel = createClassViewModel,
                 manageClassViewModel = manageClassViewModel,
+                dailyQrViewModel = dailyQrViewModel,
+                screenBrightness = screenBrightness,
             )
         } else {
             AppNavHost(
@@ -150,6 +157,8 @@ object Flow1Compose {
                 createClassViewModel = createClassViewModel,
                 manageClassViewModel = manageClassViewModel,
                 navController = navController,
+                dailyQrViewModel = dailyQrViewModel,
+                screenBrightness = screenBrightness,
             )
         }
     }

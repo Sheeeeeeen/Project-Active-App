@@ -46,6 +46,8 @@ fun ComposeUiTest.mountFlow4(world: Flow4Harness): NavHostController {
             coachClassesViewModel = world::coachClasses,
             createClassViewModel = world::createClass,
             manageClassViewModel = world::manageClass,
+            dailyQrViewModel = world::dailyQr,
+            screenBrightness = world.brightness,
             onNavController = { nav = it },
         )
     }
