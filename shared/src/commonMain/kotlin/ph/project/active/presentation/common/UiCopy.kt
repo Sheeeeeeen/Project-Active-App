@@ -144,6 +144,10 @@ object UiCopy {
         UiError.EndDateInPast -> "End date cannot be in the past."
         UiError.PastDate -> "Cannot cancel a past date."
         UiError.InvalidState -> "That action is not available."
+        UiError.InvalidSlot -> "The end time must be after the start time."
+        UiError.AlreadyInvited -> "This student already has an invite."
+        UiError.AlreadyRequested -> "This student already requested this class."
+        UiError.AlreadyMember -> "This student is already on the roster."
     }
 
     fun scanPresentTitle(): String = "You\u2019re marked Present"
@@ -308,4 +312,164 @@ object UiCopy {
     fun tabSessions(): String = "Sessions"
 
     fun tabInvites(): String = "Invites"
+
+    fun coachSubtitle(name: String): String = "Coach $name"
+
+    fun yourClassesHeader(): String = "YOUR CLASSES"
+
+    fun createClass(): String = "Create class"
+
+    fun privateCalloutTitle(): String = "Private classes are invite-only"
+
+    fun privateCalloutBody(): String = "Guests and students only see your public classes."
+
+    fun studentCount(count: Int): String = if (count == 1) "1 student" else "$count students"
+
+    fun requestCount(count: Int): String = if (count == 1) "1 request" else "$count requests"
+
+    fun slotCount(count: Int): String = if (count == 1) "1 slot" else "$count slots"
+
+    fun dateCount(count: Int): String = if (count == 1) "1 date" else "$count dates"
+
+    fun tabQr(): String = "QR"
+
+    fun tabAttendance(): String = "Attendance"
+
+    fun newClassTitle(): String = "New class"
+
+    fun cancel(): String = "Cancel"
+
+    fun classNameLabel(): String = "Class name"
+
+    fun classNamePlaceholder(): String = "e.g. TRX Core Burn"
+
+    fun repeatsLabel(): String = "Repeats"
+
+    fun specificDays(): String = "Specific days"
+
+    fun everyDay(): String = "Every day"
+
+    fun timeSlotsLabel(): String = "Time slots"
+
+    fun chooseDayFirst(): String = "Choose at least one day. Each day gets its own time slots."
+
+    fun startLabel(): String = "Start"
+
+    fun endLabel(): String = "End"
+
+    fun addTimeSlot(): String = "Add time slot"
+
+    fun visibilityLabel(): String = "Visibility"
+
+    fun publicHelper(): String = "Public: anyone can see it and request to join."
+
+    fun privateHelper(): String = "Private: only you and students on the roster see it. Students join by your invite."
+
+    fun endsLabel(): String = "Ends"
+
+    fun endDateLabel(): String = "End date"
+
+    fun chooseDate(): String = "Choose"
+
+    fun saveClass(): String = "Save class"
+
+    fun previewTitle(count: Int): String = "${dateCount(count)} will be created"
+
+    fun previewBody(today: LocalDate, dayNames: String, first: LocalDate, last: LocalDate): String =
+        "Saving today, ${formatDate(today)}: every $dayNames from ${formatShortDate(first)} to ${formatDate(last)}. " +
+            "Past dates are not created. The end date is included."
+
+    fun noEndDateBody(): String =
+        "This class keeps repeating until you cancel the whole class. Dates are created from today."
+
+    fun classesBack(): String = "Classes"
+
+    fun classOptions(): String = "Class options"
+
+    fun manageEndsLine(endDate: LocalDate?, count: Int): String =
+        if (endDate == null) "${noEndDate()} \u00B7 ${dateCount(count)}" else "Ends ${formatDate(endDate)} \u00B7 ${dateCount(count)}"
+
+    fun tabSchedule(): String = "Schedule"
+
+    fun tabRequests(): String = "Requests"
+
+    fun tabRoster(): String = "Roster"
+
+    fun tabInvite(): String = "Invite"
+
+    fun cancelDateCalloutTitle(): String = "Cancel a single date"
+
+    fun cancelDateCalloutBody(): String = "Only today or a future date can be cancelled. The class keeps repeating."
+
+    fun datesHeader(): String = "DATES"
+
+    fun sessionLabel(number: Int): String = "SESSION $number"
+
+    fun today(): String = "TODAY"
+
+    fun pastDate(): String = "Past date"
+
+    fun cancelDate(): String = "Cancel date"
+
+    fun keepDate(): String = "Keep date"
+
+    fun cancelDateTitle(date: LocalDate): String = "Cancel ${formatShortDate(date)}?"
+
+    fun cancelDateBody(sessionNumber: Int, className: String, nextDate: LocalDate?): String {
+        val first = "Session $sessionNumber of $className will show as Cancelled and won\u2019t accept attendance."
+        return if (nextDate == null) first else "$first ${formatShortDate(nextDate)} and every other date stay scheduled."
+    }
+
+    fun waitingForYou(): String = "WAITING FOR YOU"
+
+    fun approve(): String = "Approve"
+
+    fun requestsFootnote(): String =
+        "Approve adds the student to the roster. Decline leaves them off; they can request again."
+
+    fun onTheRoster(): String = "ON THE ROSTER"
+
+    fun joinedByRequest(): String = "Joined by request"
+
+    fun joinedByInvite(): String = "Joined by invite"
+
+    fun remove(): String = "Remove"
+
+    fun keep(): String = "Keep"
+
+    fun rosterFootnote(): String = "A removed student is taken off this class only and can request to join again."
+
+    fun removeTitle(name: String): String = "Remove $name?"
+
+    fun removeBody(name: String, className: String): String {
+        val firstName = name.trim().substringBefore(' ')
+        return "$firstName will be taken off $className and can\u2019t record attendance for it. " +
+            "They can request to join again. Past attendance stays as recorded."
+    }
+
+    fun inviteIntro(): String = "Search a student by employee ID to invite them to this class."
+
+    fun matchCount(count: Int): String = if (count == 1) "1 match" else "$count matches"
+
+    fun matchLine(employeeId: String, status: String): String = "$employeeId \u00B7 Student \u00B7 $status"
+
+    fun notOnThisClass(): String = "Not on this class"
+
+    fun requested(): String = "Requested"
+
+    fun onThisClass(): String = "On this class"
+
+    fun sendInvite(): String = "Send invite"
+
+    fun cancelWholeClass(): String = "Cancel whole class"
+
+    fun keepClass(): String = "Keep class"
+
+    fun cancelClass(): String = "Cancel class"
+
+    fun cancelClassTitle(className: String): String = "Cancel $className?"
+
+    fun cancelClassBody(): String =
+        "All remaining dates are cancelled and the class stops repeating. It leaves the public class list. " +
+            "Past sessions and their attendance stay as recorded."
 }

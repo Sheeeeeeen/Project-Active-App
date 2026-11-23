@@ -38,6 +38,8 @@ import ph.project.active.presentation.common.isOffline
 import ph.project.active.presentation.common.UiError
 import ph.project.active.domain.repository.current
 import ph.project.active.domain.model.Role
+import ph.project.active.domain.model.JoinPath
+import ph.project.active.presentation.common.UiCopy
 
 class ManageClassViewModel(
     account: SignedInAccount,
@@ -73,7 +75,7 @@ class ManageClassViewModel(
     fun onSelectTab(tab: ManageTab) = _state.update { it.copy(selectedTab = tab) }
 
     fun onCancelDate(date: LocalDate) {
-        if (offline()) return
+        if (offline() || cancelledClass()) return
         _state.update { it.copy(confirmCancelDate = date) }
     }
 
@@ -93,7 +95,7 @@ class ManageClassViewModel(
     }
 
     fun onApprove(studentId: String) {
-        if (offline()) return
+        if (offline() || cancelledClass()) return
         try {
             approveRequest(classId = classId, studentId = studentId)
             reload(error = null)
@@ -105,7 +107,7 @@ class ManageClassViewModel(
     }
 
     fun onDecline(studentId: String) {
-        if (offline()) return
+        if (offline() || cancelledClass()) return
         try {
             declineRequest(classId = classId, studentId = studentId)
             reload(error = null)
@@ -117,7 +119,6 @@ class ManageClassViewModel(
     }
 
     fun onRemove(studentId: String) {
-        if (offline()) return
         val name = _state.value.roster.firstOrNull { it.studentId == studentId }?.name
             ?: people.find(studentId)?.name.orEmpty()
         _state.update { it.copy(confirmRemove = ConfirmRemove(studentId, name)) }
@@ -126,7 +127,10 @@ class ManageClassViewModel(
     fun onKeep() = _state.update { it.copy(confirmRemove = null) }
 
     fun onConfirmRemove() {
-        if (offline()) return
+        if (offline() || cancelledClass()) {
+            _state.update { it.copy(confirmRemove = null) }
+            return
+        }
         val studentId = _state.value.confirmRemove?.studentId ?: return
         try {
             removeFromRoster(classId = classId, studentId = studentId)
@@ -141,8 +145,13 @@ class ManageClassViewModel(
     fun onSearchTextChange(value: String) = _state.update { it.copy(searchText = value) }
 
     fun onSearch() {
-        if (offline()) return
         val id = _state.value.searchText.trim()
+        if (id.isEmpty()) return
+        if (offline()) return
+        if (_state.value.isCancelled) {
+            _state.update { it.copy(error = UiError.ClassCancelled) }
+            return
+        }
         val student = users.findByEmployeeId(id)?.takeIf { it.role == Role.STUDENT }
         if (student == null) {
             _state.update { it.copy(noMatch = true, match = null, canSendInvite = false, searchedId = id, error = null) }
@@ -176,9 +185,9 @@ class ManageClassViewModel(
                     )
                 }
             }
-            is InviteResult.AlreadyInvited -> setMatchStatus(MembershipStatus.INVITED)
-            is InviteResult.AlreadyRequested -> setMatchStatus(MembershipStatus.PENDING_REQUEST)
-            is InviteResult.AlreadyMember -> setMatchStatus(MembershipStatus.ACTIVE)
+            is InviteResult.AlreadyInvited -> setMatchStatus(MembershipStatus.INVITED, UiError.AlreadyInvited)
+            is InviteResult.AlreadyRequested -> setMatchStatus(MembershipStatus.PENDING_REQUEST, UiError.AlreadyRequested)
+            is InviteResult.AlreadyMember -> setMatchStatus(MembershipStatus.ACTIVE, UiError.AlreadyMember)
             InviteResult.NoMatch -> _state.update {
                 it.copy(noMatch = true, match = null, canSendInvite = false, searchedId = id)
             }
@@ -192,8 +201,13 @@ class ManageClassViewModel(
 
     fun onKeepClass() = _state.update { it.copy(confirmCancelClass = false) }
 
+    fun onCloseOptions() = _state.update { it.copy(optionsOpen = false, confirmCancelClass = false) }
+
     fun onConfirmCancelClass() {
-        if (offline()) return
+        if (offline()) {
+            onCloseOptions()
+            return
+        }
         try {
             cancelClass(classId)
             reload(confirmCancelClass = false, navigation = Navigation.Back, error = null)
@@ -206,13 +220,21 @@ class ManageClassViewModel(
 
     fun onNavigationHandled() = _state.update { it.copy(navigation = null) }
 
+    fun onConfirmationHandled() = _state.update { it.copy(confirmation = null) }
+
     private fun offline(): Boolean {
         if (!network.isOffline()) return false
         _state.update { it.copy(error = UiError.Offline) }
         return true
     }
 
-    private fun setMatchStatus(status: MembershipStatus) {
+    private fun cancelledClass(): Boolean {
+        if (!_state.value.isCancelled) return false
+        _state.update { it.copy(error = UiError.InvalidState) }
+        return true
+    }
+
+    private fun setMatchStatus(status: MembershipStatus, error: UiError) {
         val id = _state.value.searchText.trim()
         val current = _state.value.match
         val user = users.findByEmployeeId(id)
@@ -225,6 +247,7 @@ class ManageClassViewModel(
                 ),
                 canSendInvite = false,
                 noMatch = false,
+                error = error,
             )
         }
     }
@@ -275,7 +298,7 @@ class ManageClassViewModel(
             .filter { memberships.currentStatus(classId, it) == MembershipStatus.PENDING_REQUEST }
             .map { studentId -> personRow(studentId) { id, name, employeeId -> RequestRow(id, name, employeeId) } }
         val roster = memberships.activeRoster(classId).map { studentId ->
-            personRow(studentId) { id, name, employeeId -> RosterRow(id, name, employeeId) }
+            personRow(studentId) { id, name, employeeId -> RosterRow(id, name, employeeId, joinedBy(studentId)) }
         }
         return flags.copy(
             name = trxClass.name,
@@ -288,7 +311,14 @@ class ManageClassViewModel(
             requests = requests,
             requestsEmpty = requests.isEmpty(),
             roster = roster,
+            isCancelled = trxClass.isCancelled,
         )
+    }
+
+    private fun joinedBy(studentId: String): String = when (memberships.current(classId, studentId)?.joinedBy) {
+        JoinPath.REQUEST -> UiCopy.joinedByRequest()
+        JoinPath.INVITE -> UiCopy.joinedByInvite()
+        null -> ""
     }
 
     private fun <T> personRow(studentId: String, make: (String, String, String) -> T): T {

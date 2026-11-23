@@ -34,4 +34,5 @@ data class ManageClassUiState(
     val confirmCancelClass: Boolean = false,
     val error: UiError? = null,
     val navigation: Navigation? = null,
+    val isCancelled: Boolean = false,
 )
