@@ -303,6 +303,8 @@ class Phase2World(
             memberships = memberships,
             people = people,
             network = network,
+            clock = clock,
+            timeZone = timeZone,
         )
 
     fun attend(account: SignedInAccount): AttendViewModel = AttendViewModel(

@@ -13,4 +13,6 @@ data class InvitesUiState(
     val error: UiError?,
     val connection: ConnectionUi,
     val navigation: Navigation?,
+    /** Bumped each time a confirmation is set, so the screen restarts its toast timer. */
+    val confirmationId: Int = 0,
 )

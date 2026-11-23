@@ -115,6 +115,8 @@ class F2RequestNavigationTest {
                     guestClassListViewModel = guest,
                     registrationViewModel = factory,
                     classDetailViewModel = detail,
+                    studentClassesViewModel = world.studentClassesFactory(),
+                    invitesViewModel = world.invitesFactory(),
                     navController = nav,
                     onNavController = {},
                 )
@@ -147,6 +149,8 @@ class F2RequestNavigationTest {
                     guestClassListViewModel = guest,
                     registrationViewModel = factory,
                     classDetailViewModel = detail,
+                    studentClassesViewModel = world.studentClassesFactory(),
+                    invitesViewModel = world.invitesFactory(),
                     navController = sameNav,
                     onNavController = {},
                 )

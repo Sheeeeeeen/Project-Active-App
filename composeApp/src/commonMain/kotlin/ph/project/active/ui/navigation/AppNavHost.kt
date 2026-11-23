@@ -26,13 +26,15 @@ import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.common.Navigation
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.guestclasses.GuestClassListViewModel
+import ph.project.active.presentation.invites.InvitesViewModel
 import ph.project.active.presentation.registration.RegistrationViewModel
 import ph.project.active.presentation.root.Root
 import ph.project.active.presentation.root.RootViewModel
+import ph.project.active.presentation.studentclasses.StudentClassesViewModel
 import ph.project.active.ui.classdetail.ClassDetailScreen
 import ph.project.active.ui.guestclasses.GuestClassListScreen
 import ph.project.active.ui.home.CoachHomePlaceholder
-import ph.project.active.ui.home.StudentHomePlaceholder
+import ph.project.active.ui.studenthome.StudentHomeScreen
 import ph.project.active.ui.platform.ShakeSource
 import ph.project.active.ui.registration.RegistrationRoute
 
@@ -44,6 +46,8 @@ fun AppNavHost(
     shakeSource: ShakeSource = koinInject(),
     onNavController: (NavHostController) -> Unit = {},
     classDetailViewModel: ((classId: String, viewer: SignedInAccount?, joinOutcome: JoinOutcome?) -> ClassDetailViewModel)? = null,
+    studentClassesViewModel: ((SignedInAccount) -> StudentClassesViewModel)? = null,
+    invitesViewModel: ((SignedInAccount) -> InvitesViewModel)? = null,
     navController: NavHostController = rememberNavController(),
 ) {
     val scope = rememberCoroutineScope()
@@ -139,10 +143,18 @@ fun AppNavHost(
                     onBack = { navController.popBackStack() },
                 )
             }
-            composable<StudentHome>(typeMap = joinOutcomeType) { entry ->
-                val openClassId = entry.toRoute<StudentHome>().openClassId
-                val name = (rootState.root as? Root.Student)?.account?.name.orEmpty()
-                StudentHomePlaceholder(name = name, openClassId = openClassId)
+            composable<StudentHome>(typeMap = joinOutcomeType) {
+                val account = (rootState.root as? Root.Student)?.account
+                if (account != null) {
+                    StudentHomeScreen(
+                        account = account,
+                        studentClassesViewModel = studentClassesViewModel,
+                        invitesViewModel = invitesViewModel,
+                        onOpenClass = { id ->
+                            navController.follow(Navigation.OpenClassDetail(id), shakes, scope, shakeSource, registrationViewModel)
+                        },
+                    )
+                }
             }
             composable<CoachHome> {
                 val name = (rootState.root as? Root.Coach)?.account?.name.orEmpty()
