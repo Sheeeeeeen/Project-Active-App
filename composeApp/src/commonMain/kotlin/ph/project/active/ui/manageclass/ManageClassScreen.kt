@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -20,7 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
@@ -213,10 +214,13 @@ private fun Header(state: ManageClassUiState) {
 private fun Tabs(state: ManageClassUiState, onSelect: (ManageTab) -> Unit) {
     val colors = LocalTrxColors.current
     val selectedIndex = state.selectedTab.ordinal
-    PrimaryTabRow(
+    // Scrollable with content-width tabs so all four labels and the count fit at 360dp.
+    PrimaryScrollableTabRow(
         selectedTabIndex = selectedIndex,
         containerColor = colors.canvas,
         contentColor = colors.textPrimary,
+        edgePadding = TrxSpacing.s16,
+        minTabWidth = TrxSpacing.s0,
         indicator = {
             TabRowDefaults.PrimaryIndicator(
                 modifier = Modifier.tabIndicatorOffset(selectedIndex, matchContentSize = false),
@@ -234,34 +238,38 @@ private fun Tabs(state: ManageClassUiState, onSelect: (ManageTab) -> Unit) {
                 modifier = Modifier.testTag(tab.tag()),
                 selectedContentColor = colors.textPrimary,
                 unselectedContentColor = colors.textSecondary,
-                text = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = tab.label(),
-                            style = if (selected) TrxTypography.subheadStrong else TrxTypography.subhead,
-                            maxLines = 1,
-                            softWrap = false,
-                        )
-                        if (tab == ManageTab.REQUESTS && state.pendingRequestCount > 0) {
-                            Box(
-                                Modifier
-                                    .padding(start = TrxSpacing.s4)
-                                    .size(TrxSpacing.s20)
-                                    .background(colors.accentDefault, CircleShape)
-                                    .testTag(ManageClassTestTags.requestsBadge),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Text(
-                                    text = state.pendingRequestCount.toString(),
-                                    color = colors.textOnAccent,
-                                    style = TrxTypography.label,
-                                    maxLines = 1,
-                                )
-                            }
+            ) {
+                Row(
+                    Modifier
+                        .heightIn(min = TrxSpacing.touchTarget)
+                        .padding(horizontal = TrxSpacing.s8),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = tab.label(),
+                        style = if (selected) TrxTypography.subheadStrong else TrxTypography.subhead,
+                        maxLines = 1,
+                        softWrap = false,
+                    )
+                    if (tab == ManageTab.REQUESTS && state.pendingRequestCount > 0) {
+                        Box(
+                            Modifier
+                                .padding(start = TrxSpacing.s4)
+                                .size(TrxSpacing.s20)
+                                .background(colors.accentDefault, CircleShape)
+                                .testTag(ManageClassTestTags.requestsBadge),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = state.pendingRequestCount.toString(),
+                                color = colors.textOnAccent,
+                                style = TrxTypography.label,
+                                maxLines = 1,
+                            )
                         }
                     }
-                },
-            )
+                }
+            }
         }
     }
 }
