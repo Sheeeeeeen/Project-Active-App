@@ -6,4 +6,6 @@ data class Membership(
     val classId: String,
     val studentId: String,
     val status: MembershipStatus,
+    /** Set when the membership turns ACTIVE from a request or an invite. */
+    val joinedBy: JoinPath? = null,
 )

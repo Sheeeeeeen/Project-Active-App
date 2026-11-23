@@ -4,6 +4,7 @@ import ph.project.active.data.db.TrxDatabase
 import ph.project.active.domain.repository.MembershipRepository
 import ph.project.active.domain.model.MembershipStatus
 import ph.project.active.domain.model.Membership
+import ph.project.active.domain.model.JoinPath
 
 class SqlMembershipRepository(private val database: TrxDatabase) : MembershipRepository {
     private val ids = SqlIdSource(database)
@@ -25,6 +26,7 @@ class SqlMembershipRepository(private val database: TrxDatabase) : MembershipRep
                 membership.studentId,
                 membership.status.name,
                 order,
+                membership.joinedBy?.name,
             )
         }
     }
@@ -36,6 +38,7 @@ class SqlMembershipRepository(private val database: TrxDatabase) : MembershipRep
             membership.classId,
             membership.studentId,
             membership.status.name,
+            membership.joinedBy?.name,
             existing.id,
         )
     }
@@ -46,6 +49,7 @@ private fun ph.project.active.data.db.SelectMembershipsForClass.toMembership(): 
     classId = classId,
     studentId = studentId,
     status = MembershipStatus.valueOf(status),
+    joinedBy = joinedBy?.let { JoinPath.valueOf(it) },
 )
 
 private fun ph.project.active.data.db.SelectAllMemberships.toMembership(): Membership = Membership(
@@ -53,4 +57,5 @@ private fun ph.project.active.data.db.SelectAllMemberships.toMembership(): Membe
     classId = classId,
     studentId = studentId,
     status = MembershipStatus.valueOf(status),
+    joinedBy = joinedBy?.let { JoinPath.valueOf(it) },
 )
