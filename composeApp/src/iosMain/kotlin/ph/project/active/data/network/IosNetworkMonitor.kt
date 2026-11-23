@@ -16,7 +16,7 @@ import platform.Network.nw_path_monitor_set_queue
 import platform.Network.nw_path_monitor_set_update_handler
 import platform.Network.nw_path_monitor_start
 import platform.Network.nw_path_status_satisfied
-import platform.darwin.dispatch_get_main_queue
+import platform.darwin.dispatch_queue_create
 import ph.project.active.data.repository.NetworkMonitor
 import ph.project.active.domain.model.NetworkStatus
 
@@ -33,10 +33,12 @@ class IosNetworkMonitor(
             val online = nw_path_get_status(path) == nw_path_status_satisfied
             trySend(if (online) NetworkStatus.ONLINE else NetworkStatus.OFFLINE)
         }
-        nw_path_monitor_set_queue(monitor, dispatch_get_main_queue())
+        nw_path_monitor_set_queue(monitor, dispatch_queue_create(QUEUE_LABEL, null))
         nw_path_monitor_start(monitor)
         awaitClose { nw_path_monitor_cancel(monitor) }
     }
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, NetworkStatus.ONLINE)
 }
+
+private const val QUEUE_LABEL = "ph.project.active.network"
