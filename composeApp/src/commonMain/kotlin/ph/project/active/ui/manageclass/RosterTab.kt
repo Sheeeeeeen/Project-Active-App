@@ -6,6 +6,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import ph.project.active.presentation.common.UiCopy
 import ph.project.active.presentation.manageclass.ManageClassUiState
 import ph.project.active.presentation.manageclass.RosterRow
@@ -51,7 +52,12 @@ private fun RosterRowLine(row: RosterRow, onRemove: (String) -> Unit) {
         Row {
             Text(row.employeeId, color = colors.textSecondary, style = TrxTypography.subhead)
             if (row.joinedBy.isNotBlank()) {
-                Text(" \u00B7 ", color = colors.textSecondary, style = TrxTypography.subhead)
+                Text(
+                    text = UiCopy.inlineSeparator(),
+                    color = colors.textSecondary,
+                    style = TrxTypography.subhead,
+                    modifier = Modifier.clearAndSetSemantics {},
+                )
                 Text(row.joinedBy, color = colors.textSecondary, style = TrxTypography.subhead)
             }
         }

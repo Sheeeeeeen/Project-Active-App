@@ -453,6 +453,8 @@ object UiCopy {
 
     fun matchLine(employeeId: String, status: String): String = "$employeeId \u00B7 Student \u00B7 $status"
 
+    fun inlineSeparator(): String = " \u00B7 "
+
     fun notOnThisClass(): String = "Not on this class"
 
     fun requested(): String = "Requested"
