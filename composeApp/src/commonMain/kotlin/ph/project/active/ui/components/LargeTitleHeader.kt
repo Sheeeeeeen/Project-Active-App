@@ -1,6 +1,7 @@
 package ph.project.active.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -44,21 +45,20 @@ fun LargeTitleHeader(
         )
         // Placeholder: the account button does nothing yet and wears the PlaceholderTag beside it.
         // An account menu (sign-out, profile) replaces it in a later flow (not yet planned).
-        Row(
-            if (accountTag != null) Modifier.testTag(accountTag) else Modifier,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            PlaceholderTag(Modifier.padding(end = TrxSpacing.s8))
-            IconButton(
-                onClick = {},
-                modifier = Modifier.background(colors.surfaceAlt, CircleShape),
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.circle_user),
-                    contentDescription = UiCopy.account(),
-                    tint = colors.textPrimary,
-                    modifier = Modifier.size(TrxSpacing.iconMedium),
-                )
+        Box(if (accountTag != null) Modifier.testTag(accountTag) else Modifier) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                PlaceholderTag(Modifier.padding(end = TrxSpacing.s8))
+                IconButton(
+                    onClick = {},
+                    modifier = Modifier.background(colors.surfaceAlt, CircleShape),
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.circle_user),
+                        contentDescription = UiCopy.account(),
+                        tint = colors.textPrimary,
+                        modifier = Modifier.size(TrxSpacing.iconMedium),
+                    )
+                }
             }
         }
     }
