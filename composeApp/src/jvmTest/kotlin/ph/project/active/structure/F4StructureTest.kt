@@ -123,12 +123,18 @@ class F4StructureTest {
     }
 
     @Test
-    fun F4_AC29_theIosMonitorUsesNwPathMonitorAndNeverAssumesOnline() {
+    fun F4_AC29_theIosMonitorTakesItsStatusFromThePathUpdateHandler() {
+        // Ruling 15: iOS may hold ONLINE only until the first nw_path_monitor update,
+        // so the real status must come from the path update handler.
         val files = SourceScan.sourcesIn("iosMain").filter { it.name == "IosNetworkMonitor.kt" }
         assertTrue(files.size == 1, "expected one IosNetworkMonitor.kt in an iosMain, found ${files.map { it.path }}")
         val source = files.single().readText()
-        assertTrue(source.contains("nw_path_monitor"), "reads the path with nw_path_monitor")
-        assertNoOnlineDefault(source, "IosNetworkMonitor")
+        assertTrue(source.contains("nw_path_monitor_start"), "starts the nw_path_monitor")
+
+        val handler = blockAfter(source, "nw_path_monitor_set_update_handler")
+        assertTrue(handler.contains("nw_path_get_status"), "the path update handler reads the path status")
+        assertTrue(handler.contains("NetworkStatus.ONLINE"), "the path update handler sets ONLINE")
+        assertTrue(handler.contains("NetworkStatus.OFFLINE"), "the path update handler sets OFFLINE")
     }
 
     @Test
@@ -145,6 +151,21 @@ class F4StructureTest {
         val compact = source.replace(Regex("\\s+"), "")
         assertTrue(!compact.contains("MutableStateFlow(NetworkStatus.ONLINE"), "$name must not start as ONLINE")
         assertTrue(!compact.contains("initialValue=NetworkStatus.ONLINE"), "$name must not start as ONLINE")
+    }
+
+    /** Returns the text inside the first { } block that follows [marker]. */
+    private fun blockAfter(source: String, marker: String): String {
+        val markerAt = source.indexOf(marker)
+        assertTrue(markerAt >= 0, "expected $marker in the source")
+        val open = source.indexOf('{', markerAt)
+        assertTrue(open >= 0, "expected a { } block after $marker")
+        var depth = 0
+        for (i in open until source.length) {
+            if (source[i] == '{') depth++
+            if (source[i] == '}') depth--
+            if (depth == 0) return source.substring(open + 1, i)
+        }
+        return source.substring(open + 1)
     }
 
     private fun seedSource(): String {
