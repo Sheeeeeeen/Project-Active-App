@@ -255,7 +255,7 @@ Optional later cleanup, not in this flow: drop the `onNavController` parameter o
 - The real QR and Attendance screens, student-side changes, sign-out, edit-class, undo, invite / request timestamps, loading skeletons, and pull-to-refresh wait for later phases.
 - iOS path-monitor behaviour is a manual airplane-mode check only (decision 18).
 
-## 10. Rulings on PR #12 questions (23 Nov 2026)
+## 12. Rulings on PR #12 questions (23 Nov 2026)
 1. The Android mapping test is F4-AC30 and lives in `androidHostTest` (`testAndroidHostTest`).
 2. F1-AC8 still holds: `FakeDataModule` keeps the single `NetworkMonitor` binding and gets the monitor from a platform factory; androidMain and iosMain build the real monitors.
 3. Desktop JVM (dev only, no product) uses an always-online monitor: `MutableNetworkMonitor(NetworkStatus.ONLINE)`. No test.
