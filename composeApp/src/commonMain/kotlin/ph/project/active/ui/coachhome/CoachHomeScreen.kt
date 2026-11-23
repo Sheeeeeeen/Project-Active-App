@@ -9,10 +9,15 @@ import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ph.project.active.data.model.SignedInAccount
 import ph.project.active.di.rememberCoachClasses
+import ph.project.active.di.rememberDailyQr
 import ph.project.active.presentation.coachclasses.CoachClassesViewModel
 import ph.project.active.presentation.common.Navigation
+import ph.project.active.presentation.dailyqr.DailyQrViewModel
 import ph.project.active.presentation.common.UiCopy
 import ph.project.active.ui.coachclasses.CoachClassesScreen
+import ph.project.active.ui.dailyqr.DailyQrScreen
+import ph.project.active.ui.platform.ScreenBrightness
+import ph.project.active.ui.platform.rememberScreenBrightness
 
 /** The signed-in coach root: three tabs inside one back-stack entry, so tab switches never touch the back stack. */
 @Composable
@@ -21,6 +26,8 @@ fun CoachHomeScreen(
     coachClassesViewModel: ((SignedInAccount) -> CoachClassesViewModel)?,
     onOpenCreate: () -> Unit,
     onOpenManage: (String) -> Unit,
+    dailyQrViewModel: ((SignedInAccount) -> DailyQrViewModel)? = null,
+    screenBrightness: ScreenBrightness? = null,
 ) {
     val classes = rememberCoachClasses(account, coachClassesViewModel)
     var selected by rememberSaveable { mutableStateOf(CoachTab.Classes) }
@@ -52,13 +59,18 @@ fun CoachHomeScreen(
             },
             tabBar = tabBar,
         )
-        CoachTab.Qr -> CoachTabPlaceholder(
-            title = UiCopy.tabQr(),
-            rootTag = CoachTabBarTestTags.qrRoot,
-            titleTag = CoachTabBarTestTags.qrTitle,
-            accountTag = CoachTabBarTestTags.qrAccount,
-            tabBar = tabBar,
-        )
+        CoachTab.Qr -> {
+            val dailyQr = rememberDailyQr(account, dailyQrViewModel)
+            val brightness = screenBrightness ?: rememberScreenBrightness()
+            // Each show or return to the foreground picks up a new day; leaving or backgrounding restores the screen.
+            LifecycleStartEffect(dailyQr, brightness) {
+                dailyQr.refresh()
+                brightness.raise()
+                onStopOrDispose { brightness.restore() }
+            }
+            val qrState by dailyQr.state.collectAsStateWithLifecycle()
+            DailyQrScreen(state = qrState, tabBar = tabBar)
+        }
         CoachTab.Attendance -> CoachTabPlaceholder(
             title = UiCopy.tabAttendance(),
             rootTag = CoachTabBarTestTags.attendanceRoot,
