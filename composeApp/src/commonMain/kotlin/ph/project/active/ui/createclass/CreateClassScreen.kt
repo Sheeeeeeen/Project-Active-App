@@ -29,16 +29,21 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -482,23 +487,41 @@ private fun Preview(state: CreateClassUiState) {
 private fun SlotDialog(onAdd: (LocalTime, LocalTime) -> Unit, onDismiss: () -> Unit) {
     val start = rememberTimePickerState(initialHour = 17, initialMinute = 30)
     val end = rememberTimePickerState(initialHour = 18, initialMinute = 30)
+    val colors = LocalTrxColors.current
+    val buttonColors = ButtonDefaults.textButtonColors(contentColor = colors.accentText)
+    val timeColors = TimePickerDefaults.colors(
+        selectorColor = colors.accentText,
+        clockDialSelectedContentColor = colors.textInverse,
+        periodSelectorBorderColor = colors.borderStrong,
+        periodSelectorSelectedContainerColor = colors.accentSubtle,
+        periodSelectorSelectedContentColor = colors.textPrimary,
+        timeSelectorSelectedContainerColor = colors.accentSubtle,
+        timeSelectorSelectedContentColor = colors.textPrimary,
+    )
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(UiCopy.addTimeSlot()) },
         text = {
-            Column {
-                Text(UiCopy.startLabel(), style = TrxTypography.label)
-                TimeInput(start)
-                Text(UiCopy.endLabel(), style = TrxTypography.label)
-                TimeInput(end)
+            // TimeInput draws its focused border and cursor in primary, which is yellow on white in light
+            // mode, so these fields get the darker accentText as primary.
+            MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = colors.accentText, onPrimary = colors.textInverse)) {
+                Column {
+                    Text(UiCopy.startLabel(), style = TrxTypography.label)
+                    TimeInput(start, colors = timeColors)
+                    Text(UiCopy.endLabel(), style = TrxTypography.label)
+                    TimeInput(end, colors = timeColors)
+                }
             }
         },
         confirmButton = {
-            TextButton(onClick = { onAdd(LocalTime(start.hour, start.minute), LocalTime(end.hour, end.minute)) }) {
+            TextButton(
+                onClick = { onAdd(LocalTime(start.hour, start.minute), LocalTime(end.hour, end.minute)) },
+                colors = buttonColors,
+            ) {
                 Text(UiCopy.addTimeSlot())
             }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(UiCopy.cancel()) } },
+        dismissButton = { TextButton(onClick = onDismiss, colors = buttonColors) { Text(UiCopy.cancel()) } },
     )
 }
 
@@ -506,18 +529,35 @@ private fun SlotDialog(onAdd: (LocalTime, LocalTime) -> Unit, onDismiss: () -> U
 @Composable
 private fun EndDateDialog(onPick: (LocalDate) -> Unit, onDismiss: () -> Unit) {
     val picker = rememberDatePickerState()
+    val colors = LocalTrxColors.current
+    val buttonColors = ButtonDefaults.textButtonColors(contentColor = colors.accentText)
+    // Thin lines and text in primary would be yellow on white in light mode; they use accentText.
+    // The selected day stays a yellow fill with dark text (primary / onPrimary).
+    val pickerColors = DatePickerDefaults.colors(
+        todayContentColor = colors.accentText,
+        todayDateBorderColor = colors.accentText,
+        currentYearContentColor = colors.accentText,
+        dateTextFieldColors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = colors.accentText,
+            focusedLabelColor = colors.accentText,
+            cursorColor = colors.accentText,
+        ),
+    )
     DatePickerDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
-            TextButton(onClick = {
-                picker.selectedDateMillis?.let { millis -> onPick(LocalDate.fromEpochDays((millis / MILLIS_PER_DAY).toInt())) }
-            }) {
+            TextButton(
+                onClick = {
+                    picker.selectedDateMillis?.let { millis -> onPick(LocalDate.fromEpochDays((millis / MILLIS_PER_DAY).toInt())) }
+                },
+                colors = buttonColors,
+            ) {
                 Text(UiCopy.chooseDate())
             }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(UiCopy.cancel()) } },
+        dismissButton = { TextButton(onClick = onDismiss, colors = buttonColors) { Text(UiCopy.cancel()) } },
     ) {
-        DatePicker(picker)
+        DatePicker(picker, colors = pickerColors)
     }
 }
 
