@@ -125,6 +125,34 @@ class F5StructureTest {
         }
     }
 
+    // Ruling 4: "raise() turns brightness up to full and keeps the screen awake, and restore() undoes both".
+    // The fake can't see a real screen, so this checks the Android version by its source.
+    @Test
+    fun F5_AC5_androidScreenBrightnessKeepsTheScreenAwakeAndUndoesIt() {
+        val source = platformScreenBrightness("androidMain").compact()
+        assertTrue("screenBrightness" in source, "the Android ScreenBrightness sets the window's screenBrightness")
+        assertTrue("addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)" in source || "keepScreenOn=true" in source,
+            "raise() keeps the screen awake (FLAG_KEEP_SCREEN_ON)")
+        assertTrue("clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)" in source || "keepScreenOn=false" in source,
+            "restore() lets the screen sleep again")
+    }
+
+    // Ruling 4: the same rule on iOS, where keep-awake is the app's idle timer.
+    @Test
+    fun F5_AC5_iosScreenBrightnessKeepsTheScreenAwakeAndUndoesIt() {
+        val source = platformScreenBrightness("iosMain").compact()
+        assertTrue("brightness" in source, "the iOS ScreenBrightness sets the screen brightness")
+        assertTrue("idleTimerDisabled=true" in source, "raise() keeps the screen awake (idleTimerDisabled = true)")
+        assertTrue("idleTimerDisabled=false" in source, "restore() lets the screen sleep again")
+    }
+
+    private fun platformScreenBrightness(sourceSet: String): String {
+        val files = SourceScan.sourcesIn(sourceSet)
+            .filter { "/composeApp/" in it.unixPath() && Regex(":\\s*ScreenBrightness\\b").containsMatchIn(it.readText()) }
+        assertEquals(1, files.size, "expected one ScreenBrightness in composeApp $sourceSet, found ${files.map { it.name }}")
+        return files.single().readText()
+    }
+
     private fun composeMainFiles(): List<File> = listOf("commonMain", "androidMain", "iosMain", "jvmMain")
         .flatMap { SourceScan.sourcesIn(it) }
         .filter { "/composeApp/" in it.unixPath() }
