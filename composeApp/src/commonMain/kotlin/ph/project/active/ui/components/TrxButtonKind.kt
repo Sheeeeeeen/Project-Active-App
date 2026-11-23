@@ -1,3 +1,3 @@
 package ph.project.active.ui.components
 
-enum class TrxButtonKind { Primary, Secondary }
+enum class TrxButtonKind { Primary, Secondary, Danger }
