@@ -6,7 +6,6 @@ import ph.project.active.data.db.TrxDatabase
 import ph.project.active.data.fake.FakeAttendanceUploader
 import ph.project.active.data.fake.FakeAuthRepository
 import ph.project.active.data.fake.FakePasswordHasher
-import ph.project.active.data.fake.MutableNetworkMonitor
 import ph.project.active.data.repository.AttendanceUploader
 import ph.project.active.data.repository.AuthRepository
 import ph.project.active.data.repository.NetworkMonitor
@@ -19,7 +18,6 @@ import ph.project.active.data.repository.SqlPersonRepository
 import ph.project.active.data.repository.SqlSessionStore
 import ph.project.active.data.sync.OutboxSync
 import ph.project.active.domain.crypto.PasswordHasher
-import ph.project.active.domain.model.NetworkStatus
 import ph.project.active.domain.repository.AttendanceRepository
 import ph.project.active.domain.repository.ClassRepository
 import ph.project.active.domain.repository.MembershipRepository
@@ -36,7 +34,7 @@ val FakeDataModule = module {
     single<ClassRepository> { SqlClassRepository(get()) }
     single<MembershipRepository> { SqlMembershipRepository(get()) }
     single<AttendanceRepository> { SqlAttendanceRepository(get()) }
-    single<NetworkMonitor> { MutableNetworkMonitor(NetworkStatus.ONLINE) }
+    single<NetworkMonitor> { platformNetworkMonitor() }
     single<UserRepository> { InMemoryUserRepository() }
     single<PasswordHasher> { FakePasswordHasher() }
     single<AuthRepository> {
