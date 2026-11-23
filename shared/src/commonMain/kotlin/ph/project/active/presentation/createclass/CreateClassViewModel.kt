@@ -142,20 +142,27 @@ class CreateClassViewModel(
         val canSave = state.name.trim().isNotEmpty() &&
             state.selectedDays.isNotEmpty() &&
             state.selectedDays.all { state.slotsByWeekday[it].orEmpty().isNotEmpty() }
-        return state.copy(canSave = canSave, previewDateCount = preview(state))
+        val today = clock.todayIn(timeZone)
+        val dates = previewDates(state, today)
+        return state.copy(
+            canSave = canSave,
+            previewDateCount = dates?.size,
+            today = today,
+            previewFirstDate = dates?.firstOrNull(),
+            previewLastDate = dates?.lastOrNull(),
+        )
     }
 
-    private fun preview(state: CreateClassUiState): Int? {
+    private fun previewDates(state: CreateClassUiState, today: LocalDate): List<LocalDate>? {
         val end = state.endDate ?: return null
-        val today = clock.todayIn(timeZone)
+        val dates = mutableListOf<LocalDate>()
         var date = today
-        var count = 0
         while (date <= end) {
             val hasSlot = date.dayOfWeek in state.selectedDays &&
                 state.slotsByWeekday[date.dayOfWeek].orEmpty().isNotEmpty()
-            if (hasSlot) count += 1
+            if (hasSlot) dates += date
             date = date.plus(1, DateTimeUnit.DAY)
         }
-        return count
+        return dates
     }
 }

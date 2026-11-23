@@ -23,4 +23,7 @@ data class CreateClassUiState(
     val error: UiError?,
     val connection: ConnectionUi,
     val navigation: Navigation?,
+    val today: LocalDate? = null,
+    val previewFirstDate: LocalDate? = null,
+    val previewLastDate: LocalDate? = null,
 )

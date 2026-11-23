@@ -44,6 +44,9 @@ fun ComposeUiTest.mountFlow3(world: Flow3Harness): NavHostController {
             classDetailViewModel = world::detail,
             studentClassesViewModel = world::studentClasses,
             invitesViewModel = world::invites,
+            coachClassesViewModel = world::coachClasses,
+            createClassViewModel = world::createClass,
+            manageClassViewModel = world::manageClass,
             onNavController = { nav = it },
         )
     }

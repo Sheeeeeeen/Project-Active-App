@@ -1,10 +1,21 @@
 package ph.project.active.di
 
+import kotlin.time.Clock
+import kotlinx.datetime.TimeZone
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import ph.project.active.data.model.SignedInAccount
 import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
+import ph.project.active.presentation.coachclasses.CoachClassesViewModel
+import ph.project.active.presentation.createclass.CreateClassViewModel
+import ph.project.active.presentation.manageclass.ManageClassViewModel
+import ph.project.active.domain.usecase.ApproveRequest
+import ph.project.active.domain.usecase.CancelClass
+import ph.project.active.domain.usecase.CancelDate
+import ph.project.active.domain.usecase.DeclineRequest
+import ph.project.active.domain.usecase.InviteByEmployeeId
+import ph.project.active.domain.usecase.RemoveFromRoster
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.guestclasses.GuestClassListViewModel
 import ph.project.active.presentation.invites.InvitesViewModel
@@ -55,6 +66,39 @@ val ViewModelModule = module {
             people = get(),
             classes = get(),
             requestToJoin = get(),
+            network = get(),
+        )
+    }
+    viewModel { (account: SignedInAccount) ->
+        CoachClassesViewModel(account = account, classes = get(), memberships = get(), network = get())
+    }
+    viewModel { (account: SignedInAccount) ->
+        CreateClassViewModel(
+            account = account,
+            classes = get(),
+            clock = Clock.System,
+            timeZone = TimeZone.currentSystemDefault(),
+            network = get(),
+        )
+    }
+    viewModel { (account: SignedInAccount, classId: String) ->
+        val timeZone = TimeZone.currentSystemDefault()
+        ManageClassViewModel(
+            account = account,
+            classId = classId,
+            classes = get(),
+            memberships = get(),
+            attendance = get(),
+            people = get(),
+            users = get(),
+            approveRequest = ApproveRequest(get()),
+            declineRequest = DeclineRequest(get()),
+            removeFromRoster = RemoveFromRoster(get()),
+            inviteByEmployeeId = InviteByEmployeeId(get(), get(), get()),
+            cancelDate = CancelDate(get(), Clock.System, timeZone),
+            cancelClass = CancelClass(get(), Clock.System, timeZone),
+            clock = Clock.System,
+            timeZone = timeZone,
             network = get(),
         )
     }

@@ -50,6 +50,9 @@ kotlin {
         androidResources {
             enable = true
         }
+        // Flow 4 (F4-AC30): JVM unit tests for the Android network mapping. No device, no Robolectric.
+        // With the Android KMP library plugin this is the androidHostTest source set (AGP's androidUnitTest).
+        withHostTest {}
     }
 
     sourceSets {
@@ -63,6 +66,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.navigation.compose)
             implementation(libs.kotlinx.serialization.core)
+            implementation(libs.kotlinx.datetime)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
@@ -108,6 +112,10 @@ kotlin {
         }
         getByName("jvmTest") {
             kotlin.srcDir("src/commonTest/kotlin")
+        }
+        getByName("androidHostTest").dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlin.testJunit)
         }
     }
 }

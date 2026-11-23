@@ -44,6 +44,10 @@ class CoachClassesViewModel(
         _state.update { it.copy(navigation = Navigation.OpenManage(id)) }
     }
 
+    fun refresh() {
+        _state.update { load(it.connection, it.navigation) }
+    }
+
     fun onNavigationHandled() {
         _state.update { it.copy(navigation = null) }
     }

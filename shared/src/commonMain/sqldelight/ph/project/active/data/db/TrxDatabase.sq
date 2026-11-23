@@ -48,7 +48,8 @@ CREATE TABLE IF NOT EXISTS membership (
   class_id TEXT NOT NULL,
   student_id TEXT NOT NULL,
   status TEXT NOT NULL,
-  sort_order INTEGER NOT NULL
+  sort_order INTEGER NOT NULL,
+  joined_by TEXT
 );
 
 CREATE TABLE IF NOT EXISTS attendance (
@@ -176,18 +177,18 @@ INSERT OR REPLACE INTO session(id, class_id, date, start_time, end_time, session
 VALUES (?, ?, ?, ?, ?, ?, ?);
 
 selectMembershipById:
-SELECT id, class_id AS classId, student_id AS studentId, status, sort_order AS sortOrder
+SELECT id, class_id AS classId, student_id AS studentId, status, sort_order AS sortOrder, joined_by AS joinedBy
 FROM membership
 WHERE id = ?;
 
 selectMembershipsForClass:
-SELECT id, class_id AS classId, student_id AS studentId, status, sort_order AS sortOrder
+SELECT id, class_id AS classId, student_id AS studentId, status, sort_order AS sortOrder, joined_by AS joinedBy
 FROM membership
 WHERE class_id = ?
 ORDER BY sort_order;
 
 selectAllMemberships:
-SELECT id, class_id AS classId, student_id AS studentId, status, sort_order AS sortOrder
+SELECT id, class_id AS classId, student_id AS studentId, status, sort_order AS sortOrder, joined_by AS joinedBy
 FROM membership
 ORDER BY sort_order;
 
@@ -196,12 +197,12 @@ SELECT COALESCE(MAX(sort_order), 0)
 FROM membership;
 
 insertMembership:
-INSERT INTO membership(id, class_id, student_id, status, sort_order)
-VALUES (?, ?, ?, ?, ?);
+INSERT INTO membership(id, class_id, student_id, status, sort_order, joined_by)
+VALUES (?, ?, ?, ?, ?, ?);
 
 updateMembership:
 UPDATE membership
-SET class_id = ?, student_id = ?, status = ?
+SET class_id = ?, student_id = ?, status = ?, joined_by = ?
 WHERE id = ?;
 
 selectAllAttendance:

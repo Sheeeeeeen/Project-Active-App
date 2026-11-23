@@ -29,12 +29,21 @@ import ph.project.active.domain.model.User
 import ph.project.active.domain.model.Visibility
 import ph.project.active.domain.repository.inmemory.InMemoryUserRepository
 import ph.project.active.domain.usecase.AcceptInvite
+import ph.project.active.domain.usecase.ApproveRequest
+import ph.project.active.domain.usecase.CancelClass
+import ph.project.active.domain.usecase.CancelDate
+import ph.project.active.domain.usecase.DeclineRequest
+import ph.project.active.domain.usecase.InviteByEmployeeId
+import ph.project.active.domain.usecase.RemoveFromRoster
 import ph.project.active.domain.usecase.CreateClass
 import ph.project.active.domain.usecase.DeclineInvite
 import ph.project.active.domain.usecase.RegisterCoach
 import ph.project.active.domain.usecase.RegisterStudent
 import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
+import ph.project.active.presentation.coachclasses.CoachClassesViewModel
+import ph.project.active.presentation.createclass.CreateClassViewModel
+import ph.project.active.presentation.manageclass.ManageClassViewModel
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.guestclasses.GuestClassListViewModel
 import ph.project.active.presentation.invites.InvitesViewModel
@@ -60,6 +69,7 @@ class Flow1Harness(
     val classes: SqlClassRepository
     val memberships: SqlMembershipRepository
     val auth: FakeAuthRepository
+    val attendance: SqlAttendanceRepository
     private val outbox: OutboxSync
 
     private val requestToJoin: ph.project.active.domain.usecase.RequestToJoin
@@ -73,7 +83,7 @@ class Flow1Harness(
         people = SqlPersonRepository(database)
         classes = SqlClassRepository(database)
         memberships = SqlMembershipRepository(database)
-        val attendance = SqlAttendanceRepository(database)
+        attendance = SqlAttendanceRepository(database)
         outbox = OutboxSync(attendance, FakeAttendanceUploader(), network)
         requestToJoin = ph.project.active.domain.usecase.RequestToJoin(classes, memberships)
         auth = FakeAuthRepository(users, hasher, network, session, people)
@@ -144,6 +154,47 @@ class Flow1Harness(
     )
 
     fun invitesFactory(): (SignedInAccount) -> InvitesViewModel = ::invites
+
+    // Flow 4: the coach screens read the same repositories, so CoachHome needs no Koin.
+    fun coachClasses(account: SignedInAccount): CoachClassesViewModel = CoachClassesViewModel(
+        account = account,
+        classes = classes,
+        memberships = memberships,
+        network = network,
+    )
+
+    fun coachClassesFactory(): (SignedInAccount) -> CoachClassesViewModel = ::coachClasses
+
+    fun createClass(account: SignedInAccount): CreateClassViewModel = CreateClassViewModel(
+        account = account,
+        classes = classes,
+        clock = Clock.System,
+        timeZone = TimeZone.of("Asia/Manila"),
+        network = network,
+    )
+
+    fun createClassFactory(): (SignedInAccount) -> CreateClassViewModel = ::createClass
+
+    fun manageClass(account: SignedInAccount, classId: String): ManageClassViewModel = ManageClassViewModel(
+        account = account,
+        classId = classId,
+        classes = classes,
+        memberships = memberships,
+        attendance = attendance,
+        people = people,
+        users = users,
+        approveRequest = ApproveRequest(memberships),
+        declineRequest = DeclineRequest(memberships),
+        removeFromRoster = RemoveFromRoster(memberships),
+        inviteByEmployeeId = InviteByEmployeeId(users, classes, memberships),
+        cancelDate = CancelDate(classes, Clock.System, TimeZone.of("Asia/Manila")),
+        cancelClass = CancelClass(classes, Clock.System, TimeZone.of("Asia/Manila")),
+        clock = Clock.System,
+        timeZone = TimeZone.of("Asia/Manila"),
+        network = network,
+    )
+
+    fun manageClassFactory(): (SignedInAccount, String) -> ManageClassViewModel = ::manageClass
 
     fun coreBurn(): TrxClass {
         people.upsert(PersonProfile(CORE_BURN_COACH_ID, "Mara Santos", Role.COACH, null))

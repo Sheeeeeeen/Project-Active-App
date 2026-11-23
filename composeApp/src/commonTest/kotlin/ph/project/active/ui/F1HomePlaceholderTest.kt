@@ -52,7 +52,7 @@ class F1HomePlaceholderTest {
             typeInto("registration_email_field", "mara.santos@acme.test")
             typeInto("registration_password_field", "password1")
             clickTag("registration_submit_button")
-            tag("coach_home").assertTextContains("Mara Santos")
+            tag("coach_home").assertTextContains("Coach Mara Santos")
             tag("student_home_open_class").assertDoesNotExist()
             assertNoSignOut()
         }

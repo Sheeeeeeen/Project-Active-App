@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +35,7 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.password
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
@@ -69,6 +71,8 @@ fun TrxTextField(
     passwordToggleTag: String? = null,
     onTogglePassword: (() -> Unit)? = null,
     leadingIcon: DrawableResource? = null,
+    imeAction: ImeAction = ImeAction.Default,
+    onImeAction: (() -> Unit)? = null,
 ) {
     val colors = LocalTrxColors.current
     val interaction = remember { MutableInteractionSource() }
@@ -121,7 +125,9 @@ fun TrxTextField(
                         else -> keyboardType
                     },
                     autoCorrectEnabled = if (password) false else true,
+                    imeAction = imeAction,
                 ),
+                keyboardActions = if (onImeAction != null) KeyboardActions(onAny = { onImeAction() }) else KeyboardActions.Default,
                 interactionSource = interaction,
                 modifier = Modifier
                     .weight(1f)
