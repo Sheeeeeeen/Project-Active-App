@@ -1,5 +1,7 @@
 package ph.project.active.ui.manageclass
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,8 +15,8 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Badge
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -241,14 +243,20 @@ private fun Tabs(state: ManageClassUiState, onSelect: (ManageTab) -> Unit) {
                             softWrap = false,
                         )
                         if (tab == ManageTab.REQUESTS && state.pendingRequestCount > 0) {
-                            Badge(
-                                modifier = Modifier
+                            Box(
+                                Modifier
                                     .padding(start = TrxSpacing.s4)
+                                    .size(TrxSpacing.s20)
+                                    .background(colors.accentDefault, CircleShape)
                                     .testTag(ManageClassTestTags.requestsBadge),
-                                containerColor = colors.accentDefault,
-                                contentColor = colors.textOnAccent,
+                                contentAlignment = Alignment.Center,
                             ) {
-                                Text(state.pendingRequestCount.toString(), style = TrxTypography.label)
+                                Text(
+                                    text = state.pendingRequestCount.toString(),
+                                    color = colors.textOnAccent,
+                                    style = TrxTypography.label,
+                                    maxLines = 1,
+                                )
                             }
                         }
                     }
