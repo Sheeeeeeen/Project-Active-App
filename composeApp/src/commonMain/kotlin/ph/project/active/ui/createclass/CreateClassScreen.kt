@@ -1,5 +1,12 @@
 package ph.project.active.ui.createclass
 
+import projectactive.composeapp.generated.resources.chevron_right
+import projectactive.composeapp.generated.resources.calendar_x
+import ph.project.active.ui.components.TrxCard
+import org.jetbrains.compose.resources.DrawableResource
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -194,15 +201,18 @@ fun CreateClassScreen(
                 )
                 Helper(if (state.visibility == Visibility.PUBLIC) UiCopy.publicHelper() else UiCopy.privateHelper())
                 SectionLabel(UiCopy.endsLabel())
-                NoEndDateToggle(
-                    checked = noEndDate,
-                    onChange = { on ->
-                        wantsEndDate = !on
-                        if (on) onEndDateChange(null)
-                    },
-                )
-                if (!noEndDate) {
-                    EndDateRow(state.endDate, onChoose = { pickingEndDate = true })
+                TrxCard(contentPadding = TrxSpacing.s0) {
+                    NoEndDateToggle(
+                        checked = noEndDate,
+                        onChange = { on ->
+                            wantsEndDate = !on
+                            if (on) onEndDateChange(null)
+                        },
+                    )
+                    if (!noEndDate) {
+                        HorizontalDivider(color = colors.borderDefault)
+                        EndDateRow(state.endDate, onChoose = { pickingEndDate = true })
+                    }
                 }
                 Preview(state)
             }
@@ -316,8 +326,8 @@ private fun DayChips(state: CreateClassUiState, onToggleDay: (DayOfWeek) -> Unit
                     .weight(1f)
                     .heightIn(min = TrxSpacing.touchTarget)
                     .clip(RoundedCornerShape(TrxSpacing.radiusSm))
-                    .background(if (selected) colors.accentDefault else colors.surface)
-                    .border(1.dp, if (selected) colors.accentDefault else colors.borderDefault, RoundedCornerShape(TrxSpacing.radiusSm))
+                    .background(if (selected) colors.surfaceInverse else colors.surface)
+                    .border(1.dp, if (selected) colors.surfaceInverse else colors.borderDefault, RoundedCornerShape(TrxSpacing.radiusSm))
                     .selectable(
                         selected = selected,
                         enabled = !state.daysLocked,
@@ -328,7 +338,7 @@ private fun DayChips(state: CreateClassUiState, onToggleDay: (DayOfWeek) -> Unit
             ) {
                 Text(
                     text = day.shortName(),
-                    color = if (selected) colors.textOnAccent else colors.textPrimary,
+                    color = if (selected) colors.textInverse else colors.textPrimary,
                     style = TrxTypography.label,
                 )
             }
@@ -382,31 +392,62 @@ private fun NoEndDateToggle(checked: Boolean, onChange: (Boolean) -> Unit) {
         Modifier
             .fillMaxWidth()
             .heightIn(min = TrxSpacing.touchTarget)
-            .toggleable(value = checked, role = Role.Switch, onValueChange = onChange),
+            .toggleable(value = checked, role = Role.Switch, onValueChange = onChange)
+            .padding(horizontal = TrxSpacing.s16, vertical = TrxSpacing.s4),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        EndsIcon(Res.drawable.calendar_x)
         Text(UiCopy.noEndDate(), color = colors.textPrimary, style = TrxTypography.body, modifier = Modifier.weight(1f))
-        Switch(checked = checked, onCheckedChange = null)
+        Switch(
+            checked = checked,
+            onCheckedChange = null,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = colors.surface,
+                checkedTrackColor = colors.successFg,
+                checkedBorderColor = colors.successFg,
+                uncheckedThumbColor = colors.surface,
+                uncheckedTrackColor = colors.borderStrong,
+                uncheckedBorderColor = colors.borderStrong,
+            ),
+        )
     }
 }
 
 @Composable
 private fun EndDateRow(endDate: LocalDate?, onChoose: () -> Unit) {
     val colors = LocalTrxColors.current
-    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = TrxSpacing.touchTarget)
+            .clickable(role = Role.Button, onClick = onChoose)
+            .padding(horizontal = TrxSpacing.s16, vertical = TrxSpacing.s12),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        EndsIcon(Res.drawable.calendar_days)
         Text(UiCopy.endDateLabel(), color = colors.textPrimary, style = TrxTypography.body, modifier = Modifier.weight(1f))
-        TextButton(onClick = onChoose) {
-            Icon(
-                painter = painterResource(Res.drawable.calendar_days),
-                contentDescription = null,
-                tint = colors.accentText,
-                modifier = Modifier
-                    .padding(end = TrxSpacing.s8)
-                    .size(TrxSpacing.iconSmall),
-            )
-            Text(endDate?.let { formatDate(it) } ?: UiCopy.chooseDate(), color = colors.accentText, style = TrxTypography.body)
-        }
+        Text(endDate?.let { formatDate(it) } ?: UiCopy.chooseDate(), color = colors.textPrimary, style = TrxTypography.body)
+        Icon(
+            painter = painterResource(Res.drawable.chevron_right),
+            contentDescription = null,
+            tint = colors.textTertiary,
+            modifier = Modifier
+                .padding(start = TrxSpacing.s8)
+                .size(TrxSpacing.iconSmall),
+        )
     }
+}
+
+@Composable
+private fun EndsIcon(icon: DrawableResource) {
+    Icon(
+        painter = painterResource(icon),
+        contentDescription = null,
+        tint = LocalTrxColors.current.textPrimary,
+        modifier = Modifier
+            .padding(end = TrxSpacing.s12)
+            .size(TrxSpacing.iconMedium),
+    )
 }
 
 @Composable
