@@ -9,6 +9,7 @@ import org.koin.core.context.GlobalContext
 import ph.project.active.data.model.PersonProfile
 import ph.project.active.data.repository.PersonRepository
 import ph.project.active.domain.crypto.PasswordHasher
+import ph.project.active.domain.model.JoinPath
 import ph.project.active.domain.model.Membership
 import ph.project.active.domain.model.MembershipStatus
 import ph.project.active.domain.model.Role
@@ -26,6 +27,7 @@ import ph.project.active.domain.usecase.CreateClass
  * Debug-only demo data: four coaches, six public classes, the demo student Paolo
  * (paolo@company.com / password1) in the C1 snapshot, and the demo coach Mara
  * (mara@company.com / password1) with one private and one cancelled class added after the six.
+ * Core Burn also gets Dana, Gia and Hana after Paolo, as in the Manage example data.
  * Sign-in accounts live in memory, so both are added on every launch; classes and memberships are saved once.
  */
 object DemoSeed {
@@ -99,14 +101,27 @@ object DemoSeed {
         CancelClass(classes, Clock.System, TimeZone.currentSystemDefault()).invoke(cancelled.id)
 
         val memberships = koin.get<MembershipRepository>()
-        fun member(trxClass: TrxClass, status: MembershipStatus) {
-            memberships.add(Membership(memberships.nextId(), trxClass.id, PAOLO_ID, status))
+        fun member(
+            trxClass: TrxClass,
+            status: MembershipStatus,
+            studentId: String = PAOLO_ID,
+            joinedBy: JoinPath? = if (status == MembershipStatus.ACTIVE) JoinPath.REQUEST else null,
+        ) {
+            memberships.add(Membership(memberships.nextId(), trxClass.id, studentId, status, joinedBy))
         }
         member(sunrise, MembershipStatus.ACTIVE)
         member(lunchExpress, MembershipStatus.ACTIVE)
         member(coreBurn, MembershipStatus.ACTIVE)
         member(mobilityFlow, MembershipStatus.INVITED)
         member(bootcamp, MembershipStatus.PENDING_REQUEST)
+
+        // Core Burn's roster after Paolo matches the Manage example data, so D12 shows both join paths.
+        people.upsert(PersonProfile(DANA_ID, "Dana Uy", Role.STUDENT, "EMP-20155"))
+        people.upsert(PersonProfile(GIA_ID, "Gia Torres", Role.STUDENT, "EMP-20249"))
+        people.upsert(PersonProfile(HANA_ID, "Hana Cho", Role.STUDENT, "EMP-20877"))
+        member(coreBurn, MembershipStatus.ACTIVE, DANA_ID, JoinPath.INVITE)
+        member(coreBurn, MembershipStatus.ACTIVE, GIA_ID, JoinPath.INVITE)
+        member(coreBurn, MembershipStatus.ACTIVE, HANA_ID, JoinPath.REQUEST)
     }
 
     private fun addUser(
@@ -140,4 +155,7 @@ object DemoSeed {
     private const val JUN_ID = "demo-jun"
     private const val ANA_ID = "demo-ana"
     private const val PAOLO_ID = "demo-paolo"
+    private const val DANA_ID = "demo-dana"
+    private const val GIA_ID = "demo-gia"
+    private const val HANA_ID = "demo-hana"
 }
