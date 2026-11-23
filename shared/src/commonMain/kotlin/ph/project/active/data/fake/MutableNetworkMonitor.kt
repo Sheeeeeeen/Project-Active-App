@@ -9,6 +9,7 @@ import ph.project.active.domain.model.NetworkStatus
 class MutableNetworkMonitor(initial: NetworkStatus) : NetworkMonitor {
     private val _status = MutableStateFlow(initial)
     override val status: StateFlow<NetworkStatus> = _status.asStateFlow()
+    override val hasRealReading: StateFlow<Boolean> = MutableStateFlow(true).asStateFlow()
 
     fun set(status: NetworkStatus) {
         _status.value = status

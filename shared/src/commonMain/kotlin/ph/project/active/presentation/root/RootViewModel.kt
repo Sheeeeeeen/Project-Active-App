@@ -29,6 +29,7 @@ class RootViewModel(
     )
     val state: StateFlow<RootUiState> = _state.asStateFlow()
     val startRoot: Root = _state.value.root
+    private var previousRealReading: NetworkStatus? = null
 
     init {
         viewModelScope.launch {
@@ -37,17 +38,28 @@ class RootViewModel(
             }
         }
         viewModelScope.launch {
-            var previous: NetworkStatus? = null
             network.status.collect { status ->
                 _state.update { it.copy(connection = status.toConnection()) }
-                if (status == NetworkStatus.ONLINE && previous != NetworkStatus.ONLINE) {
-                    try {
-                        outbox.sync()
-                    } catch (_: Exception) {
-                        // A failed upload leaves that row PENDING. The next transition tries again.
-                    }
-                }
-                previous = status
+                onReading(status)
+            }
+        }
+        viewModelScope.launch {
+            network.hasRealReading.collect { real ->
+                if (real) onReading(network.status.value)
+            }
+        }
+    }
+
+    // Syncs when a real reading turns ONLINE; a starting guess (iOS before its first path update) is ignored.
+    private suspend fun onReading(status: NetworkStatus) {
+        if (!network.hasRealReading.value) return
+        val wasOnline = previousRealReading == NetworkStatus.ONLINE
+        previousRealReading = status
+        if (status == NetworkStatus.ONLINE && !wasOnline) {
+            try {
+                outbox.sync()
+            } catch (_: Exception) {
+                // A failed upload leaves that row PENDING. The next real ONLINE tries again.
             }
         }
     }
