@@ -23,6 +23,9 @@ import ph.project.active.di.rememberClassDetail
 import ph.project.active.domain.model.Role
 import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
+import ph.project.active.presentation.coachclasses.CoachClassesViewModel
+import ph.project.active.presentation.createclass.CreateClassViewModel
+import ph.project.active.presentation.manageclass.ManageClassViewModel
 import ph.project.active.presentation.common.Navigation
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.guestclasses.GuestClassListViewModel
@@ -33,7 +36,9 @@ import ph.project.active.presentation.root.RootViewModel
 import ph.project.active.presentation.studentclasses.StudentClassesViewModel
 import ph.project.active.ui.classdetail.ClassDetailScreen
 import ph.project.active.ui.guestclasses.GuestClassListScreen
-import ph.project.active.ui.home.CoachHomePlaceholder
+import ph.project.active.ui.coachhome.CoachHomeScreen
+import ph.project.active.ui.createclass.CreateClassRoute
+import ph.project.active.ui.manageclass.ManageClassRoute
 import ph.project.active.ui.studenthome.StudentHomeScreen
 import ph.project.active.ui.platform.ShakeSource
 import ph.project.active.ui.registration.RegistrationRoute
@@ -49,6 +54,9 @@ fun AppNavHost(
     studentClassesViewModel: ((SignedInAccount) -> StudentClassesViewModel)? = null,
     invitesViewModel: ((SignedInAccount) -> InvitesViewModel)? = null,
     navController: NavHostController = rememberNavController(),
+    coachClassesViewModel: ((SignedInAccount) -> CoachClassesViewModel)? = null,
+    createClassViewModel: ((SignedInAccount) -> CreateClassViewModel)? = null,
+    manageClassViewModel: ((SignedInAccount, String) -> ManageClassViewModel)? = null,
 ) {
     val scope = rememberCoroutineScope()
     val shakes = remember { RegistrationShakeCollection() }
@@ -157,8 +165,37 @@ fun AppNavHost(
                 }
             }
             composable<CoachHome> {
-                val name = (rootState.root as? Root.Coach)?.account?.name.orEmpty()
-                CoachHomePlaceholder(name = name)
+                val account = (rootState.root as? Root.Coach)?.account
+                if (account != null) {
+                    CoachHomeScreen(
+                        account = account,
+                        coachClassesViewModel = coachClassesViewModel,
+                        onOpenCreate = { navController.navigate(CreateClass) { launchSingleTop = true } },
+                        onOpenManage = { id -> navController.navigate(ManageClass(id)) { launchSingleTop = true } },
+                    )
+                }
+            }
+            composable<CreateClass> {
+                val account = (rootState.root as? Root.Coach)?.account
+                if (account != null) {
+                    CreateClassRoute(
+                        account = account,
+                        factory = createClassViewModel,
+                        onClose = { navController.popBackStack<CreateClass>(inclusive = true) },
+                    )
+                }
+            }
+            composable<ManageClass> { entry ->
+                val account = (rootState.root as? Root.Coach)?.account
+                if (account != null) {
+                    val classId = entry.toRoute<ManageClass>().classId
+                    ManageClassRoute(
+                        account = account,
+                        classId = classId,
+                        factory = manageClassViewModel,
+                        onBack = { navController.popBackStack<ManageClass>(inclusive = true) },
+                    )
+                }
             }
         }
     }

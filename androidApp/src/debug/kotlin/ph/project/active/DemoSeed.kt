@@ -19,22 +19,26 @@ import ph.project.active.domain.model.Visibility
 import ph.project.active.domain.repository.ClassRepository
 import ph.project.active.domain.repository.MembershipRepository
 import ph.project.active.domain.repository.UserRepository
+import ph.project.active.domain.usecase.CancelClass
 import ph.project.active.domain.usecase.CreateClass
 
 /**
- * Debug-only demo data: four coaches, six public classes, and the demo student Paolo
- * (paolo@company.com / password1) in the C1 snapshot. Sign-in accounts live in memory,
- * so Paolo is added on every launch; classes and memberships are saved once.
+ * Debug-only demo data: four coaches, six public classes, the demo student Paolo
+ * (paolo@company.com / password1) in the C1 snapshot, and the demo coach Mara
+ * (mara@company.com / password1) with one private and one cancelled class added after the six.
+ * Sign-in accounts live in memory, so both are added on every launch; classes and memberships are saved once.
  */
 object DemoSeed {
     fun install() {
         val koin = GlobalContext.get()
         val people = koin.get<PersonRepository>()
-        addPaolo(koin.get<UserRepository>(), koin.get<PasswordHasher>(), people)
+        val users = koin.get<UserRepository>()
+        val hasher = koin.get<PasswordHasher>()
+        addUser(users, hasher, people, PAOLO_ID, "Paolo Reyes", "paolo@company.com", Role.STUDENT, "EMP-20417")
+        addUser(users, hasher, people, MARA_ID, "Mara Santos", "mara@company.com", Role.COACH, null)
 
         val classes = koin.get<ClassRepository>()
         if (classes.allClasses().isNotEmpty()) return
-        people.upsert(PersonProfile(MARA_ID, "Mara Santos", Role.COACH, null))
         people.upsert(PersonProfile(LEO_ID, "Leo Ramirez", Role.COACH, null))
         people.upsert(PersonProfile(JUN_ID, "Jun Tan", Role.COACH, null))
         people.upsert(PersonProfile(ANA_ID, "Ana Cruz", Role.COACH, null))
@@ -44,10 +48,16 @@ object DemoSeed {
             timeZone = TimeZone.currentSystemDefault(),
             openEndedHorizon = DatePeriod(months = 12),
         )
-        fun save(coachId: String, name: String, days: List<DayOfWeek>, slot: TimeSlot): TrxClass = create(
+        fun save(
+            coachId: String,
+            name: String,
+            days: List<DayOfWeek>,
+            slot: TimeSlot,
+            visibility: Visibility = Visibility.PUBLIC,
+        ): TrxClass = create(
             coachId = coachId,
             name = name,
-            visibility = Visibility.PUBLIC,
+            visibility = visibility,
             slotsByWeekday = days.associateWith { listOf(slot) },
             endDate = null,
         )
@@ -78,6 +88,15 @@ object DemoSeed {
             listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
             slot(6, 0, 6, 45),
         )
+        save(
+            MARA_ID,
+            "TRX Leadership Circle",
+            listOf(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY),
+            slot(7, 0, 7, 45),
+            Visibility.PRIVATE,
+        )
+        val cancelled = save(MARA_ID, "TRX Friday Finisher", listOf(DayOfWeek.FRIDAY), slot(18, 0, 18, 45))
+        CancelClass(classes, Clock.System, TimeZone.currentSystemDefault()).invoke(cancelled.id)
 
         val memberships = koin.get<MembershipRepository>()
         fun member(trxClass: TrxClass, status: MembershipStatus) {
@@ -90,18 +109,27 @@ object DemoSeed {
         member(bootcamp, MembershipStatus.PENDING_REQUEST)
     }
 
-    private fun addPaolo(users: UserRepository, hasher: PasswordHasher, people: PersonRepository) {
-        if (users.findById(PAOLO_ID) != null) return
-        val paolo = User(
-            id = PAOLO_ID,
-            name = "Paolo Reyes",
-            email = "paolo@company.com",
-            role = Role.STUDENT,
-            employeeId = "EMP-20417",
+    private fun addUser(
+        users: UserRepository,
+        hasher: PasswordHasher,
+        people: PersonRepository,
+        id: String,
+        name: String,
+        email: String,
+        role: Role,
+        employeeId: String?,
+    ) {
+        if (users.findById(id) != null) return
+        val user = User(
+            id = id,
+            name = name,
+            email = email,
+            role = role,
+            employeeId = employeeId,
             passwordHash = hasher.hash("password1"),
         )
-        users.add(paolo)
-        people.upsert(PersonProfile(paolo.id, paolo.name, paolo.role, paolo.employeeId))
+        users.add(user)
+        people.upsert(PersonProfile(user.id, user.name, user.role, user.employeeId))
     }
 
     private fun slot(startHour: Int, startMinute: Int, endHour: Int, endMinute: Int): TimeSlot =
