@@ -25,6 +25,11 @@ class AndroidNetworkMonitor(
 
     override val status: StateFlow<NetworkStatus> = callbackFlow {
         val callback = object : ConnectivityManager.NetworkCallback() {
+            // Below API 26, onCapabilitiesChanged is not guaranteed after onAvailable, so read them here too.
+            override fun onAvailable(network: Network) {
+                trySend(networkStatusOf(connectivity.getNetworkCapabilities(network)?.toSignal()))
+            }
+
             override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) {
                 trySend(networkStatusOf(capabilities.toSignal()))
             }
