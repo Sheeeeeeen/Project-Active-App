@@ -54,7 +54,7 @@ import ph.project.active.ui.components.LargeTitleHeader
 import ph.project.active.ui.components.OfflineBanner
 import ph.project.active.ui.components.StatusChip
 import ph.project.active.ui.components.TrxButtonKind
-import ph.project.active.ui.components.TrxLargeButton
+import ph.project.active.ui.components.TrxCompactButton
 import ph.project.active.ui.platform.LightStatusBarIcons
 import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
@@ -65,7 +65,7 @@ import projectactive.composeapp.generated.resources.calendar_days
 import projectactive.composeapp.generated.resources.chevron_right
 import projectactive.composeapp.generated.resources.clock
 import projectactive.composeapp.generated.resources.globe
-import projectactive.composeapp.generated.resources.inbox
+import projectactive.composeapp.generated.resources.dumbbell
 import projectactive.composeapp.generated.resources.lock
 import projectactive.composeapp.generated.resources.plus
 import projectactive.composeapp.generated.resources.user
@@ -131,19 +131,19 @@ fun CoachClassesScreen(
             Column(Modifier.padding(horizontal = TrxSpacing.screenHorizontal, vertical = TrxSpacing.s16)) {
                 if (state.isEmpty) {
                     EmptyState(
-                        icon = Res.drawable.inbox,
+                        icon = Res.drawable.dumbbell,
                         title = UiCopy.coachClassesEmptyTitle(),
                         body = UiCopy.coachClassesEmptyBody(),
                         tag = CoachClassesTestTags.empty,
                     )
-                    TrxLargeButton(
+                    TrxCompactButton(
                         label = UiCopy.createClass(),
-                        kind = TrxButtonKind.Primary,
+                        kind = TrxButtonKind.Secondary,
                         tag = CoachClassesTestTags.emptyCreate,
                         onClick = onCreateClass,
-                        enabled = true,
-                        icon = Res.drawable.plus,
-                        modifier = Modifier.padding(top = TrxSpacing.s24),
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = TrxSpacing.s16),
                     )
                 } else {
                     SectionHeader(count = UiCopy.classCount(state.classes.size))
