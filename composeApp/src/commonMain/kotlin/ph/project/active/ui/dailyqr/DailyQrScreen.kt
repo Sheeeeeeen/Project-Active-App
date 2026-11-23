@@ -113,7 +113,7 @@ fun DailyQrScreen(
                     OfflineBanner(
                         message = banner,
                         modifier = Modifier
-                            .padding(top = TrxSpacing.s16)
+                            .padding(top = TrxSpacing.s12)
                             .clip(RoundedCornerShape(TrxSpacing.radiusMd)),
                         subtitle = UiCopy.qrOfflineSubtitle(),
                     )
@@ -133,7 +133,7 @@ fun DailyQrScreen(
                     tag = DailyQrTestTags.brightness,
                     modifier = Modifier.padding(top = TrxSpacing.s12),
                 )
-                SectionHeader(Modifier.padding(top = TrxSpacing.s16, bottom = TrxSpacing.s12))
+                SectionHeader(Modifier.padding(top = TrxSpacing.s20, bottom = TrxSpacing.s16))
                 if (state.classListUnavailable) {
                     InfoCallout(
                         title = UiCopy.classListUnavailableTitle(),
@@ -169,15 +169,18 @@ private fun QrCard(state: DailyQrUiState, modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .aspectRatio(1f),
         ) {
-            // Whole-pixel modules, centred, so every module edge is sharp.
-            val module = (minOf(size.width, size.height) / matrix.size).toInt().coerceAtLeast(1)
-            val origin = ((size.width - module * matrix.size) / 2).toInt().toFloat()
+            // The card padding is the quiet zone: whole-pixel modules sized on the symbol alone, centred.
+            val quiet = QrEncoder.QUIET_ZONE
+            val inner = matrix.size - 2 * quiet
+            val module = minOf(minOf(size.width, size.height) / inner, TrxSpacing.s24.toPx() / quiet).toInt().coerceAtLeast(1)
+            val originX = ((size.width - module * inner) / 2).toInt().toFloat() - quiet * module
+            val originY = ((size.height - module * inner) / 2).toInt().toFloat() - quiet * module
             for (y in 0 until matrix.size) {
                 for (x in 0 until matrix.size) {
                     if (matrix.isDark(x, y)) {
                         drawRect(
                             color = ink,
-                            topLeft = Offset(origin + x * module, origin + y * module),
+                            topLeft = Offset(originX + x * module, originY + y * module),
                             size = Size(module.toFloat(), module.toFloat()),
                         )
                     }
