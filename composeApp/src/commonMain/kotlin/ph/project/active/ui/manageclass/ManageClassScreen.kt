@@ -15,12 +15,14 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -28,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.Dp
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import ph.project.active.domain.model.SessionStatus
@@ -207,33 +210,47 @@ private fun Header(state: ManageClassUiState) {
 @Composable
 private fun Tabs(state: ManageClassUiState, onSelect: (ManageTab) -> Unit) {
     val colors = LocalTrxColors.current
+    val selectedIndex = state.selectedTab.ordinal
     PrimaryTabRow(
-        selectedTabIndex = state.selectedTab.ordinal,
+        selectedTabIndex = selectedIndex,
         containerColor = colors.canvas,
         contentColor = colors.textPrimary,
+        indicator = {
+            TabRowDefaults.PrimaryIndicator(
+                modifier = Modifier.tabIndicatorOffset(selectedIndex, matchContentSize = false),
+                width = Dp.Unspecified,
+                color = colors.textPrimary,
+            )
+        },
+        divider = { HorizontalDivider(color = colors.borderDefault) },
     ) {
         ManageTab.entries.forEach { tab ->
+            val selected = tab == state.selectedTab
             Tab(
-                selected = tab == state.selectedTab,
+                selected = selected,
                 onClick = { onSelect(tab) },
                 modifier = Modifier.testTag(tab.tag()),
+                selectedContentColor = colors.textPrimary,
+                unselectedContentColor = colors.textSecondary,
                 text = {
-                    if (tab == ManageTab.REQUESTS && state.pendingRequestCount > 0) {
-                        BadgedBox(
-                            badge = {
-                                Badge(
-                                    modifier = Modifier.testTag(ManageClassTestTags.requestsBadge),
-                                    containerColor = colors.dangerFg,
-                                    contentColor = colors.textInverse,
-                                ) {
-                                    Text(state.pendingRequestCount.toString())
-                                }
-                            },
-                        ) {
-                            Text(tab.label(), style = TrxTypography.label)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = tab.label(),
+                            style = if (selected) TrxTypography.subheadStrong else TrxTypography.subhead,
+                            maxLines = 1,
+                            softWrap = false,
+                        )
+                        if (tab == ManageTab.REQUESTS && state.pendingRequestCount > 0) {
+                            Badge(
+                                modifier = Modifier
+                                    .padding(start = TrxSpacing.s4)
+                                    .testTag(ManageClassTestTags.requestsBadge),
+                                containerColor = colors.accentDefault,
+                                contentColor = colors.textOnAccent,
+                            ) {
+                                Text(state.pendingRequestCount.toString(), style = TrxTypography.label)
+                            }
                         }
-                    } else {
-                        Text(tab.label(), style = TrxTypography.label)
                     }
                 },
             )
