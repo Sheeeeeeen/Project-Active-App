@@ -1,6 +1,7 @@
 package ph.project.active.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,7 +21,7 @@ import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTypography
 
 @Composable
-fun OfflineBanner(message: String, modifier: Modifier = Modifier) {
+fun OfflineBanner(message: String, modifier: Modifier = Modifier, subtitle: String? = null) {
     val colors = LocalTrxColors.current
     Row(
         modifier
@@ -37,11 +38,16 @@ fun OfflineBanner(message: String, modifier: Modifier = Modifier) {
                 .padding(end = TrxSpacing.s8)
                 .size(20.dp),
         )
-        Text(
-            text = message,
-            color = colors.textInverse,
-            style = TrxTypography.body,
-            modifier = Modifier.testTag(ComponentTestTags.offlineBanner),
-        )
+        Column {
+            Text(
+                text = message,
+                color = colors.textInverse,
+                style = TrxTypography.body,
+                modifier = Modifier.testTag(ComponentTestTags.offlineBanner),
+            )
+            if (subtitle != null) {
+                Text(text = subtitle, color = colors.textInverse, style = TrxTypography.footnote)
+            }
+        }
     }
 }
