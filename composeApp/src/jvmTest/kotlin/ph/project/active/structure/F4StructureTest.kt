@@ -39,11 +39,23 @@ class F4StructureTest {
 
     @Test
     fun F4_Seed_marasRosterShowsBothJoinPaths() {
-        // Planner ruling (P7 / D12): Paolo and Hana joined by REQUEST, Dana and Gia by INVITE,
-        // so Mara's demo roster shows both "Joined by" lines.
+        // Spec section 7 ("Manage example data"), Planner ruling 23 Nov: on Mara's TRX Core Burn the roster,
+        // in join order, is Paolo (request), Dana (invite), Gia (invite) and Hana (request). The class
+        // also has 3 pending requests, and Felix is a student who is not on the class.
         val source = seedSource()
-        for (student in listOf("Paolo", "Hana", "Dana", "Gia")) {
-            assertTrue(source.contains(student), "the debug seed should include $student")
+        val people = listOf(
+            "Paolo Reyes" to "EMP-20417",
+            "Dana Uy" to "EMP-20155",
+            "Gia Torres" to "EMP-20249",
+            "Hana Cho" to "EMP-20877",
+            "Ella Navarro" to "EMP-20611",
+            "Bea Lim" to "EMP-20388",
+            "Carlo Diaz" to "EMP-20502",
+            "Felix Ong" to "EMP-20733",
+        )
+        for ((name, employeeId) in people) {
+            assertTrue(source.contains(name), "the debug seed should include $name")
+            assertTrue(source.contains(employeeId), "the debug seed should include $name's ID $employeeId")
         }
         assertTrue(source.contains("JoinPath.REQUEST"), "the debug seed records a join by REQUEST (Paolo, Hana)")
         assertTrue(source.contains("JoinPath.INVITE"), "the debug seed records a join by INVITE (Dana, Gia)")
