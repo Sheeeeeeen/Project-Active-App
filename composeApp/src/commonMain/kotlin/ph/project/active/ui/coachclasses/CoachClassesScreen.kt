@@ -49,6 +49,7 @@ import ph.project.active.presentation.coachclasses.timeLine
 import ph.project.active.presentation.common.UiCopy
 import ph.project.active.ui.components.EmptyState
 import ph.project.active.ui.components.InfoCallout
+import ph.project.active.ui.components.InfoCalloutStyle
 import ph.project.active.ui.components.LargeTitleHeader
 import ph.project.active.ui.components.OfflineBanner
 import ph.project.active.ui.components.StatusChip
@@ -145,17 +146,17 @@ fun CoachClassesScreen(
                         modifier = Modifier.padding(top = TrxSpacing.s24),
                     )
                 } else {
+                    SectionHeader(count = UiCopy.classCount(state.classes.size))
+                    state.classes.forEach { item -> ClassCard(item, onClassTapped) }
                     if (state.classes.any { it.visibility == Visibility.PRIVATE }) {
                         InfoCallout(
                             title = UiCopy.privateCalloutTitle(),
                             body = UiCopy.privateCalloutBody(),
-                            icon = Res.drawable.lock,
                             tag = CoachClassesTestTags.callout,
-                            modifier = Modifier.padding(bottom = TrxSpacing.s16),
+                            style = InfoCalloutStyle.Neutral,
+                            modifier = Modifier.padding(top = TrxSpacing.s16),
                         )
                     }
-                    SectionHeader(count = UiCopy.classCount(state.classes.size))
-                    state.classes.forEach { item -> ClassCard(item, onClassTapped) }
                 }
             }
         }

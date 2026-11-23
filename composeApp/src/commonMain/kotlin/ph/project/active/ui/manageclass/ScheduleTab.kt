@@ -16,6 +16,7 @@ import ph.project.active.presentation.common.formatSlot
 import ph.project.active.presentation.createclass.ScheduleRow
 import ph.project.active.presentation.manageclass.ManageClassUiState
 import ph.project.active.ui.components.InfoCallout
+import ph.project.active.ui.components.InfoCalloutStyle
 import ph.project.active.ui.components.StatusChip
 import ph.project.active.ui.components.TrxButtonKind
 import ph.project.active.ui.components.TrxCard
@@ -29,7 +30,7 @@ import projectactive.composeapp.generated.resources.calendar_check
 
 @Composable
 internal fun ScheduleTab(state: ManageClassUiState, onCancelDate: (LocalDate) -> Unit) {
-    InfoCallout(UiCopy.cancelDateCalloutTitle(), UiCopy.cancelDateCalloutBody())
+    InfoCallout(UiCopy.cancelDateCalloutTitle(), UiCopy.cancelDateCalloutBody(), style = InfoCalloutStyle.Neutral)
     ManageSectionHeader(UiCopy.datesHeader(), UiCopy.dateCount(state.sessionCount), Modifier.padding(top = TrxSpacing.s16))
     state.schedule.forEach { row -> DateRow(row, onCancelDate) }
 }

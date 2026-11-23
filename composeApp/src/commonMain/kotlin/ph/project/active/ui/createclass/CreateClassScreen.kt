@@ -62,6 +62,7 @@ import ph.project.active.presentation.createclass.CreateClassUiState
 import ph.project.active.presentation.createclass.RepeatMode
 import ph.project.active.ui.components.FormError
 import ph.project.active.ui.components.InfoCallout
+import ph.project.active.ui.components.InfoCalloutStyle
 import ph.project.active.ui.components.OfflineBanner
 import ph.project.active.ui.components.TrxButtonKind
 import ph.project.active.ui.components.TrxLargeButton
@@ -71,6 +72,7 @@ import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
 import ph.project.active.ui.theme.TrxTypography
 import projectactive.composeapp.generated.resources.Res
+import projectactive.composeapp.generated.resources.calendar_check
 import projectactive.composeapp.generated.resources.calendar_days
 import projectactive.composeapp.generated.resources.x
 
@@ -416,9 +418,21 @@ private fun Preview(state: CreateClassUiState) {
     val last = state.previewLastDate
     val days = formatDaysLong(state.selectedDays.filter { state.slotsByWeekday[it].orEmpty().isNotEmpty() }.toSet())
     if (state.endDate == null) {
-        InfoCallout(UiCopy.noEndDate(), UiCopy.noEndDateBody(), tag = CreateClassTestTags.preview)
+        InfoCallout(
+            title = UiCopy.noEndDate(),
+            body = UiCopy.noEndDateBody(),
+            tag = CreateClassTestTags.preview,
+            icon = Res.drawable.calendar_check,
+            style = InfoCalloutStyle.Accent,
+        )
     } else if (count != null && today != null && first != null && last != null) {
-        InfoCallout(UiCopy.previewTitle(count), UiCopy.previewBody(today, days, first, last), tag = CreateClassTestTags.preview)
+        InfoCallout(
+            title = UiCopy.previewTitle(count),
+            body = UiCopy.previewBody(today, days, first, last),
+            tag = CreateClassTestTags.preview,
+            icon = Res.drawable.calendar_check,
+            style = InfoCalloutStyle.Accent,
+        )
     }
 }
 
