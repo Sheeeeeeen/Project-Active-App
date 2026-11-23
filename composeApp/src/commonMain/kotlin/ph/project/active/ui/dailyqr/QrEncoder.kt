@@ -6,6 +6,9 @@ package ph.project.active.ui.dailyqr
  * public-domain reference encoder. The result has a 4-module quiet zone.
  */
 object QrEncoder {
+    /** Blank modules on each side of the symbol, included in every [QrMatrix]. */
+    const val QUIET_ZONE = 4
+
     fun encode(text: String): QrMatrix {
         val bytes = text.encodeToByteArray()
         val version = (1..40).firstOrNull { 4 + countBits(it) + bytes.size * 8 <= dataCodewords(it) * 8 }
@@ -117,7 +120,6 @@ object QrEncoder {
     }
 }
 
-private const val QUIET_ZONE = 4
 private const val BYTE_MODE = 0b0100
 
 // Level M, indexed by version (index 0 is unused).
