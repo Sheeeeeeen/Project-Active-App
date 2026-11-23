@@ -109,6 +109,8 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.test)
             implementation(libs.sqldelight.sqlite.driver)
+            // Flow 5 (F5-AC3, Planner ruling 2): test-only QR reader that decodes the encoder's matrix.
+            implementation(libs.zxing.core)
         }
         getByName("jvmTest") {
             kotlin.srcDir("src/commonTest/kotlin")
