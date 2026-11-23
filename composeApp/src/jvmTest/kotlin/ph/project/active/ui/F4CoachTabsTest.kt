@@ -38,8 +38,10 @@ class F4CoachTabsTest {
         }
     }
 
+    // Flow 5 (F5-AC19) replaced the QR placeholder with the real Daily QR, so the QR half of this test
+    // (title "QR", placeholder_tag under coach_qr, coach_qr_account) is gone. The Attendance half stays.
     @Test
-    fun F4_AC25_qrAndAttendanceShowTheirTitleAndAPlaceholderTag() = runFlow4UiTest {
+    fun F4_AC25_attendanceShowsItsTitleAndAPlaceholderTag() = runFlow4UiTest {
         Flow4Harness().use { world ->
             world.seedD1()
             world.signInAsMara()
@@ -48,10 +50,6 @@ class F4CoachTabsTest {
             openCoachTab("qr")
             tag("coach_tab_qr").assertIsSelected()
             tag("coach_qr").assertExists()
-            assertTextUnder("coach_qr", "QR")
-            assertEquals(1, countTaggedUnder("coach_qr", "placeholder_tag"), "the QR screen's own placeholder")
-            assertEquals(2, countTagged("placeholder_tag"), "plus the account button's")
-            assertEquals(1, countTaggedUnder("coach_qr_account", "placeholder_tag"), "section 10 Q9: QR account button")
 
             openCoachTab("attendance")
             tag("coach_tab_attendance").assertIsSelected()
