@@ -21,8 +21,8 @@ import ph.project.active.data.repository.NetworkMonitor
 import ph.project.active.domain.model.NetworkStatus
 
 /**
- * Follows the device path with nw_path_monitor. The monitor reports the current path as soon as it
- * starts; until that first report the status is OFFLINE, so the app never assumes it is online.
+ * Follows the device path with nw_path_monitor on a private serial queue. It starts ONLINE so the
+ * offline banner never flashes on cold start; the first path update corrects it within milliseconds.
  */
 class IosNetworkMonitor(
     scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main),
@@ -38,5 +38,5 @@ class IosNetworkMonitor(
         awaitClose { nw_path_monitor_cancel(monitor) }
     }
         .distinctUntilChanged()
-        .stateIn(scope, SharingStarted.Eagerly, NetworkStatus.OFFLINE)
+        .stateIn(scope, SharingStarted.Eagerly, NetworkStatus.ONLINE)
 }
