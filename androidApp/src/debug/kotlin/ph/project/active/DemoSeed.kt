@@ -27,8 +27,9 @@ import ph.project.active.domain.usecase.CreateClass
  * Debug-only demo data: four coaches, six public classes, the demo student Paolo
  * (paolo@company.com / password1) in the C1 snapshot, and the demo coach Mara
  * (mara@company.com / password1) with one private and one cancelled class added after the six.
- * Core Burn also gets Dana, Gia and Hana after Paolo, as in the Manage example data.
- * Sign-in accounts live in memory, so both are added on every launch; classes and memberships are saved once.
+ * TRX Core Burn also holds the Manage example data: Dana, Gia and Hana on the roster after Paolo,
+ * and requests from Ella, Bea and Carlo. Felix is a student on no class. Each signs in with password1.
+ * Sign-in accounts live in memory, so they are added on every launch; classes and memberships are saved once.
  */
 object DemoSeed {
     fun install() {
@@ -38,6 +39,10 @@ object DemoSeed {
         val hasher = koin.get<PasswordHasher>()
         addUser(users, hasher, people, PAOLO_ID, "Paolo Reyes", "paolo@company.com", Role.STUDENT, "EMP-20417")
         addUser(users, hasher, people, MARA_ID, "Mara Santos", "mara@company.com", Role.COACH, null)
+        EXAMPLE_STUDENTS.forEach { (id, name, employeeId) ->
+            val email = "${name.substringBefore(' ').lowercase()}@company.com"
+            addUser(users, hasher, people, id, name, email, Role.STUDENT, employeeId)
+        }
 
         val classes = koin.get<ClassRepository>()
         if (classes.allClasses().isNotEmpty()) return
@@ -115,13 +120,13 @@ object DemoSeed {
         member(mobilityFlow, MembershipStatus.INVITED)
         member(bootcamp, MembershipStatus.PENDING_REQUEST)
 
-        // Core Burn's roster after Paolo matches the Manage example data, so D12 shows both join paths.
-        people.upsert(PersonProfile(DANA_ID, "Dana Uy", Role.STUDENT, "EMP-20155"))
-        people.upsert(PersonProfile(GIA_ID, "Gia Torres", Role.STUDENT, "EMP-20249"))
-        people.upsert(PersonProfile(HANA_ID, "Hana Cho", Role.STUDENT, "EMP-20877"))
+        // Core Burn matches the Manage example data (spec section 7): four on the roster, three requests.
         member(coreBurn, MembershipStatus.ACTIVE, DANA_ID, JoinPath.INVITE)
         member(coreBurn, MembershipStatus.ACTIVE, GIA_ID, JoinPath.INVITE)
         member(coreBurn, MembershipStatus.ACTIVE, HANA_ID, JoinPath.REQUEST)
+        member(coreBurn, MembershipStatus.PENDING_REQUEST, ELLA_ID)
+        member(coreBurn, MembershipStatus.PENDING_REQUEST, BEA_ID)
+        member(coreBurn, MembershipStatus.PENDING_REQUEST, CARLO_ID)
     }
 
     private fun addUser(
@@ -158,4 +163,19 @@ object DemoSeed {
     private const val DANA_ID = "demo-dana"
     private const val GIA_ID = "demo-gia"
     private const val HANA_ID = "demo-hana"
+    private const val ELLA_ID = "demo-ella"
+    private const val BEA_ID = "demo-bea"
+    private const val CARLO_ID = "demo-carlo"
+    private const val FELIX_ID = "demo-felix"
+
+    /** The Manage example students; Felix Ong is on no class, so Mara can invite him. */
+    private val EXAMPLE_STUDENTS = listOf(
+        Triple(DANA_ID, "Dana Uy", "EMP-20155"),
+        Triple(GIA_ID, "Gia Torres", "EMP-20249"),
+        Triple(HANA_ID, "Hana Cho", "EMP-20877"),
+        Triple(ELLA_ID, "Ella Navarro", "EMP-20611"),
+        Triple(BEA_ID, "Bea Lim", "EMP-20388"),
+        Triple(CARLO_ID, "Carlo Diaz", "EMP-20502"),
+        Triple(FELIX_ID, "Felix Ong", "EMP-20733"),
+    )
 }
