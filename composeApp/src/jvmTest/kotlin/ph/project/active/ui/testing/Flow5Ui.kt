@@ -40,8 +40,8 @@ fun runFlow5UiTest(block: suspend ComposeUiTest.() -> Unit) = runFlow3UiTest(blo
 
 /**
  * Mounts the one NavHost in the app's light theme, with the flow 4 world's factories plus the Daily QR
- * factory and the fake brightness. [lifecycle] stands in for the app going to the background and back;
- * setting [shown] to false disposes the whole app. Call `signInAsMara()` first to start on CoachHome.
+ * factory, the fake brightness and (flow 6) the coach Attendance factory. [lifecycle] stands in for the app
+ * going to the background and back; setting [shown] to false disposes the whole app. Call `signInAsMara()` first to start on CoachHome.
  */
 @OptIn(ExperimentalTestApi::class)
 fun ComposeUiTest.mountFlow5(
@@ -68,6 +68,7 @@ fun ComposeUiTest.mountFlow5(
                         manageClassViewModel = world::manageClass,
                         dailyQrViewModel = world::dailyQr,
                         screenBrightness = world.brightness,
+                        coachAttendanceViewModel = world::coachAttendance,
                     )
                 }
             }

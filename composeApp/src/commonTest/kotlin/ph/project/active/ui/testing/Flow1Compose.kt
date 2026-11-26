@@ -25,6 +25,7 @@ import ph.project.active.data.model.SignedInAccount
 import ph.project.active.data.repository.AuthRepository
 import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
+import ph.project.active.presentation.coachattendance.CoachAttendanceViewModel
 import ph.project.active.presentation.coachclasses.CoachClassesViewModel
 import ph.project.active.presentation.createclass.CreateClassViewModel
 import ph.project.active.presentation.dailyqr.DailyQrViewModel
@@ -125,6 +126,7 @@ object Flow1Compose {
         navController: NavHostController? = null,
         dailyQrViewModel: ((SignedInAccount) -> DailyQrViewModel)? = null,
         screenBrightness: ScreenBrightness = remember { FakeScreenBrightness() },
+        coachAttendanceViewModel: ((SignedInAccount) -> CoachAttendanceViewModel)? = null,
         onNavController: (NavHostController) -> Unit,
     ) {
         if (navController == null) {
@@ -142,6 +144,7 @@ object Flow1Compose {
                 manageClassViewModel = manageClassViewModel,
                 dailyQrViewModel = dailyQrViewModel,
                 screenBrightness = screenBrightness,
+                coachAttendanceViewModel = coachAttendanceViewModel,
             )
         } else {
             AppNavHost(
@@ -159,6 +162,7 @@ object Flow1Compose {
                 navController = navController,
                 dailyQrViewModel = dailyQrViewModel,
                 screenBrightness = screenBrightness,
+                coachAttendanceViewModel = coachAttendanceViewModel,
             )
         }
     }
