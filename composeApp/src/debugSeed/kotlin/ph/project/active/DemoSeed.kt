@@ -5,7 +5,7 @@ import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import org.koin.core.context.GlobalContext
+import org.koin.mp.KoinPlatformTools
 import ph.project.active.data.model.PersonProfile
 import ph.project.active.data.repository.PersonRepository
 import ph.project.active.domain.crypto.PasswordHasher
@@ -33,7 +33,7 @@ import ph.project.active.domain.usecase.CreateClass
  */
 object DemoSeed {
     fun install() {
-        val koin = GlobalContext.get()
+        val koin = KoinPlatformTools.defaultContext().get()
         val people = koin.get<PersonRepository>()
         val users = koin.get<UserRepository>()
         val hasher = koin.get<PasswordHasher>()
@@ -179,3 +179,7 @@ object DemoSeed {
         Triple(FELIX_ID, "Felix Ong", "EMP-20733"),
     )
 }
+
+/** iOS debug entry. The name stays off the iosMain sources. */
+fun installDebugSeed() = DemoSeed.install()
+

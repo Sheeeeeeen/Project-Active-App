@@ -20,7 +20,10 @@ import platform.AVFoundation.AVMetadataObjectTypeQRCode
 import platform.QuartzCore.CATransaction
 import platform.UIKit.UIView
 import platform.darwin.NSObject
+import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
+import platform.darwin.dispatch_queue_create
+import ph.project.active.presentation.attend.looksLikeAttendanceCode
 
 @Composable
 actual fun rememberQrScanner(): QrScanner = remember { AvFoundationQrScanner() }
@@ -35,26 +38,30 @@ private class AvFoundationQrScanner : QrScanner {
         val onTextState = rememberUpdatedState(onText)
         val session = remember { AVCaptureSession() }
         val handed = remember { HandedOff() }
+        val sessionQueue = remember { dispatch_queue_create("ph.project.active.capture", null) }
         DisposableEffect(session) {
-            val device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
-            val input = device?.let { AVCaptureDeviceInput.deviceInputWithDevice(it, error = null) }
-            if (input != null && session.canAddInput(input)) session.addInput(input)
-            val output = AVCaptureMetadataOutput()
-            if (session.canAddOutput(output)) {
-                session.addOutput(output)
-                output.setMetadataObjectsDelegate(
-                    QrDelegate { text ->
-                        if (!handed.taken) {
+            dispatch_async(sessionQueue) {
+                val device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
+                val input = device?.let { AVCaptureDeviceInput.deviceInputWithDevice(it, error = null) }
+                if (input != null && session.canAddInput(input)) session.addInput(input)
+                val output = AVCaptureMetadataOutput()
+                if (session.canAddOutput(output)) {
+                    session.addOutput(output)
+                    output.setMetadataObjectsDelegate(
+                        QrDelegate { text ->
+                            if (handed.taken || !looksLikeAttendanceCode(text)) return@QrDelegate
                             handed.taken = true
                             onTextState.value(text)
-                        }
-                    },
-                    dispatch_get_main_queue(),
-                )
-                output.metadataObjectTypes = listOf(AVMetadataObjectTypeQRCode)
+                        },
+                        dispatch_get_main_queue(),
+                    )
+                    output.metadataObjectTypes = listOf(AVMetadataObjectTypeQRCode)
+                }
+                session.startRunning()
             }
-            session.startRunning()
-            onDispose { session.stopRunning() }
+            onDispose {
+                dispatch_async(sessionQueue) { session.stopRunning() }
+            }
         }
         UIKitView(
             factory = {

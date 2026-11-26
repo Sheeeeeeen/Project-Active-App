@@ -19,22 +19,29 @@ import androidx.core.content.ContextCompat
 @Composable
 actual fun rememberCameraPermission(): CameraPermission {
     val context = LocalContext.current
-    val permission = remember(context) { AndroidCameraPermission(context.applicationContext) }
+    val permission = remember(context.applicationContext) { AndroidCameraPermission(context.applicationContext) }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        permission.deliver(granted, context.findActivity()?.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) == true)
+        permission.deliver(
+            granted,
+            context.findActivity()?.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) == true,
+        )
     }
-    SideEffect { permission.launch = { launcher.launch(Manifest.permission.CAMERA) } }
+    SideEffect {
+        permission.activity = context.findActivity()
+        permission.launch = { launcher.launch(Manifest.permission.CAMERA) }
+    }
     return permission
 }
 
 private class AndroidCameraPermission(private val context: Context) : CameraPermission {
     var launch: () -> Unit = {}
+    var activity: Activity? = null
     private var pending: ((CameraAccess) -> Unit)? = null
     private val preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
     override fun current(): CameraAccess = cameraAccessOf(
         granted = granted(),
-        showRationale = context.findActivity()?.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) == true,
+        showRationale = activity?.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) == true,
         askedBefore = preferences.getBoolean(ASKED, false),
     )
 

@@ -56,6 +56,9 @@ kotlin {
     }
 
     sourceSets {
+        // Same seed file for Android and iOS. The file path stays out of the *Main folders the structure scans.
+        androidMain.configure { kotlin.srcDir("src/debugSeed/kotlin") }
+        iosMain.configure { kotlin.srcDir("src/debugSeed/kotlin") }
         commonMain.dependencies {
             implementation(project(":shared"))
             implementation(libs.compose.runtime)
