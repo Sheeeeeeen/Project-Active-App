@@ -278,12 +278,12 @@ class F4ClassesScreenTest {
             assertEquals(listOf("CoachHome"), coachRoutes(nav))
             tag("coach_tab_classes").assertIsSelected()
 
-            // Attendance: the account button's tag plus the placeholder's own (F4-AC25). Flow 5 (F5-AC19):
-            // the QR tab is the real Daily QR now, with no account button and no placeholder tag.
+            // Flow 5 (F5-AC19): the QR tab is the real Daily QR now, with no account button and no placeholder tag.
+            // Flow 6 (F6-AC1): the Attendance tab is real too, with no coach_attendance_account and no placeholder tag.
             openCoachTab("qr")
             assertEquals(0, countTagged("placeholder_tag"))
             openCoachTab("attendance")
-            assertEquals(2, countTagged("placeholder_tag"))
+            assertEquals(0, countTagged("placeholder_tag"))
             assertEquals(listOf("CoachHome"), coachRoutes(nav))
         }
     }

@@ -12,6 +12,7 @@ import platform.UIKit.UIWindowScene
  */
 class IosScreenBrightness : ScreenBrightness {
     private var previous: Double? = null
+    private var savedIdleTimer: Boolean? = null
 
     override fun raise() {
         val screen = currentScreen()
@@ -19,14 +20,18 @@ class IosScreenBrightness : ScreenBrightness {
             if (previous == null) previous = screen.brightness
             screen.brightness = 1.0
         }
-        UIApplication.sharedApplication.idleTimerDisabled = true
+        val application = UIApplication.sharedApplication
+        if (savedIdleTimer == null) savedIdleTimer = application.idleTimerDisabled
+        application.idleTimerDisabled = true
     }
 
     override fun restore() {
         val before = previous
         previous = null
         if (before != null) currentScreen()?.brightness = before
-        UIApplication.sharedApplication.idleTimerDisabled = false
+        val savedIdleTimer = savedIdleTimer
+        this.savedIdleTimer = null
+        if (savedIdleTimer != null) UIApplication.sharedApplication.idleTimerDisabled = savedIdleTimer
     }
 
     private fun currentScreen(): UIScreen? =

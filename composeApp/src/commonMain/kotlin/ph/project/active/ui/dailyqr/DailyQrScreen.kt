@@ -34,6 +34,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import ph.project.active.domain.model.SessionStatus
@@ -167,7 +169,8 @@ private fun QrCard(state: DailyQrUiState, modifier: Modifier = Modifier) {
         Canvas(
             Modifier
                 .fillMaxWidth()
-                .aspectRatio(1f),
+                .aspectRatio(1f)
+                .semantics { contentDescription = UiCopy.qrCodeDescription(state.validFor) },
         ) {
             // The card padding is the quiet zone: whole-pixel modules sized on the symbol alone, centred.
             val quiet = QrEncoder.QUIET_ZONE

@@ -7,6 +7,7 @@ import org.koin.dsl.module
 import ph.project.active.data.model.SignedInAccount
 import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
+import ph.project.active.presentation.coachattendance.CoachAttendanceViewModel
 import ph.project.active.presentation.coachclasses.CoachClassesViewModel
 import ph.project.active.presentation.createclass.CreateClassViewModel
 import ph.project.active.presentation.dailyqr.DailyQrViewModel
@@ -108,6 +109,18 @@ val ViewModelModule = module {
             account = account,
             classes = get(),
             keys = get(),
+            people = get(),
+            clock = Clock.System,
+            timeZone = TimeZone.currentSystemDefault(),
+            network = get(),
+        )
+    }
+    viewModel { (account: SignedInAccount) ->
+        CoachAttendanceViewModel(
+            account = account,
+            classes = get(),
+            memberships = get(),
+            attendance = get(),
             people = get(),
             clock = Clock.System,
             timeZone = TimeZone.currentSystemDefault(),

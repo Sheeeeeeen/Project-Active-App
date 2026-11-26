@@ -31,7 +31,6 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.DrawableResource
@@ -96,8 +95,7 @@ fun StudentClassesScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .testTag(StudentClassesTestTags.home)
-                .semantics { text = AnnotatedString(greeting) },
+                .testTag(StudentClassesTestTags.home),
         ) {
             Column(Modifier.padding(horizontal = TrxSpacing.screenHorizontal)) {
                 LargeTitleHeader(

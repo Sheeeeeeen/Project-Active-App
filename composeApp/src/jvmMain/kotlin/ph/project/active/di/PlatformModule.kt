@@ -5,6 +5,8 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import ph.project.active.data.db.TrxSchema
+import ph.project.active.data.fake.InMemorySecretKeyStore
+import ph.project.active.data.repository.SecretKeyStore
 import ph.project.active.ui.platform.NoShakeSource
 import ph.project.active.ui.platform.ShakeSource
 
@@ -16,4 +18,5 @@ actual fun platformModule(): Module = module {
         }
     }
     single<ShakeSource> { NoShakeSource }
+    single<SecretKeyStore> { InMemorySecretKeyStore() }
 }

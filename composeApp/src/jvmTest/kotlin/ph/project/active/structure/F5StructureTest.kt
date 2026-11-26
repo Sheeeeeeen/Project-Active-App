@@ -79,12 +79,13 @@ class F5StructureTest {
         assertTrue(block.contains("TimeZone.currentSystemDefault()"), "DailyQrViewModel gets TimeZone.currentSystemDefault()")
     }
 
-    // F5-AC12: "CoachKeyRepository and SecretKeyStore are bound in the app Koin module" (decision 13: SqlCoachKeyRepository, InMemorySecretKeyStore)
+    // F5-AC12: "CoachKeyRepository and SecretKeyStore are bound in the app Koin module" (decision 13: SqlCoachKeyRepository).
+    // Flow 6 (F6-AC18) moves the SecretKeyStore binding out of FakeDataModule into each platformModule(), so the
+    // InMemorySecretKeyStore clause is gone here; F6StructureTest checks the platform bindings.
     @Test
-    fun F5_AC12_fakeDataModuleBindsTheCoachKeysAndTheSecretKeyStore() {
+    fun F5_AC12_fakeDataModuleBindsTheCoachKeys() {
         val module = singleMainFile("FakeDataModule.kt").readText().compact()
         assertTrue(Regex("""single<CoachKeyRepository>\{SqlCoachKeyRepository\(""").containsMatchIn(module), "single<CoachKeyRepository> { SqlCoachKeyRepository(…) }")
-        assertTrue(Regex("""single<SecretKeyStore>\{InMemorySecretKeyStore\(""").containsMatchIn(module), "single<SecretKeyStore> { InMemorySecretKeyStore() }")
     }
 
     // F5-AC12 / section 6: "A rememberDailyQr factory beside rememberCoachClasses", used by CoachHomeScreen for the QR tab
@@ -137,13 +138,13 @@ class F5StructureTest {
             "restore() lets the screen sleep again")
     }
 
-    // Ruling 4: the same rule on iOS, where keep-awake is the app's idle timer.
+    // Ruling 4: the same rule on iOS, where keep-awake is the app's idle timer. Flow 6 (F6-AC21, decision 18) changes
+    // restore() to put back the saved idleTimerDisabled instead of `false`, so that clause is gone here; F6StructureTest checks it.
     @Test
-    fun F5_AC5_iosScreenBrightnessKeepsTheScreenAwakeAndUndoesIt() {
+    fun F5_AC5_iosScreenBrightnessKeepsTheScreenAwake() {
         val source = platformScreenBrightness("iosMain").compact()
         assertTrue("brightness" in source, "the iOS ScreenBrightness sets the screen brightness")
         assertTrue("idleTimerDisabled=true" in source, "raise() keeps the screen awake (idleTimerDisabled = true)")
-        assertTrue("idleTimerDisabled=false" in source, "restore() lets the screen sleep again")
     }
 
     private fun platformScreenBrightness(sourceSet: String): String {

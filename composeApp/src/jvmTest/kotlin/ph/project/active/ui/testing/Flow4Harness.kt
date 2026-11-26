@@ -46,6 +46,7 @@ import ph.project.active.domain.usecase.RequestToJoin
 import ph.project.active.domain.usecase.VerifyDailyCode
 import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
+import ph.project.active.presentation.coachattendance.CoachAttendanceViewModel
 import ph.project.active.presentation.coachclasses.CoachClassesViewModel
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.createclass.CreateClassViewModel
@@ -62,7 +63,8 @@ import ph.project.active.presentation.studentclasses.StudentClassesViewModel
  * (Asia/Manila), coach Mara Santos, and ViewModel factories for every screen on the NavHost. No Koin.
  * The create and manage factories remember the last ViewModel they made, so a test can fill the
  * platform time and date pickers through the ViewModel. Flow 5 adds the coach keys, the Daily QR
- * factory, and a fake for the screen brightness / keep-awake interface.
+ * factory, and a fake for the screen brightness / keep-awake interface. Flow 6 adds the coach Attendance
+ * factory and [setNow] for the D21 / D22 clocks.
  */
 class Flow4Harness : AutoCloseable {
     val timeZone: TimeZone = TimeZone.of("Asia/Manila")
@@ -82,6 +84,8 @@ class Flow4Harness : AutoCloseable {
     val coachKeys: SqlCoachKeyRepository
     val brightness = FakeScreenBrightness()
     var lastDailyQr: DailyQrViewModel? = null
+        private set
+    var lastCoachAttendance: CoachAttendanceViewModel? = null
         private set
     var lastCreateClass: CreateClassViewModel? = null
         private set
@@ -164,6 +168,11 @@ class Flow4Harness : AutoCloseable {
 
     fun setToday(date: LocalDate) {
         clock.current = LocalDateTime(date.year, date.month, date.day, 9, 0).toInstant(timeZone)
+    }
+
+    /** Moves the clock to [hour]:[minute] on [date], Asia/Manila (flow 6 D22 is 5:40 PM, D21 is 9:41 AM). */
+    fun setNow(date: LocalDate, hour: Int, minute: Int) {
+        clock.current = LocalDateTime(date.year, date.month, date.day, hour, minute).toInstant(timeZone)
     }
 
     fun cancel(classId: String) {
@@ -382,6 +391,17 @@ class Flow4Harness : AutoCloseable {
         timeZone = timeZone,
         network = network,
     ).also { lastDailyQr = it }
+
+    fun coachAttendance(account: SignedInAccount): CoachAttendanceViewModel = CoachAttendanceViewModel(
+        account = account,
+        classes = classes,
+        memberships = memberships,
+        attendance = attendance,
+        people = people,
+        clock = clock,
+        timeZone = timeZone,
+        network = network,
+    ).also { lastCoachAttendance = it }
 
     /** Checks a daily code against this world's clock, as a student's phone would (Phase 2 AC75). */
     fun verifyDailyCode(): VerifyDailyCode = VerifyDailyCode(keys = coachKeys, clock = clock, timeZone = timeZone)

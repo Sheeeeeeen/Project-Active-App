@@ -39,9 +39,10 @@ class F4CoachTabsTest {
     }
 
     // Flow 5 (F5-AC19) replaced the QR placeholder with the real Daily QR, so the QR half of this test
-    // (title "QR", placeholder_tag under coach_qr, coach_qr_account) is gone. The Attendance half stays.
+    // (title "QR", placeholder_tag under coach_qr, coach_qr_account) is gone. Flow 6 (F6-AC1, F6-AC24)
+    // replaced the Attendance placeholder too, so its placeholder_tag and coach_attendance_account clauses are gone.
     @Test
-    fun F4_AC25_attendanceShowsItsTitleAndAPlaceholderTag() = runFlow4UiTest {
+    fun F4_AC25_attendanceShowsItsTitle() = runFlow4UiTest {
         Flow4Harness().use { world ->
             world.seedD1()
             world.signInAsMara()
@@ -55,9 +56,6 @@ class F4CoachTabsTest {
             tag("coach_tab_attendance").assertIsSelected()
             tag("coach_attendance").assertExists()
             assertTextUnder("coach_attendance", "Attendance")
-            assertEquals(1, countTaggedUnder("coach_attendance", "placeholder_tag"))
-            assertEquals(2, countTagged("placeholder_tag"))
-            assertEquals(1, countTaggedUnder("coach_attendance_account", "placeholder_tag"), "section 10 Q9: Attendance account button")
 
             openCoachTab("classes")
             assertEquals(listOf("CoachHome"), coachRoutes(nav), "switching tabs does not change the back stack")

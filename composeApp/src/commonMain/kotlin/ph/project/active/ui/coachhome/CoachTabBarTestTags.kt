@@ -8,5 +8,4 @@ object CoachTabBarTestTags {
     const val qrTitle = "coach_qr_title"
     const val attendanceRoot = "coach_attendance"
     const val attendanceTitle = "coach_attendance_title"
-    const val attendanceAccount = "coach_attendance_account"
 }
