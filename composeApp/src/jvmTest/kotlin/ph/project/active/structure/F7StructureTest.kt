@@ -59,7 +59,7 @@ class F7StructureTest {
         if (!studentHome.contains("rememberStudentSessions(")) problems += "StudentHomeScreen does not use rememberStudentSessions"
         for ((name, source) in listOf("StudentHomeScreen.kt" to studentHome, "AppNavHost.kt" to singleMainFile("AppNavHost.kt").readText())) {
             for (parameter in listOf("attendViewModel", "studentSessionsViewModel", "qrScanner", "cameraPermission", "scanHaptics")) {
-                if (!Regex("""\b$parameter\s*:[^=,)]*\?\s*=\s*null""").containsMatchIn(source)) {
+                if (!Regex("""\b$parameter\s*:[^=\n]*\?\s*=\s*null""").containsMatchIn(source)) {
                     problems += "$name has no optional parameter $parameter = null"
                 }
             }
@@ -152,9 +152,9 @@ class F7StructureTest {
             }
             val call = source.substring(at, source.indexOf(')', at) + 1)
             if ('$' in call) problems += "$name logs a template value: $call"
-            if (Regex("""coachId|privateKey|bytes|key\b""", RegexOption.IGNORE_CASE).containsMatchIn(call.substringAfter("TrxKeys"))) {
-                problems += "$name logs the key or the coach id: $call"
-            }
+            // A11: the line is fixed text only ("Could not save signing key for coach"), so no argument may be a value.
+            val arguments = call.substringAfter('(').substringBeforeLast(')').replace(Regex("\"[^\"]*\""), "")
+            if (Regex("[A-Za-z_]").containsMatchIn(arguments)) problems += "$name logs a value besides fixed text: $call"
         }
         assertTrue(problems.isEmpty(), problems.joinToString("\n"))
     }
