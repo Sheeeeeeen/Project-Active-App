@@ -1,5 +1,7 @@
 package ph.project.active.ui.theme
 
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -13,8 +15,14 @@ fun TrxTheme(
     content: @Composable () -> Unit,
 ) {
     val colors = if (dark) TrxColors.Dark else TrxColors.Light
+    val selection = TextSelectionColors(
+        handleColor = colors.accentText,
+        backgroundColor = colors.accentText.copy(alpha = 0.4f),
+    )
     CompositionLocalProvider(LocalTrxColors provides colors) {
-        MaterialTheme(colorScheme = colors.toColorScheme(dark), content = content)
+        MaterialTheme(colorScheme = colors.toColorScheme(dark)) {
+            CompositionLocalProvider(LocalTextSelectionColors provides selection, content = content)
+        }
     }
 }
 
