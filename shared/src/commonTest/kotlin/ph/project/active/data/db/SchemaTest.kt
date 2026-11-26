@@ -13,7 +13,8 @@ class SchemaTest {
     fun AC1_schema_version_2_creates_tables_on_an_empty_jvm_driver() {
         val db = inMemoryDb(createSchema = false)
         db.use {
-            assertEquals(2L, TrxDatabase.Schema.version)
+            // Flow 7 S4: the attendance code columns bump the schema to version 3 (flagged: not in the F7-AC47 list).
+            assertEquals(3L, TrxDatabase.Schema.version)
             assertTrue(REQUIRED_TABLES.none { it in db.tableNames() })
             TrxDatabase.Schema.create(db.driver)
             assertTrue(REQUIRED_TABLES.all { it in db.tableNames() })
