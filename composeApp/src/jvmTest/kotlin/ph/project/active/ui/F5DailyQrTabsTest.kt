@@ -8,7 +8,6 @@ import ph.project.active.ui.testing.Flow4Harness
 import ph.project.active.ui.testing.assertTextIs
 import ph.project.active.ui.testing.coachRoutes
 import ph.project.active.ui.testing.countTagged
-import ph.project.active.ui.testing.countTaggedUnder
 import ph.project.active.ui.testing.openCoachTab
 import ph.project.active.ui.testing.openDailyQr
 import ph.project.active.ui.testing.runFlow5UiTest
@@ -35,9 +34,10 @@ class F5DailyQrTabsTest {
         }
     }
 
-    // F5-AC6: "Selecting Attendance shows the existing placeholder: coach_attendance exists, the title is "Attendance", one placeholder_tag is under coach_attendance, and one is under coach_attendance_account."
+    // F5-AC6: "Selecting Attendance shows … coach_attendance exists, the title is "Attendance"". Flow 6 (F6-AC1, F6-AC24)
+    // replaced the placeholder with the real screen, so the placeholder_tag and coach_attendance_account clauses are gone.
     @Test
-    fun F5_AC6_selectingAttendanceShowsTheUnchangedPlaceholder() = runFlow5UiTest {
+    fun F5_AC6_selectingAttendanceShowsTheAttendanceTab() = runFlow5UiTest {
         Flow4Harness().use { world ->
             world.seedD19()
             val nav = openDailyQr(world)
@@ -46,8 +46,6 @@ class F5DailyQrTabsTest {
 
             tag("coach_attendance").assertExists()
             assertTextIs("coach_attendance_title", "Attendance")
-            assertEquals(1, countTaggedUnder("coach_attendance", "placeholder_tag"))
-            assertEquals(1, countTaggedUnder("coach_attendance_account", "placeholder_tag"))
             assertEquals(listOf("CoachHome"), coachRoutes(nav))
         }
     }
