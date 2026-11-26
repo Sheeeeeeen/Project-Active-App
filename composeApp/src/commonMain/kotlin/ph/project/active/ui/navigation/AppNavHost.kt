@@ -23,6 +23,7 @@ import ph.project.active.di.rememberClassDetail
 import ph.project.active.domain.model.Role
 import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
+import ph.project.active.presentation.coachattendance.CoachAttendanceViewModel
 import ph.project.active.presentation.coachclasses.CoachClassesViewModel
 import ph.project.active.presentation.createclass.CreateClassViewModel
 import ph.project.active.presentation.dailyqr.DailyQrViewModel
@@ -62,6 +63,7 @@ fun AppNavHost(
     dailyQrViewModel: ((SignedInAccount) -> DailyQrViewModel)? = null,
     // Resolved only when the QR tab opens, so hosts that never pass one (TrxApp) need no binding.
     screenBrightness: ScreenBrightness? = null,
+    coachAttendanceViewModel: ((SignedInAccount) -> CoachAttendanceViewModel)? = null,
 ) {
     val scope = rememberCoroutineScope()
     val shakes = remember { RegistrationShakeCollection() }
@@ -179,6 +181,7 @@ fun AppNavHost(
                         onOpenManage = { id -> navController.navigate(ManageClass(id)) { launchSingleTop = true } },
                         dailyQrViewModel = dailyQrViewModel,
                         screenBrightness = screenBrightness,
+                        coachAttendanceViewModel = coachAttendanceViewModel,
                     )
                 }
             }

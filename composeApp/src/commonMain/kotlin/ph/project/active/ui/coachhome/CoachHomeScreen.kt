@@ -8,12 +8,14 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ph.project.active.data.model.SignedInAccount
+import ph.project.active.di.rememberCoachAttendance
 import ph.project.active.di.rememberCoachClasses
 import ph.project.active.di.rememberDailyQr
+import ph.project.active.presentation.coachattendance.CoachAttendanceViewModel
 import ph.project.active.presentation.coachclasses.CoachClassesViewModel
 import ph.project.active.presentation.common.Navigation
 import ph.project.active.presentation.dailyqr.DailyQrViewModel
-import ph.project.active.presentation.common.UiCopy
+import ph.project.active.ui.coachattendance.CoachAttendanceScreen
 import ph.project.active.ui.coachclasses.CoachClassesScreen
 import ph.project.active.ui.dailyqr.DailyQrScreen
 import ph.project.active.ui.platform.ScreenBrightness
@@ -28,6 +30,7 @@ fun CoachHomeScreen(
     onOpenManage: (String) -> Unit,
     dailyQrViewModel: ((SignedInAccount) -> DailyQrViewModel)? = null,
     screenBrightness: ScreenBrightness? = null,
+    coachAttendanceViewModel: ((SignedInAccount) -> CoachAttendanceViewModel)? = null,
 ) {
     val classes = rememberCoachClasses(account, coachClassesViewModel)
     var selected by rememberSaveable { mutableStateOf(CoachTab.Classes) }
@@ -71,12 +74,19 @@ fun CoachHomeScreen(
             val qrState by dailyQr.state.collectAsStateWithLifecycle()
             DailyQrScreen(state = qrState, tabBar = tabBar)
         }
-        CoachTab.Attendance -> CoachTabPlaceholder(
-            title = UiCopy.tabAttendance(),
-            rootTag = CoachTabBarTestTags.attendanceRoot,
-            titleTag = CoachTabBarTestTags.attendanceTitle,
-            accountTag = CoachTabBarTestTags.attendanceAccount,
-            tabBar = tabBar,
-        )
+        CoachTab.Attendance -> {
+            val attendance = rememberCoachAttendance(account, coachAttendanceViewModel)
+            LifecycleStartEffect(attendance) {
+                attendance.refresh()
+                onStopOrDispose {}
+            }
+            val attendanceState by attendance.state.collectAsStateWithLifecycle()
+            CoachAttendanceScreen(
+                state = attendanceState,
+                onPreviousDay = attendance::onPreviousDay,
+                onNextDay = attendance::onNextDay,
+                tabBar = tabBar,
+            )
+        }
     }
 }
