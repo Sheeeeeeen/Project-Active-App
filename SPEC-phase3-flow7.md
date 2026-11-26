@@ -232,7 +232,7 @@ Everything lives inside the student root. **No new navigation routes.** The scan
 - **F7-AC12.** `StudentSessionsViewModel` on the default clock:
   - `today` = Mobility Flow, Core Burn, Sunrise (non-cancelled, start time descending), then Lunch Express (CANCELLED) last.
   - Every row has `sessionId` set.
-  - (Provisional, O1) `upcoming` = Tue 29 Lunch 2; Wed 30 Sunrise 2, Core Burn 2; Thu 1 Oct Lunch 3, Mobility 2; Fri 2 Oct Sunrise 3; Mon 5 Oct Sunrise 4, Lunch 4, Core Burn 3, Mobility 3. That is date ascending, then start time ascending, and nothing after Mon 5 Oct.
+  - `upcoming` = Tue 29 Lunch 2; Wed 30 Sunrise 2, Core Burn 2; Thu 1 Oct Lunch 3, Mobility 2; Fri 2 Oct Sunrise 3; Mon 5 Oct Sunrise 4, Lunch 4, Core Burn 3, Mobility 3. That is date ascending, then start time ascending, and nothing after Mon 5 Oct.
   - Cancelling Lunch Express Thu 1 Oct moves nothing: that row stays in place with `CANCELLED`.
 - **F7-AC13.** `looksLikeAttendanceCode` is true for Mara's code, `"  trxatt://v1/daily?x"` and any `trxatt://` text. It is false for `"https://example.com"`, `""` and `"TRXATT://v1/daily"`.
 - **F7-AC14.** `UiCopy` returns exactly the copy-table strings. Existing strings are unchanged.
@@ -385,7 +385,7 @@ Everything lives inside the student root. **No new navigation routes.** The scan
   2. Deny. C9 now shows Allow camera and Open Settings.
   3. Deny again with "Don’t ask again" (or a second time, depending on the Android version). The scanner closes and the sheet shows C18.
   4. Tap Open Settings, allow Camera, and come back. The Scan button is back.
-- **P2. iOS camera permission.** Same as P1 on an iPhone. After the first no, the sheet goes straight to C18. Open Settings opens this app's Settings page. The system dialog shows the A5 text. **Needs O2:** without a seeded student on iOS there is no class to choose.
+- **P2. iOS camera permission.** Same as P1 on an iPhone. After the first no, the sheet goes straight to C18. Open Settings opens this app's Settings page. The system dialog shows the A5 text. **Demo seed (O2, approved):** on an iOS debug build, Paolo and Mara's seeded classes are present on first launch, so a class can be chosen. This is checked by hand; there is no AC for it.
 - **P3. Two-phone scan (the main check).** Sheen's two Android phones, both on the same debug build, each freshly installed or cleared (there is no sign-out). Both use only the `DemoSeed` data. Do not create anything new on either phone. Run Monday to Friday.
   1. Coach phone: sign in as **mara@company.com / password1** and open the QR tab.
   2. Student phone: sign in as **paolo@company.com / password1**. Paolo is seeded ACTIVE on three of Mara's classes: **Sunrise TRX Strength** (Mon/Wed/Fri 6:00 AM), **Lunch Express TRX** (Mon/Tue/Thu 12:15 PM) and **TRX Core Burn** (Mon/Wed 5:30 PM).
@@ -405,6 +405,7 @@ Everything lives inside the student root. **No new navigation routes.** The scan
 - **P7. Look and screen readers.**
   - C5, C5b and C6–C15 plus C18 match Figma in light mode, look right in dark mode, and work at 360dp and 412dp.
   - The TODAY tag sits on its own line under the class name.
+  - C18 shows the warning triangle icon in its callout, as in Figma `133:7035`.
   - TalkBack and VoiceOver announce the selected class row as selected and read every button.
 
 **Test tags** (snake_case; `AttendTestTags` in `ui.attend`, `StudentSessionsTestTags` in `ui.studentsessions`, one object per file):
@@ -559,3 +560,13 @@ If a function with the same string already exists, reuse it.
   - It seeds no keys and needs none now.
 - **Outbox on reconnect:** `RootViewModel` runs `OutboxSync.sync()` when a real reading turns ONLINE. A failed upload stays `PENDING` until the next ONLINE. `AttendViewModel` also syncs right after an online scan. The uploader is `FakeAttendanceUploader`, which always succeeds.
 - **Session numbers:** `CreateClass` numbers every date 1..n in date, then start-time order, and `CancelDate` keeps the numbers (Phase 1 AC7, AC13). Cancelled sessions already stay in the count. Nothing to fix.
+
+
+## 15. Rulings after approval (Planner, Thu 26 Nov 2026, 2:30 PM Asia/Manila, on Tester's PR #16 questions)
+
+1. **Earlier-spec edits.** Section 12's edits to `SPEC-phase1.md` and `SPEC-phase2.md` go in as one docs-only commit on the PR branch (Tester), not the first commit.
+2. **Tests outside the allowed list are allowed:** schema version 2 → 3 in F5C4 and SchemaTest, SqlQueryParityTest AC9, and the test-only `navigationevent-compose` 1.1.0 dependency for pressing system back.
+3. **Manual only:** the iOS debug demo seed (under P2) and the C18 warning triangle icon (under P7).
+4. **`cameraAccessOf`** lives in `ui.platform`.
+5. **F7-AC12** is no longer provisional. O1 was approved as the next 7 days.
+6. **Phase 2 AC59** needs no edit; its Upcoming list has a single row.
