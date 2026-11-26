@@ -11,8 +11,10 @@ import ph.project.active.ui.studenthome.StudentTabBarTestTags
 import ph.project.active.ui.testing.FakeQrScanner
 import ph.project.active.ui.testing.Flow4Harness
 import ph.project.active.ui.testing.MON_28_SEP_2026
+import ph.project.active.ui.testing.OFFLINE_SUBTITLES
 import ph.project.active.ui.testing.assertNothingClickableUnder
 import ph.project.active.ui.testing.assertNoTextUnder
+import ph.project.active.ui.testing.assertTextNotShown
 import ph.project.active.ui.testing.assertTextUnder
 import ph.project.active.ui.testing.cardIdsTopToBottom
 import ph.project.active.ui.testing.chooseAndScan
@@ -105,6 +107,7 @@ class F7SessionsStatesTest {
             openSessions(world, example)
 
             assertEquals(listOf("No internet connection"), textsUnder("offline_banner").filter { it.isNotBlank() })
+            for (subtitle in OFFLINE_SUBTITLES) assertTextNotShown(subtitle)
             assertTrue(topOf("offline_banner") > topOf(StudentTabBarTestTags.sessionsTitle), "the banner sits under the title")
             assertEquals(14, cardIdsTopToBottom("sessions_row_").size, "10 upcoming rows and 4 today rows still show")
         }

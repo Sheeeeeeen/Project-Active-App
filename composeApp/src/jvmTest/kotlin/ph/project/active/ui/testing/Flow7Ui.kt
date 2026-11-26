@@ -11,14 +11,11 @@ import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performKeyInput
-import androidx.compose.ui.test.pressKey
 import androidx.compose.ui.test.v2.runDesktopComposeUiTest
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.geometry.Rect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
@@ -121,9 +118,11 @@ fun ComposeUiTest.mountFlow7(
     permission: FakeCameraPermission = FakeCameraPermission(CameraAccess.GRANTED),
     haptics: FakeScanHaptics = FakeScanHaptics(),
     lifecycle: HostLifecycle = HostLifecycle(),
+    back: SystemBack = SystemBack(),
 ): NavHostController {
     lateinit var nav: NavHostController
     setContent {
+        back.owner = LocalNavigationEventDispatcherOwner.current
         CompositionLocalProvider(LocalLifecycleOwner provides lifecycle) {
             TrxTheme(dark = false) {
                 AppNavHost(
@@ -163,9 +162,10 @@ fun ComposeUiTest.openAttend(
     permission: FakeCameraPermission = FakeCameraPermission(CameraAccess.GRANTED),
     haptics: FakeScanHaptics = FakeScanHaptics(),
     lifecycle: HostLifecycle = HostLifecycle(),
+    back: SystemBack = SystemBack(),
 ): NavHostController {
     world.signInAs(example.paolo)
-    val nav = mountFlow7(world, scanner, permission, haptics, lifecycle)
+    val nav = mountFlow7(world, scanner, permission, haptics, lifecycle, back)
     openTab("attend")
     return nav
 }
@@ -199,10 +199,10 @@ fun ComposeUiTest.scanText(scanner: FakeQrScanner, text: String) {
     waitForIdle()
 }
 
-/** The system back gesture / button. On the desktop test host this is the Escape key on the focused window. */
+/** The system back gesture / button, sent through the composition's back dispatcher (see [SystemBack]). */
 @OptIn(ExperimentalTestApi::class)
-fun ComposeUiTest.pressSystemBack() {
-    onRoot().performKeyInput { pressKey(Key.Escape) }
+fun ComposeUiTest.pressSystemBack(back: SystemBack) {
+    runOnIdle { back.press() }
     waitForIdle()
 }
 
@@ -267,3 +267,10 @@ private fun hasTestTagSuffix(suffix: String): SemanticsMatcher =
     SemanticsMatcher("TestTag ends with $suffix") { node ->
         node.config.getOrNull(SemanticsProperties.TestTag)?.endsWith(suffix) == true
     }
+
+/** The offline banner subtitles used elsewhere in the app; the Attend and Sessions banners show none of them. */
+val OFFLINE_SUBTITLES = listOf(
+    "Scans are saved on this phone and upload when you are back online.",
+    "Upload will retry when your connection returns.",
+    "Showing today\u2019s code saved on this phone.",
+)

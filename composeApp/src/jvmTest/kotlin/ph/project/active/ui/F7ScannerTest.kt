@@ -13,6 +13,7 @@ import ph.project.active.ui.testing.FakeCameraPermission
 import ph.project.active.ui.testing.FakeQrScanner
 import ph.project.active.ui.testing.FakeScanHaptics
 import ph.project.active.ui.testing.Flow4Harness
+import ph.project.active.ui.testing.SystemBack
 import ph.project.active.ui.testing.MON_28_SEP_2026
 import ph.project.active.ui.testing.assertNoTabBar
 import ph.project.active.ui.testing.assertTabBarShown
@@ -102,8 +103,8 @@ class F7ScannerTest {
             openAttend(world, example)
             chooseAndScan(world, example.coreBurn)
 
-            assertTextUnder("offline_banner", "No internet connection")
-            assertTextUnder("offline_banner", "Scans are saved on this phone and upload when you are back online.")
+            assertTextIs("offline_banner", "No internet connection")
+            assertTextUnder("scanner", "Scans are saved on this phone and upload when you are back online.")
             assertTextIs("scanner_hint_detail", "No connection needed. The scan is kept on this phone.")
         }
     }
@@ -161,10 +162,11 @@ class F7ScannerTest {
     fun F7_AC25_systemBackReturnsToAttendHome() = runFlow7UiTest {
         Flow4Harness().use { world ->
             val example = world.seedFlow7()
-            openAttend(world, example)
+            val back = SystemBack()
+            openAttend(world, example, back = back)
             chooseAndScan(world, example.coreBurn)
 
-            pressSystemBack()
+            pressSystemBack(back)
 
             tag("scanner").assertDoesNotExist()
             tag("attend_sheet").assertDoesNotExist()

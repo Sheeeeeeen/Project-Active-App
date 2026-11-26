@@ -15,6 +15,7 @@ import ph.project.active.ui.testing.MON_28_SEP_2026
 import ph.project.active.ui.testing.assertNoTabBar
 import ph.project.active.ui.testing.assertNoTextUnder
 import ph.project.active.ui.testing.assertTextIs
+import ph.project.active.ui.testing.assertTextNotShown
 import ph.project.active.ui.testing.assertTextUnder
 import ph.project.active.ui.testing.choiceTag
 import ph.project.active.ui.testing.chooseAndScan
@@ -128,8 +129,8 @@ class F7ScanResultsTest {
 
             scanText(scanner, example.marasCode)
 
-            assertTextUnder("offline_banner", "No internet connection")
-            assertNoTextUnder("offline_banner", "Scans are saved on this phone and upload when you are back online.")
+            assertTextIs("offline_banner", "No internet connection")
+            assertTextNotShown("Scans are saved on this phone and upload when you are back online.")
             for (text in listOf(
                 "Saved on this phone",
                 "Your attendance is stored now and uploads automatically when you\u2019re back online. The recorded time is the scan time.",
