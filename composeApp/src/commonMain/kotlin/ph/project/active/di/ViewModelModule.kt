@@ -9,6 +9,7 @@ import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.coachclasses.CoachClassesViewModel
 import ph.project.active.presentation.createclass.CreateClassViewModel
+import ph.project.active.presentation.dailyqr.DailyQrViewModel
 import ph.project.active.presentation.manageclass.ManageClassViewModel
 import ph.project.active.domain.usecase.ApproveRequest
 import ph.project.active.domain.usecase.CancelClass
@@ -99,6 +100,17 @@ val ViewModelModule = module {
             cancelClass = CancelClass(get(), Clock.System, timeZone),
             clock = Clock.System,
             timeZone = timeZone,
+            network = get(),
+        )
+    }
+    viewModel { (account: SignedInAccount) ->
+        DailyQrViewModel(
+            account = account,
+            classes = get(),
+            keys = get(),
+            people = get(),
+            clock = Clock.System,
+            timeZone = TimeZone.currentSystemDefault(),
             network = get(),
         )
     }

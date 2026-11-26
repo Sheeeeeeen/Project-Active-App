@@ -6,13 +6,16 @@ import ph.project.active.data.db.TrxDatabase
 import ph.project.active.data.fake.FakeAttendanceUploader
 import ph.project.active.data.fake.FakeAuthRepository
 import ph.project.active.data.fake.FakePasswordHasher
+import ph.project.active.data.fake.InMemorySecretKeyStore
 import ph.project.active.data.repository.AttendanceUploader
 import ph.project.active.data.repository.AuthRepository
 import ph.project.active.data.repository.NetworkMonitor
 import ph.project.active.data.repository.PersonRepository
+import ph.project.active.data.repository.SecretKeyStore
 import ph.project.active.data.repository.SessionStore
 import ph.project.active.data.repository.SqlAttendanceRepository
 import ph.project.active.data.repository.SqlClassRepository
+import ph.project.active.data.repository.SqlCoachKeyRepository
 import ph.project.active.data.repository.SqlMembershipRepository
 import ph.project.active.data.repository.SqlPersonRepository
 import ph.project.active.data.repository.SqlSessionStore
@@ -20,6 +23,7 @@ import ph.project.active.data.sync.OutboxSync
 import ph.project.active.domain.crypto.PasswordHasher
 import ph.project.active.domain.repository.AttendanceRepository
 import ph.project.active.domain.repository.ClassRepository
+import ph.project.active.domain.repository.CoachKeyRepository
 import ph.project.active.domain.repository.MembershipRepository
 import ph.project.active.domain.repository.UserRepository
 import ph.project.active.domain.repository.inmemory.InMemoryUserRepository
@@ -34,6 +38,9 @@ val FakeDataModule = module {
     single<ClassRepository> { SqlClassRepository(get()) }
     single<MembershipRepository> { SqlMembershipRepository(get()) }
     single<AttendanceRepository> { SqlAttendanceRepository(get()) }
+    // Placeholder: the private key stays in memory until the Android Keystore / iOS Keychain pass.
+    single<SecretKeyStore> { InMemorySecretKeyStore() }
+    single<CoachKeyRepository> { SqlCoachKeyRepository(database = get(), secrets = get()) }
     single<NetworkMonitor> { platformNetworkMonitor() }
     single<UserRepository> { InMemoryUserRepository() }
     single<PasswordHasher> { FakePasswordHasher() }

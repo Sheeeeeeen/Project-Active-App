@@ -20,7 +20,7 @@ import ph.project.active.ui.platform.LightStatusBarIcons
 import ph.project.active.ui.theme.LocalTrxColors
 import ph.project.active.ui.theme.TrxSpacing
 
-/** The coach QR and Attendance tabs: large-title chrome, the tab bar, and only the placeholder tag. */
+/** The coach Attendance tab: large-title chrome, the tab bar, and only the placeholder tag. */
 @Composable
 fun CoachTabPlaceholder(
     title: String,
@@ -30,8 +30,7 @@ fun CoachTabPlaceholder(
     tabBar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Placeholder: the coach daily QR (D19–D20) replaces the QR tab in flow 5, and coach
-    // attendance (D21–D22) replaces the Attendance tab in flow 6.
+    // Placeholder: coach attendance (D21–D22) replaces the Attendance tab in flow 6.
     LightStatusBarIcons(lightIcons = false)
     val colors = LocalTrxColors.current
     Scaffold(

@@ -8,11 +8,12 @@ import ph.project.active.data.inMemoryDb
 
 class SchemaTest {
 
+    // Flow 5 C4 / F5-AC19: the only edit is the version, which is now 2 (was 1).
     @Test
-    fun AC1_schema_version_1_creates_tables_on_an_empty_jvm_driver() {
+    fun AC1_schema_version_2_creates_tables_on_an_empty_jvm_driver() {
         val db = inMemoryDb(createSchema = false)
         db.use {
-            assertEquals(1L, TrxDatabase.Schema.version)
+            assertEquals(2L, TrxDatabase.Schema.version)
             assertTrue(REQUIRED_TABLES.none { it in db.tableNames() })
             TrxDatabase.Schema.create(db.driver)
             assertTrue(REQUIRED_TABLES.all { it in db.tableNames() })

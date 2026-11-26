@@ -1,0 +1,3 @@
+-- v1 -> v2. membership.joined_by may or may not exist on a v1 install (it arrived in PR #12 without
+-- a version bump), and SQLite has no ADD COLUMN IF NOT EXISTS, so TrxSchema adds it in code after
+-- this step, only when it is missing.

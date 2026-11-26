@@ -14,6 +14,20 @@ object UiCopy {
 
     fun qrOfflineSubtitle(): String = "Showing today\u2019s code saved on this phone."
 
+    fun dailyQrOverline(): String = "DAILY QR"
+
+    fun todaysCode(): String = "Today\u2019s code"
+
+    fun dailyQrSubtitle(date: LocalDate, coachName: String): String = "${formatDate(date)} \u00B7 Coach $coachName"
+
+    fun validForDate(date: LocalDate): String = "Valid ${formatDate(date)} only"
+
+    fun brightnessRaised(): String = "Brightness is raised while this code is open"
+
+    fun thisCodeCoversToday(): String = "This code covers today"
+
+    fun oneCodeAllClasses(): String = "One code \u00B7 all classes"
+
     fun classListUnavailableTitle(): String = "Today\u2019s class list can\u2019t load"
 
     fun classListUnavailableBody(): String =
@@ -454,6 +468,9 @@ object UiCopy {
     fun matchLine(employeeId: String, status: String): String = "$employeeId \u00B7 Student \u00B7 $status"
 
     fun inlineSeparator(): String = " \u00B7 "
+
+    /** A count in a small pill: the number up to 99, then "99+". */
+    fun countBadge(count: Int): String = if (count > 99) "99+" else count.toString()
 
     fun notOnThisClass(): String = "Not on this class"
 

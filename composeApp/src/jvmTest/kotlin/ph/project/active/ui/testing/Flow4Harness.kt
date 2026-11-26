@@ -12,11 +12,13 @@ import ph.project.active.data.db.TrxDatabase
 import ph.project.active.data.fake.FakeAttendanceUploader
 import ph.project.active.data.fake.FakeAuthRepository
 import ph.project.active.data.fake.FakePasswordHasher
+import ph.project.active.data.fake.InMemorySecretKeyStore
 import ph.project.active.data.fake.MutableNetworkMonitor
 import ph.project.active.data.model.PersonProfile
 import ph.project.active.data.model.SignedInAccount
 import ph.project.active.data.repository.SqlAttendanceRepository
 import ph.project.active.data.repository.SqlClassRepository
+import ph.project.active.data.repository.SqlCoachKeyRepository
 import ph.project.active.data.repository.SqlMembershipRepository
 import ph.project.active.data.repository.SqlPersonRepository
 import ph.project.active.data.repository.SqlSessionStore
@@ -41,11 +43,13 @@ import ph.project.active.domain.usecase.RegisterCoach
 import ph.project.active.domain.usecase.RegisterStudent
 import ph.project.active.domain.usecase.RemoveFromRoster
 import ph.project.active.domain.usecase.RequestToJoin
+import ph.project.active.domain.usecase.VerifyDailyCode
 import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.coachclasses.CoachClassesViewModel
 import ph.project.active.presentation.common.RegistrationOrigin
 import ph.project.active.presentation.createclass.CreateClassViewModel
+import ph.project.active.presentation.dailyqr.DailyQrViewModel
 import ph.project.active.presentation.guestclasses.GuestClassListViewModel
 import ph.project.active.presentation.invites.InvitesViewModel
 import ph.project.active.presentation.manageclass.ManageClassViewModel
@@ -57,7 +61,8 @@ import ph.project.active.presentation.studentclasses.StudentClassesViewModel
  * Flow 4 test world: one in-memory database, a clock fixed on Mon 28 Sep 2026 at 9:00 AM
  * (Asia/Manila), coach Mara Santos, and ViewModel factories for every screen on the NavHost. No Koin.
  * The create and manage factories remember the last ViewModel they made, so a test can fill the
- * platform time and date pickers through the ViewModel.
+ * platform time and date pickers through the ViewModel. Flow 5 adds the coach keys, the Daily QR
+ * factory, and a fake for the screen brightness / keep-awake interface.
  */
 class Flow4Harness : AutoCloseable {
     val timeZone: TimeZone = TimeZone.of("Asia/Manila")
@@ -73,6 +78,11 @@ class Flow4Harness : AutoCloseable {
     val memberships: SqlMembershipRepository
     val attendance: SqlAttendanceRepository
     val auth: FakeAuthRepository
+    val secrets = InMemorySecretKeyStore()
+    val coachKeys: SqlCoachKeyRepository
+    val brightness = FakeScreenBrightness()
+    var lastDailyQr: DailyQrViewModel? = null
+        private set
     var lastCreateClass: CreateClassViewModel? = null
         private set
     var lastManage: ManageClassViewModel? = null
@@ -92,6 +102,7 @@ class Flow4Harness : AutoCloseable {
         classes = SqlClassRepository(database)
         memberships = SqlMembershipRepository(database)
         attendance = SqlAttendanceRepository(database)
+        coachKeys = SqlCoachKeyRepository(database, secrets)
         outbox = OutboxSync(attendance, FakeAttendanceUploader(), network)
         requestToJoin = RequestToJoin(classes, memberships)
         auth = FakeAuthRepository(users, hasher, network, session, people)
@@ -187,8 +198,10 @@ class Flow4Harness : AutoCloseable {
         accept(classId, student)
     }
 
-    /** A past attendance record, saved straight to the repository. */
-    /** A past scan that was already uploaded (SYNCED), so the start-up outbox sync leaves it alone (F4-AC20). */
+    /**
+     * A past attendance record, saved straight to the repository. It is already uploaded (SYNCED),
+     * so the start-up outbox sync leaves it alone (F4-AC20).
+     */
     fun recordAttendance(classId: String, student: User, date: LocalDate): AttendanceRecord {
         val session = classes.sessionsOf(classId).first { it.date == date }
         val record = AttendanceRecord(
@@ -359,6 +372,19 @@ class Flow4Harness : AutoCloseable {
         timeZone = timeZone,
         network = network,
     ).also { lastManage = it }
+
+    fun dailyQr(account: SignedInAccount): DailyQrViewModel = DailyQrViewModel(
+        account = account,
+        classes = classes,
+        keys = coachKeys,
+        people = people,
+        clock = clock,
+        timeZone = timeZone,
+        network = network,
+    ).also { lastDailyQr = it }
+
+    /** Checks a daily code against this world's clock, as a student's phone would (Phase 2 AC75). */
+    fun verifyDailyCode(): VerifyDailyCode = VerifyDailyCode(keys = coachKeys, clock = clock, timeZone = timeZone)
 
     override fun close() {
         driver.close()

@@ -25,6 +25,7 @@ import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.coachclasses.CoachClassesViewModel
 import ph.project.active.presentation.createclass.CreateClassViewModel
+import ph.project.active.presentation.dailyqr.DailyQrViewModel
 import ph.project.active.presentation.manageclass.ManageClassViewModel
 import ph.project.active.presentation.common.Navigation
 import ph.project.active.presentation.common.RegistrationOrigin
@@ -40,6 +41,7 @@ import ph.project.active.ui.coachhome.CoachHomeScreen
 import ph.project.active.ui.createclass.CreateClassRoute
 import ph.project.active.ui.manageclass.ManageClassRoute
 import ph.project.active.ui.studenthome.StudentHomeScreen
+import ph.project.active.ui.platform.ScreenBrightness
 import ph.project.active.ui.platform.ShakeSource
 import ph.project.active.ui.registration.RegistrationRoute
 
@@ -57,6 +59,9 @@ fun AppNavHost(
     coachClassesViewModel: ((SignedInAccount) -> CoachClassesViewModel)? = null,
     createClassViewModel: ((SignedInAccount) -> CreateClassViewModel)? = null,
     manageClassViewModel: ((SignedInAccount, String) -> ManageClassViewModel)? = null,
+    dailyQrViewModel: ((SignedInAccount) -> DailyQrViewModel)? = null,
+    // Resolved only when the QR tab opens, so hosts that never pass one (TrxApp) need no binding.
+    screenBrightness: ScreenBrightness? = null,
 ) {
     val scope = rememberCoroutineScope()
     val shakes = remember { RegistrationShakeCollection() }
@@ -172,6 +177,8 @@ fun AppNavHost(
                         coachClassesViewModel = coachClassesViewModel,
                         onOpenCreate = { navController.navigate(CreateClass) { launchSingleTop = true } },
                         onOpenManage = { id -> navController.navigate(ManageClass(id)) { launchSingleTop = true } },
+                        dailyQrViewModel = dailyQrViewModel,
+                        screenBrightness = screenBrightness,
                     )
                 }
             }
