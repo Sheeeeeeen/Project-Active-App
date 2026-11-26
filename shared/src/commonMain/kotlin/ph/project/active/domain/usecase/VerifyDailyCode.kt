@@ -4,6 +4,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
+import ph.project.active.domain.crypto.decodeCoachIdOrNull
 import ph.project.active.domain.crypto.fromBase64UrlOrNull
 import ph.project.active.domain.repository.CoachKeyRepository
 import ph.project.active.domain.model.DailyCodeCheck
@@ -39,7 +40,8 @@ class VerifyDailyCode(
 
     private fun parse(code: String): ParsedCode? {
         val match = DAILY_URI.matchEntire(code.trim().trimEnd('=')) ?: return null
-        val (coachId, dateText, sigText) = match.destructured
+        val (coachText, dateText, sigText) = match.destructured
+        val coachId = decodeCoachIdOrNull(coachText) ?: return null
         val date = try {
             LocalDate.parse(dateText)
         } catch (e: IllegalArgumentException) {

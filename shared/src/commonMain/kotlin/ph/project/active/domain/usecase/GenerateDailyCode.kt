@@ -3,6 +3,7 @@ package ph.project.active.domain.usecase
 import kotlinx.datetime.LocalDate
 import ph.project.active.domain.repository.CoachKeyRepository
 import ph.project.active.domain.crypto.DAILY_URI_PREFIX
+import ph.project.active.domain.crypto.encodeCoachId
 import ph.project.active.domain.crypto.signedPayload
 import ph.project.active.domain.crypto.toBase64Url
 
@@ -14,6 +15,6 @@ class GenerateDailyCode(private val keys: CoachKeyRepository) {
     operator fun invoke(coachId: String, date: LocalDate): String {
         val keyPair = checkNotNull(keys.find(coachId)) { "Coach $coachId has no signing key" }
         val sig = keyPair.sign(signedPayload(coachId, date)).toBase64Url()
-        return "$DAILY_URI_PREFIX?coach=$coachId&date=$date&sig=$sig"
+        return "$DAILY_URI_PREFIX?coach=${encodeCoachId(coachId)}&date=$date&sig=$sig"
     }
 }

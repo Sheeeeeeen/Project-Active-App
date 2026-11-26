@@ -1,7 +1,9 @@
 package ph.project.active.presentation.common
 
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import ph.project.active.domain.model.Role
+import ph.project.active.domain.model.TimeSlot
 import ph.project.active.presentation.classdetail.JoinOutcome
 
 object UiCopy {
@@ -217,6 +219,25 @@ object UiCopy {
     fun dayEnded(): String = "Day ended"
 
     fun inProgress(): String = "Today \u00B7 in progress"
+
+    fun attendanceSlotLine(slot: TimeSlot, sessionNumber: Int): String =
+        "${formatSlot(slot)} \u00B7 Session $sessionNumber"
+
+    fun cancelledSlotLine(slot: TimeSlot): String = "${formatSlot(slot)} \u00B7 no attendance"
+
+    fun choseAndScanned(className: String, time: LocalTime): String =
+        "Chose $className \u00B7 scanned ${formatTime(time)}"
+
+    fun absentSetAfterDayEnds(): String = "\u00B7 Absent is set after the day ends"
+
+    fun noSessionsOnDate(): String = "No sessions on this date."
+
+    fun previousDay(): String = "Previous day"
+
+    fun nextDay(): String = "Next day"
+
+    fun qrCodeDescription(date: LocalDate): String =
+        "Today\u2019s attendance code, valid ${formatDate(date)} only"
 
     fun guestListTitle(): String = "Classes"
 
