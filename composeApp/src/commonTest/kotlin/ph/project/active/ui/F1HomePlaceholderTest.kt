@@ -69,7 +69,7 @@ class F1HomePlaceholderTest {
             typeInto("registration_password_field", "password1")
             typeInto("registration_employee_id_field", "EMP-20417")
             clickTag("registration_submit_button")
-            tag("student_home").assertTextContains("Hi Ella \u00B7 EMP-20417")
+            tag("student_classes_greeting").assertTextContains("Hi Ella \u00B7 EMP-20417")
             tag("student_home_open_class").assertDoesNotExist()
             assertNoSignOut()
         }

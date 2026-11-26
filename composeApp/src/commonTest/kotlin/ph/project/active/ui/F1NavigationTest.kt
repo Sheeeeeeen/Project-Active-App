@@ -182,13 +182,13 @@ class F1NavigationTest {
             first.session.save(account)
             runFlow1UiTest {
                 showApp(first)
-                tag("student_home").assertTextContains("Hi Ella \u00B7 EMP-20417")
+                tag("student_classes_greeting").assertTextContains("Hi Ella \u00B7 EMP-20417")
             }
         }
         Flow1Harness(path = path, createSchema = false).use { second ->
             runFlow1UiTest {
                 showApp(second)
-                tag("student_home").assertTextContains("Hi Ella \u00B7 EMP-20417")
+                tag("student_classes_greeting").assertTextContains("Hi Ella \u00B7 EMP-20417")
             }
         }
     }
