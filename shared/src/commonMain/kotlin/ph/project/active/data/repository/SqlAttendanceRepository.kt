@@ -1,5 +1,8 @@
 package ph.project.active.data.repository
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.datetime.Instant
 import ph.project.active.data.db.TrxDatabase
 import ph.project.active.domain.repository.AttendanceRepository
@@ -9,6 +12,8 @@ import ph.project.active.domain.model.UploadState
 
 class SqlAttendanceRepository(private val database: TrxDatabase) : AttendanceRepository {
     private val ids = SqlIdSource(database)
+    private val _changes = MutableStateFlow(0)
+    override val changes: StateFlow<Int> = _changes.asStateFlow()
 
     override fun nextId(): String = ids.next("attendance")
 
@@ -28,6 +33,7 @@ class SqlAttendanceRepository(private val database: TrxDatabase) : AttendanceRep
             record.status.name,
             record.uploadState.name,
         )
+        _changes.value += 1
     }
 
     override fun update(record: AttendanceRecord) {
@@ -42,6 +48,7 @@ class SqlAttendanceRepository(private val database: TrxDatabase) : AttendanceRep
             record.uploadState.name,
             record.id,
         )
+        _changes.value += 1
     }
 }
 
