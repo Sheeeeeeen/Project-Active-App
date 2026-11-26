@@ -35,12 +35,14 @@ class F3TabsTest {
             openTab("attend")
             tag("student_tab_attend").assertIsSelected()
             assertTextUnder("student_attend", "Attend")
-            assertEquals(2, countTagged("placeholder_tag"), "Attend's own tag plus the account button's")
+            // Flow 7 F7-AC15 / F7-AC47: Attend is the real screen now, with no placeholder tag and no profile icon.
+            assertEquals(0, countTagged("placeholder_tag"), "Attend has no placeholder tag")
 
             openTab("sessions")
             tag("student_tab_sessions").assertIsSelected()
             assertTextUnder("student_sessions", "Sessions")
-            assertEquals(2, countTagged("placeholder_tag"), "Sessions' own tag plus the account button's")
+            // Flow 7 F7-AC36 / F7-AC47: Sessions is the real screen now, with no placeholder tag and no profile icon.
+            assertEquals(0, countTagged("placeholder_tag"), "Sessions has no placeholder tag")
 
             openTab("invites")
             assertEquals(1, countTagged("placeholder_tag"), "Invites has one placeholder tag")
