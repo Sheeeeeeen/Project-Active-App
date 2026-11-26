@@ -32,6 +32,9 @@ class SqlAttendanceRepository(private val database: TrxDatabase) : AttendanceRep
             record.scannedAt.toString(),
             record.status.name,
             record.uploadState.name,
+            record.codeCoach,
+            record.codeDate,
+            record.codeSig,
         )
         _changes.value += 1
     }
@@ -46,6 +49,9 @@ class SqlAttendanceRepository(private val database: TrxDatabase) : AttendanceRep
             record.scannedAt.toString(),
             record.status.name,
             record.uploadState.name,
+            record.codeCoach,
+            record.codeDate,
+            record.codeSig,
             record.id,
         )
         _changes.value += 1
@@ -60,6 +66,9 @@ private fun ph.project.active.data.db.SelectAllAttendance.toRecord(): Attendance
     scannedAt = Instant.parse(scannedAt),
     status = AttendanceStatus.valueOf(status),
     uploadState = UploadState.valueOf(uploadState),
+    codeCoach = codeCoach,
+    codeDate = codeDate,
+    codeSig = codeSig,
 )
 
 private fun ph.project.active.data.db.SelectAttendanceByPair.toRecord(): AttendanceRecord = AttendanceRecord(
@@ -70,4 +79,7 @@ private fun ph.project.active.data.db.SelectAttendanceByPair.toRecord(): Attenda
     scannedAt = Instant.parse(scannedAt),
     status = AttendanceStatus.valueOf(status),
     uploadState = UploadState.valueOf(uploadState),
+    codeCoach = codeCoach,
+    codeDate = codeDate,
+    codeSig = codeSig,
 )

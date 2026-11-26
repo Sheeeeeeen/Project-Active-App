@@ -45,10 +45,11 @@ class AttendanceQueriesTest {
         val rows = world.studentSessions(studentId = student.id)
 
         val byDate = rows.associate { it.session.date to it.status }
-        assertEquals(9, rows.size, "10 sessions minus 1 cancelled")
+        // Flow 7 S9 / F7-AC47: a cancelled date of an open class is now listed, as CANCELLED (was left out).
+        assertEquals(10, rows.size, "10 sessions, the cancelled one included")
         assertEquals(rows.size, rows.map { it.session.id }.toSet().size, "one row per session")
-        assertTrue(rows.none { it.session.date == MON_12_OCT }, "cancelled sessions are omitted")
-        assertTrue(rows.none { it.session.status == SessionStatus.CANCELLED })
+        assertEquals(StudentSessionStatus.CANCELLED, byDate[MON_12_OCT], "the cancelled date shows as CANCELLED")
+        assertEquals(listOf(MON_12_OCT), rows.filter { it.session.status == SessionStatus.CANCELLED }.map { it.session.date })
         assertEquals(StudentSessionStatus.PRESENT, byDate[MON_28_SEP_2026])
         assertEquals(StudentSessionStatus.ABSENT, byDate[WED_30_SEP_2026])
         assertEquals(StudentSessionStatus.UPCOMING, byDate[MON_5_OCT])

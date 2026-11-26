@@ -1,11 +1,38 @@
 package ph.project.active.domain.crypto
 
 import kotlinx.datetime.LocalDate
+import ph.project.active.domain.model.DailyCodeLink
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 internal const val DAILY_URI_PREFIX = "trxatt://v1/daily"
 internal val DAILY_URI = Regex("""^trxatt://v1/daily\?coach=([A-Za-z0-9_.~%-]+)&date=(\d{4}-\d{2}-\d{2})&sig=([A-Za-z0-9_-]+)$""")
+
+/**
+ * Reads a daily-code link. Returns null unless coach, date and sig are all present, the coach
+ * decodes, the date is a real day, and sig is non-empty base64url. The signature is not checked.
+ */
+internal fun parseDailyCodeLink(code: String): DailyCodeLink? {
+    val match = DAILY_URI.matchEntire(code.trim()) ?: return null
+    val rawCoach = match.groupValues[1]
+    val rawDate = match.groupValues[2]
+    val sig = match.groupValues[3]
+    val coachId = decodeCoachIdOrNull(rawCoach)?.takeIf { it.isNotEmpty() } ?: return null
+    val date = try {
+        LocalDate.parse(rawDate)
+    } catch (_: IllegalArgumentException) {
+        return null
+    }
+    val sigBytes = sig.fromBase64UrlOrNull() ?: return null
+    if (sigBytes.isEmpty()) return null
+    return DailyCodeLink(
+        coachId = coachId,
+        date = date,
+        rawCoach = rawCoach,
+        rawDate = rawDate,
+        sig = sig,
+    )
+}
 
 /** Bytes that get signed: binds the signature to the coach and the date. */
 internal fun signedPayload(coachId: String, date: LocalDate): ByteArray =

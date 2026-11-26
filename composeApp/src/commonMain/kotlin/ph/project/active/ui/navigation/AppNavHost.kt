@@ -23,7 +23,12 @@ import ph.project.active.di.rememberClassDetail
 import ph.project.active.domain.model.Role
 import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
+import ph.project.active.presentation.attend.AttendViewModel
 import ph.project.active.presentation.coachattendance.CoachAttendanceViewModel
+import ph.project.active.presentation.studentsessions.StudentSessionsViewModel
+import ph.project.active.ui.platform.CameraPermission
+import ph.project.active.ui.platform.QrScanner
+import ph.project.active.ui.platform.ScanHaptics
 import ph.project.active.presentation.coachclasses.CoachClassesViewModel
 import ph.project.active.presentation.createclass.CreateClassViewModel
 import ph.project.active.presentation.dailyqr.DailyQrViewModel
@@ -64,6 +69,11 @@ fun AppNavHost(
     // Resolved only when the QR tab opens, so hosts that never pass one (TrxApp) need no binding.
     screenBrightness: ScreenBrightness? = null,
     coachAttendanceViewModel: ((SignedInAccount) -> CoachAttendanceViewModel)? = null,
+    attendViewModel: ((SignedInAccount) -> AttendViewModel)? = null,
+    studentSessionsViewModel: ((SignedInAccount) -> StudentSessionsViewModel)? = null,
+    qrScanner: QrScanner? = null,
+    cameraPermission: CameraPermission? = null,
+    scanHaptics: ScanHaptics? = null,
 ) {
     val scope = rememberCoroutineScope()
     val shakes = remember { RegistrationShakeCollection() }
@@ -168,6 +178,11 @@ fun AppNavHost(
                         onOpenClass = { id ->
                             navController.follow(Navigation.OpenClassDetail(id), shakes, scope, shakeSource, registrationViewModel)
                         },
+                        attendViewModel = attendViewModel,
+                        studentSessionsViewModel = studentSessionsViewModel,
+                        qrScanner = qrScanner,
+                        cameraPermission = cameraPermission,
+                        scanHaptics = scanHaptics,
                     )
                 }
             }

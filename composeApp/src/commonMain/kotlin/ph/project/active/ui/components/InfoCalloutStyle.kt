@@ -1,3 +1,3 @@
 package ph.project.active.ui.components
 
-enum class InfoCalloutStyle { Info, Neutral, Accent }
+enum class InfoCalloutStyle { Info, Neutral, Accent, Warning }

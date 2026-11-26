@@ -11,4 +11,5 @@ data class StudentSessionUiRow(
     val slot: TimeSlot,
     val status: StudentSessionStatus,
     val uploadPending: Boolean,
+    val sessionId: String = "",
 )

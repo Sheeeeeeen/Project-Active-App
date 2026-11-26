@@ -1,10 +1,14 @@
 package ph.project.active.presentation.studentsessions
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 import ph.project.active.domain.repository.AttendanceRepository
@@ -17,6 +21,7 @@ import ph.project.active.data.repository.NetworkMonitor
 import ph.project.active.presentation.common.requireStudent
 import ph.project.active.presentation.common.ConnectionUi
 import ph.project.active.presentation.common.toConnection
+import ph.project.active.domain.model.StudentSessionStatus
 import ph.project.active.domain.model.UploadState
 import ph.project.active.presentation.common.Navigation
 
@@ -40,6 +45,11 @@ class StudentSessionsViewModel(
 
     init {
         watchConnection(network, _state) { copy(connection = it) }
+        viewModelScope.launch {
+            attendance.changes.collect {
+                _state.value = load(_state.value.connection, _state.value.navigation)
+            }
+        }
     }
 
     fun refresh() {
@@ -61,12 +71,17 @@ class StudentSessionsViewModel(
                 slot = row.session.slot,
                 status = row.status,
                 uploadPending = pending,
+                sessionId = row.session.id,
             )
         }
-        val order = compareByDescending<StudentSessionUiRow> { it.date }.thenByDescending { it.slot.start }
-        val upcoming = rows.filter { it.date > today }.sortedWith(order)
-        val todayRows = rows.filter { it.date == today }.sortedWith(order)
-        val earlier = rows.filter { it.date < today }.sortedWith(order)
+        val soonest = compareBy<StudentSessionUiRow> { it.date }.thenBy { it.slot.start }
+        val latest = compareByDescending<StudentSessionUiRow> { it.date }.thenByDescending { it.slot.start }
+        val horizon = today.plus(DatePeriod(days = 7))
+        val upcoming = rows.filter { it.date > today && it.date <= horizon }.sortedWith(soonest)
+        val onToday = rows.filter { it.date == today }
+        val todayRows = onToday.filter { it.status != StudentSessionStatus.CANCELLED }.sortedByDescending { it.slot.start } +
+            onToday.filter { it.status == StudentSessionStatus.CANCELLED }.sortedBy { it.slot.start }
+        val earlier = rows.filter { it.date < today }.sortedWith(latest)
         return StudentSessionsUiState(
             upcoming = upcoming,
             today = todayRows,

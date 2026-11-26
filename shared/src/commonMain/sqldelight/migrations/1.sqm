@@ -1,0 +1,2 @@
+-- v1 to v2 adds membership.joined_by in TrxSchema when the column is missing.
+UPDATE id_counter SET value = value WHERE 0;

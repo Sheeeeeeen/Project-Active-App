@@ -23,7 +23,16 @@ import ph.project.active.presentation.guestclasses.GuestClassListViewModel
 import ph.project.active.presentation.invites.InvitesViewModel
 import ph.project.active.presentation.registration.RegistrationViewModel
 import ph.project.active.presentation.root.RootViewModel
+import ph.project.active.data.repository.NetworkMonitor
+import ph.project.active.domain.repository.AttendanceRepository
+import ph.project.active.domain.repository.ClassRepository
+import ph.project.active.domain.repository.CoachKeyRepository
+import ph.project.active.domain.repository.MembershipRepository
+import ph.project.active.domain.usecase.RecordAttendance
+import ph.project.active.domain.usecase.VerifyDailyCode
+import ph.project.active.presentation.attend.AttendViewModel
 import ph.project.active.presentation.studentclasses.StudentClassesViewModel
+import ph.project.active.presentation.studentsessions.StudentSessionsViewModel
 
 val ViewModelModule = module {
     viewModel { RootViewModel(session = get(), network = get(), outbox = get()) }
@@ -127,4 +136,48 @@ val ViewModelModule = module {
             network = get(),
         )
     }
+    viewModel { (account: SignedInAccount) ->
+        AttendViewModel(
+            account = account,
+            classes = get(),
+            memberships = get(),
+            attendance = get(),
+            people = get(),
+            recordAttendance = recordAttendance(get(), get(), get(), get(), get()),
+            outbox = get(),
+            clock = Clock.System,
+            timeZone = TimeZone.currentSystemDefault(),
+            network = get(),
+        )
+    }
+    viewModel { (account: SignedInAccount) ->
+        StudentSessionsViewModel(
+            account = account,
+            classes = get(),
+            memberships = get(),
+            attendance = get(),
+            clock = Clock.System,
+            timeZone = TimeZone.currentSystemDefault(),
+            network = get(),
+        )
+    }
+}
+
+private fun recordAttendance(
+    classes: ClassRepository,
+    memberships: MembershipRepository,
+    attendance: AttendanceRepository,
+    keys: CoachKeyRepository,
+    network: NetworkMonitor,
+): RecordAttendance {
+    val timeZone = TimeZone.currentSystemDefault()
+    return RecordAttendance(
+        classes = classes,
+        memberships = memberships,
+        attendance = attendance,
+        verifyDailyCode = VerifyDailyCode(keys = keys, clock = Clock.System, timeZone = timeZone),
+        clock = Clock.System,
+        timeZone = timeZone,
+        networkStatus = { network.status.value },
+    )
 }

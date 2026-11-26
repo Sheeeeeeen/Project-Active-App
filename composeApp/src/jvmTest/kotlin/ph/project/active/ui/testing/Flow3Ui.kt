@@ -18,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import ph.project.active.ui.platform.CameraAccess
 
 /**
  * Runs a flow 3 UI test in a tall window, so all six C1 cards are composed at once.
@@ -32,7 +33,10 @@ fun runFlow3UiTest(block: suspend ComposeUiTest.() -> Unit) {
     }
 }
 
-/** Mounts the one NavHost with the flow 3 world's factories. Call `signInAsPaolo()` first to start on StudentHome. */
+/**
+ * Mounts the one NavHost with the flow 3 world's factories. Call `signInAsPaolo()` first to start on StudentHome.
+ * Flow 7: also the Attend and Sessions factories and the scanner, camera and haptics fakes, so no tab resolves from Koin.
+ */
 @OptIn(ExperimentalTestApi::class)
 fun ComposeUiTest.mountFlow3(world: Flow3Harness): NavHostController {
     lateinit var nav: NavHostController
@@ -47,6 +51,11 @@ fun ComposeUiTest.mountFlow3(world: Flow3Harness): NavHostController {
             coachClassesViewModel = world::coachClasses,
             createClassViewModel = world::createClass,
             manageClassViewModel = world::manageClass,
+            attendViewModel = world::attend,
+            studentSessionsViewModel = world::studentSessions,
+            qrScanner = FakeQrScanner(),
+            cameraPermission = FakeCameraPermission(CameraAccess.GRANTED),
+            scanHaptics = FakeScanHaptics(),
             onNavController = { nav = it },
         )
     }

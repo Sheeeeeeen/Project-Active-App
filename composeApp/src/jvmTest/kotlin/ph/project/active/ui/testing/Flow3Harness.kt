@@ -12,11 +12,13 @@ import ph.project.active.data.db.TrxDatabase
 import ph.project.active.data.fake.FakeAttendanceUploader
 import ph.project.active.data.fake.FakeAuthRepository
 import ph.project.active.data.fake.FakePasswordHasher
+import ph.project.active.data.fake.InMemorySecretKeyStore
 import ph.project.active.data.fake.MutableNetworkMonitor
 import ph.project.active.data.model.PersonProfile
 import ph.project.active.data.model.SignedInAccount
 import ph.project.active.data.repository.SqlAttendanceRepository
 import ph.project.active.data.repository.SqlClassRepository
+import ph.project.active.data.repository.SqlCoachKeyRepository
 import ph.project.active.data.repository.SqlMembershipRepository
 import ph.project.active.data.repository.SqlPersonRepository
 import ph.project.active.data.repository.SqlSessionStore
@@ -35,10 +37,13 @@ import ph.project.active.domain.usecase.CreateClass
 import ph.project.active.domain.usecase.DeclineInvite
 import ph.project.active.domain.usecase.DeclineRequest
 import ph.project.active.domain.usecase.InviteByEmployeeId
+import ph.project.active.domain.usecase.RecordAttendance
 import ph.project.active.domain.usecase.RegisterCoach
 import ph.project.active.domain.usecase.RegisterStudent
 import ph.project.active.domain.usecase.RemoveFromRoster
 import ph.project.active.domain.usecase.RequestToJoin
+import ph.project.active.domain.usecase.VerifyDailyCode
+import ph.project.active.presentation.attend.AttendViewModel
 import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.coachclasses.CoachClassesViewModel
@@ -50,10 +55,12 @@ import ph.project.active.presentation.invites.InvitesViewModel
 import ph.project.active.presentation.registration.RegistrationViewModel
 import ph.project.active.presentation.root.RootViewModel
 import ph.project.active.presentation.studentclasses.StudentClassesViewModel
+import ph.project.active.presentation.studentsessions.StudentSessionsViewModel
 
 /**
  * Flow 3 test world: one in-memory database, a clock fixed on Mon 28 Sep 2026 at 9:00 AM
  * (Asia/Manila), and ViewModel factories for every screen on the NavHost. No Koin.
+ * Flow 7 adds the Attend and Sessions factories.
  */
 class Flow3Harness : AutoCloseable {
     val timeZone: TimeZone = TimeZone.of("Asia/Manila")
@@ -280,6 +287,39 @@ class Flow3Harness : AutoCloseable {
         people = people,
         acceptInvite = AcceptInvite(memberships),
         declineInvite = DeclineInvite(memberships),
+        network = network,
+    )
+
+    // Flow 7: the Attend and Sessions tabs are real screens now, so the student root needs their factories
+    // (a null factory would resolve from Koin, which UI tests never start). Flow 3 tests only switch to them.
+    fun attend(account: SignedInAccount): AttendViewModel = AttendViewModel(
+        account = account,
+        classes = classes,
+        memberships = memberships,
+        attendance = SqlAttendanceRepository(database),
+        people = people,
+        recordAttendance = RecordAttendance(
+            classes = classes,
+            memberships = memberships,
+            attendance = SqlAttendanceRepository(database),
+            verifyDailyCode = VerifyDailyCode(SqlCoachKeyRepository(database, InMemorySecretKeyStore()), clock, timeZone),
+            clock = clock,
+            timeZone = timeZone,
+            networkStatus = { network.status.value },
+        ),
+        outbox = outbox,
+        clock = clock,
+        timeZone = timeZone,
+        network = network,
+    )
+
+    fun studentSessions(account: SignedInAccount): StudentSessionsViewModel = StudentSessionsViewModel(
+        account = account,
+        classes = classes,
+        memberships = memberships,
+        attendance = SqlAttendanceRepository(database),
+        clock = clock,
+        timeZone = timeZone,
         network = network,
     )
 

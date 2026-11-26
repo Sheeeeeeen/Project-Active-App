@@ -40,7 +40,7 @@ class AttendViewModel(
     private val recordAttendance: RecordAttendance,
     private val outbox: OutboxSync,
     private val clock: Clock,
-    private val timeZone: TimeZone,
+    val timeZone: TimeZone,
     private val network: NetworkMonitor,
 ) : ViewModel() {
     init {
@@ -55,6 +55,11 @@ class AttendViewModel(
 
     init {
         watchConnection(network, _state) { copy(connection = it) }
+        viewModelScope.launch {
+            attendance.changes.collect {
+                _state.update { current -> current.copy(recordedToday = recorded(current.today)) }
+            }
+        }
     }
 
     fun onOpened() {
@@ -87,6 +92,19 @@ class AttendViewModel(
 
     fun onChangeSession() {
         _state.update { it.copy(scannerOpen = false, sheetOpen = true) }
+    }
+
+    fun onCloseScanner() {
+        chosen = null
+        _state.update {
+            it.copy(
+                scannerOpen = false,
+                sheetOpen = false,
+                recordingFor = null,
+                selectedSessionId = null,
+                canScan = false,
+            )
+        }
     }
 
     fun onCodeScanned(code: String) {
@@ -134,6 +152,7 @@ class AttendViewModel(
             AttendanceResult.InvalidCode -> reject(RejectReason.InvalidCode)
             AttendanceResult.WrongCoach -> reject(RejectReason.WrongCoach)
             AttendanceResult.WrongDate -> reject(RejectReason.WrongDate(parseCodeDate(code)))
+            AttendanceResult.NoSessionToday -> reject(RejectReason.NoSessionToday)
         }
     }
 
@@ -145,6 +164,7 @@ class AttendViewModel(
         val session = chosen ?: return
         _state.update {
             it.copy(
+                result = null,
                 scannerOpen = true,
                 sheetOpen = false,
                 recordingFor = RecordingFor(className(session.classId), session.slot),
@@ -159,12 +179,20 @@ class AttendViewModel(
     fun refresh() {
         val today = clock.todayIn(timeZone)
         val choices = choices()
-        _state.update {
-            it.copy(
+        val dayChanged = today != _state.value.today
+        val keepResult = _state.value.result != null
+        if (dayChanged && !keepResult) chosen = null
+        _state.update { current ->
+            current.copy(
                 today = today,
                 choices = choices,
                 noSessionsToday = choices.isEmpty(),
                 recordedToday = recorded(today),
+                sheetOpen = if (dayChanged && !keepResult) true else current.sheetOpen,
+                scannerOpen = if (dayChanged && !keepResult) false else current.scannerOpen,
+                selectedSessionId = if (dayChanged && !keepResult) null else current.selectedSessionId,
+                canScan = if (dayChanged && !keepResult) false else current.canScan,
+                recordingFor = if (dayChanged && !keepResult) null else current.recordingFor,
             )
         }
     }
@@ -207,7 +235,13 @@ class AttendViewModel(
     }
 
     private fun reject(reason: RejectReason) {
-        _state.update { it.copy(result = ScanResult.Rejected(reason), scannerOpen = false) }
+        _state.update {
+            it.copy(
+                result = ScanResult.Rejected(reason),
+                scannerOpen = false,
+                today = clock.todayIn(timeZone),
+            )
+        }
     }
 
     private fun recordedResult(session: Session, scannedAt: Instant, online: Boolean): ScanResult {

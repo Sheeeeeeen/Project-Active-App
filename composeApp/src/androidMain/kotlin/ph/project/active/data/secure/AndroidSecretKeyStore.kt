@@ -4,6 +4,7 @@ import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import android.util.Log
 import java.security.GeneralSecurityException
 import java.security.KeyStore
 import javax.crypto.Cipher
@@ -21,7 +22,11 @@ class AndroidSecretKeyStore(context: Context) : SecretKeyStore {
     private val preferences = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
     override fun putPrivateKey(coachId: String, key: ByteArray) {
-        val wrapped = wrap(key.copyOf()) ?: return
+        val wrapped = wrap(key.copyOf())
+        if (wrapped == null) {
+            Log.w("TrxKeys", "Could not save signing key for coach")
+            return
+        }
         preferences.edit().putString(coachId, wrapped).commit()
     }
 

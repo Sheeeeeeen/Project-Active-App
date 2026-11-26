@@ -22,7 +22,8 @@ class F5C4SchemaV2MigrationTest {
     fun F5_AC14_aFreshCreateIsVersion2WithJoinedBy() {
         val db = inMemoryDb(createSchema = false)
         try {
-            assertEquals(2L, TrxDatabase.Schema.version)
+            // Flow 7 S4: the attendance code columns bump the schema to version 3 (flagged: not in the F7-AC47 list).
+            assertEquals(3L, TrxDatabase.Schema.version)
             TrxDatabase.Schema.create(db.driver)
             assertTrue(V2_TABLES.all { it in db.tableNames() }, "tables: ${db.tableNames()}")
             assertTrue("joined_by" in db.columnNames("membership"))
@@ -84,7 +85,8 @@ class F5C4SchemaV2MigrationTest {
     // Ruling 1: "the version is 2 afterwards", for both v1 shapes (read as SQLite's user_version, plus the schema's own version)
     @Test
     fun F5_AC14_bothV1ShapesAreVersion2AfterMigrating() {
-        assertEquals(2L, TrxSchema.version)
+        // Flow 7 S4: the attendance code columns bump the schema to version 3 (flagged: not in the F7-AC47 list).
+        assertEquals(3L, TrxSchema.version)
         for (withJoinedBy in listOf(false, true)) {
             val db = TestDb(JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY))
             try {

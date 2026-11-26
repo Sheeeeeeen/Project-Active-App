@@ -3,29 +3,29 @@ package ph.project.active.domain.usecase
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
-import ph.project.active.domain.repository.AttendanceRepository
-import ph.project.active.domain.repository.MembershipRepository
+import ph.project.active.domain.crypto.parseDailyCodeLink
 import ph.project.active.domain.model.AttendanceRecord
 import ph.project.active.domain.model.AttendanceResult
 import ph.project.active.domain.model.MembershipStatus
-import ph.project.active.domain.repository.ClassRepository
-import ph.project.active.domain.model.DailyCodeCheck
 import ph.project.active.domain.model.NetworkStatus
-import ph.project.active.domain.model.SessionStatus
-import ph.project.active.domain.repository.currentStatus
-import ph.project.active.domain.model.UploadState
 import ph.project.active.domain.model.SessionRef
+import ph.project.active.domain.model.SessionStatus
+import ph.project.active.domain.model.UploadState
+import ph.project.active.domain.repository.AttendanceRepository
+import ph.project.active.domain.repository.ClassRepository
+import ph.project.active.domain.repository.MembershipRepository
+import ph.project.active.domain.repository.currentStatus
 
 /**
- * AC32-AC36, AC40: records PRESENT for the session the student chose, after the daily code
- * verifies for that session's coach and today's date. Everything is checked against the local
- * store, so a valid scan is kept as PENDING even while offline; [FlushOutbox] uploads it later.
+ * Records PRESENT for the session the student chose. The phone checks the link format, that the
+ * code's coach is the class coach, that the code's date is today, and that the chosen session is
+ * today. It does not check the signature (flow 7 decision 1). The server checks [AttendanceRecord.codeSig] later.
  */
 class RecordAttendance(
     private val classes: ClassRepository,
     private val memberships: MembershipRepository,
     private val attendance: AttendanceRepository,
-    private val verifyDailyCode: VerifyDailyCode,
+    @Suppress("unused") private val verifyDailyCode: VerifyDailyCode,
     private val clock: Clock,
     private val timeZone: TimeZone,
     @Suppress("unused") private val networkStatus: () -> NetworkStatus,
@@ -40,13 +40,11 @@ class RecordAttendance(
             return AttendanceResult.NotOnRoster
         }
 
-        when (verifyDailyCode.check(code, expectedCoachId = trxClass.coachId)) {
-            DailyCodeCheck.VALID -> Unit
-            DailyCodeCheck.INVALID -> return AttendanceResult.InvalidCode
-            DailyCodeCheck.WRONG_COACH -> return AttendanceResult.WrongCoach
-            DailyCodeCheck.WRONG_DATE -> return AttendanceResult.WrongDate
-        }
-        if (chosen.date != clock.todayIn(timeZone)) return AttendanceResult.WrongDate
+        val link = parseDailyCodeLink(code) ?: return AttendanceResult.InvalidCode
+        if (link.coachId != trxClass.coachId) return AttendanceResult.WrongCoach
+        val today = clock.todayIn(timeZone)
+        if (link.date != today) return AttendanceResult.WrongDate
+        if (chosen.date != today) return AttendanceResult.NoSessionToday
         if (attendance.find(chosen.id, studentId) != null) return AttendanceResult.AlreadyRecorded
 
         val record = AttendanceRecord(
@@ -56,6 +54,9 @@ class RecordAttendance(
             studentId = studentId,
             scannedAt = clock.now(),
             uploadState = UploadState.PENDING,
+            codeCoach = link.rawCoach,
+            codeDate = link.rawDate,
+            codeSig = link.sig,
         )
         attendance.add(record)
         return AttendanceResult.Recorded(record)

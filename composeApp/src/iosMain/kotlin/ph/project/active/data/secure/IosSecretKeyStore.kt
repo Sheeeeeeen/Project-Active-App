@@ -23,6 +23,7 @@ import platform.CoreFoundation.kCFBooleanTrue
 import platform.Foundation.CFBridgingRelease
 import platform.Foundation.CFBridgingRetain
 import platform.Foundation.NSData
+import platform.Foundation.NSLog
 import platform.Foundation.create
 import platform.Security.SecItemAdd
 import platform.Security.SecItemCopyMatching
@@ -60,7 +61,9 @@ class IosSecretKeyStore : SecretKeyStore {
             kSecAttrAccessible to kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
         )
         if (query != null) {
-            SecItemAdd(query, null)
+            if (SecItemAdd(query, null) != errSecSuccess) {
+                NSLog("TrxKeys: Could not save signing key for coach")
+            }
             CFRelease(query)
         }
         CFBridgingRelease(account)

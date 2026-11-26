@@ -31,8 +31,11 @@ class StudentSessionsViewModelTest {
             world.makeActive(trxClass.id, student.id)
             world.cancelDate(trxClass.id, WED_30_SEP_2026)
             val viewModel = world.studentSessionsVm(student)
-            val rows = viewModel.state.value.upcoming + viewModel.state.value.today + viewModel.state.value.earlier
-            assertEquals(1, rows.size)
+            val all = viewModel.state.value.upcoming + viewModel.state.value.today + viewModel.state.value.earlier
+            // Flow 7 S9 / F7-AC47: the cancelled Wed 30 is now listed, as CANCELLED (was left out).
+            assertEquals(2, all.size)
+            assertEquals(StudentSessionStatus.CANCELLED, all.single { it.date == WED_30_SEP_2026 }.status)
+            val rows = all.filter { it.date != WED_30_SEP_2026 }
             assertEquals("TRX Evening", rows.single().className)
             assertEquals(1, rows.single().sessionNumber)
             assertEquals(MON_28_SEP_2026, rows.single().date)
