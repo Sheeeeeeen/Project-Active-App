@@ -32,8 +32,12 @@ class SqlQueryParityTest {
 
             world.setLocal(kotlinx.datetime.LocalDate(2026, 10, 5), 12)
             val rows = world.studentSessions(student.id)
-            assertEquals(9, rows.size)
-            assertTrue(rows.none { it.session.status == ph.project.active.domain.model.SessionStatus.CANCELLED })
+            // Flow 7 S9 / F7-AC47: the cancelled Mon 12 Oct is now listed, as CANCELLED (was left out).
+            assertEquals(10, rows.size)
+            assertEquals(
+                StudentSessionStatus.CANCELLED,
+                rows.single { it.session.status == ph.project.active.domain.model.SessionStatus.CANCELLED }.status,
+            )
             assertTrue(rows.all { it.session.classId == joined.id })
             val byDate = rows.associate { it.session.date to it.status }
             assertEquals(StudentSessionStatus.PRESENT, byDate[MON_28_SEP_2026])
