@@ -178,7 +178,8 @@ class RecordAttendanceTest {
 
         assertEquals(AttendanceResult.InvalidCode, s.record(session, code = "not a code"))
         assertEquals(AttendanceResult.InvalidCode, s.record(session, code = good.substringBefore("&sig=")))
-        assertEquals(AttendanceResult.InvalidCode, s.record(session, code = good.dropLast(6)))
+        // Flow 7 decision 1 / F7-AC47: the phone no longer checks the signature, so a cut signature that still decodes
+        // is Recorded (F7-AC2); that clause moved out of this test.
         assertTrue(s.world.attendance.all().isEmpty())
     }
 
@@ -248,7 +249,8 @@ class RecordAttendanceTest {
 
         val result = s.record(wednesday)
 
-        assertEquals(AttendanceResult.WrongDate, result)
+        // Flow 7 S2 step 9 / F7-AC47: the chosen session not being today is now NoSessionToday (was WrongDate).
+        assertEquals(AttendanceResult.NoSessionToday, result)
         assertTrue(s.world.attendance.all().isEmpty())
     }
 
