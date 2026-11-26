@@ -39,11 +39,13 @@ import ph.project.active.domain.usecase.CreateClass
 import ph.project.active.domain.usecase.DeclineInvite
 import ph.project.active.domain.usecase.DeclineRequest
 import ph.project.active.domain.usecase.InviteByEmployeeId
+import ph.project.active.domain.usecase.RecordAttendance
 import ph.project.active.domain.usecase.RegisterCoach
 import ph.project.active.domain.usecase.RegisterStudent
 import ph.project.active.domain.usecase.RemoveFromRoster
 import ph.project.active.domain.usecase.RequestToJoin
 import ph.project.active.domain.usecase.VerifyDailyCode
+import ph.project.active.presentation.attend.AttendViewModel
 import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
 import ph.project.active.presentation.coachattendance.CoachAttendanceViewModel
@@ -57,6 +59,7 @@ import ph.project.active.presentation.manageclass.ManageClassViewModel
 import ph.project.active.presentation.registration.RegistrationViewModel
 import ph.project.active.presentation.root.RootViewModel
 import ph.project.active.presentation.studentclasses.StudentClassesViewModel
+import ph.project.active.presentation.studentsessions.StudentSessionsViewModel
 
 /**
  * Flow 4 test world: one in-memory database, a clock fixed on Mon 28 Sep 2026 at 9:00 AM
@@ -64,7 +67,8 @@ import ph.project.active.presentation.studentclasses.StudentClassesViewModel
  * The create and manage factories remember the last ViewModel they made, so a test can fill the
  * platform time and date pickers through the ViewModel. Flow 5 adds the coach keys, the Daily QR
  * factory, and a fake for the screen brightness / keep-awake interface. Flow 6 adds the coach Attendance
- * factory and [setNow] for the D21 / D22 clocks.
+ * factory and [setNow] for the D21 / D22 clocks. Flow 7 adds the student Attend and Sessions factories and
+ * exposes the outbox [uploader].
  */
 class Flow4Harness : AutoCloseable {
     val timeZone: TimeZone = TimeZone.of("Asia/Manila")
@@ -87,6 +91,9 @@ class Flow4Harness : AutoCloseable {
         private set
     var lastCoachAttendance: CoachAttendanceViewModel? = null
         private set
+    var lastAttend: AttendViewModel? = null
+        private set
+    val uploader = FakeAttendanceUploader()
     var lastCreateClass: CreateClassViewModel? = null
         private set
     var lastManage: ManageClassViewModel? = null
@@ -107,7 +114,7 @@ class Flow4Harness : AutoCloseable {
         memberships = SqlMembershipRepository(database)
         attendance = SqlAttendanceRepository(database)
         coachKeys = SqlCoachKeyRepository(database, secrets)
-        outbox = OutboxSync(attendance, FakeAttendanceUploader(), network)
+        outbox = OutboxSync(attendance, uploader, network)
         requestToJoin = RequestToJoin(classes, memberships)
         auth = FakeAuthRepository(users, hasher, network, session, people)
     }
@@ -402,6 +409,39 @@ class Flow4Harness : AutoCloseable {
         timeZone = timeZone,
         network = network,
     ).also { lastCoachAttendance = it }
+
+    /** Flow 7: Paolo's Attend tab, recording through this phone's own (empty) coach key store. */
+    fun attend(account: SignedInAccount): AttendViewModel = AttendViewModel(
+        account = account,
+        classes = classes,
+        memberships = memberships,
+        attendance = attendance,
+        people = people,
+        recordAttendance = RecordAttendance(
+            classes = classes,
+            memberships = memberships,
+            attendance = attendance,
+            verifyDailyCode = verifyDailyCode(),
+            clock = clock,
+            timeZone = timeZone,
+            networkStatus = { network.status.value },
+        ),
+        outbox = outbox,
+        clock = clock,
+        timeZone = timeZone,
+        network = network,
+    ).also { lastAttend = it }
+
+    /** Flow 7: Paolo's Sessions tab. */
+    fun studentSessions(account: SignedInAccount): StudentSessionsViewModel = StudentSessionsViewModel(
+        account = account,
+        classes = classes,
+        memberships = memberships,
+        attendance = attendance,
+        clock = clock,
+        timeZone = timeZone,
+        network = network,
+    )
 
     /** Checks a daily code against this world's clock, as a student's phone would (Phase 2 AC75). */
     fun verifyDailyCode(): VerifyDailyCode = VerifyDailyCode(keys = coachKeys, clock = clock, timeZone = timeZone)

@@ -25,6 +25,7 @@ import ph.project.active.data.model.SignedInAccount
 import ph.project.active.data.repository.AuthRepository
 import ph.project.active.presentation.classdetail.ClassDetailViewModel
 import ph.project.active.presentation.classdetail.JoinOutcome
+import ph.project.active.presentation.attend.AttendViewModel
 import ph.project.active.presentation.coachattendance.CoachAttendanceViewModel
 import ph.project.active.presentation.coachclasses.CoachClassesViewModel
 import ph.project.active.presentation.createclass.CreateClassViewModel
@@ -37,6 +38,7 @@ import ph.project.active.presentation.registration.RegistrationUiState
 import ph.project.active.presentation.registration.RegistrationViewModel
 import ph.project.active.presentation.root.RootViewModel
 import ph.project.active.presentation.studentclasses.StudentClassesViewModel
+import ph.project.active.presentation.studentsessions.StudentSessionsViewModel
 import ph.project.active.ui.TrxApp
 import ph.project.active.ui.navigation.AppNavHost
 import ph.project.active.ui.navigation.ClassDetail
@@ -45,7 +47,10 @@ import ph.project.active.ui.navigation.GuestGraph
 import ph.project.active.ui.navigation.GuestHome
 import ph.project.active.ui.navigation.Registration
 import ph.project.active.ui.navigation.StudentHome
+import ph.project.active.ui.platform.CameraPermission
 import ph.project.active.ui.platform.NoShakeSource
+import ph.project.active.ui.platform.QrScanner
+import ph.project.active.ui.platform.ScanHaptics
 import ph.project.active.ui.platform.ScreenBrightness
 import ph.project.active.ui.platform.ShakeSource
 import ph.project.active.ui.registration.RegistrationRoute
@@ -127,6 +132,11 @@ object Flow1Compose {
         dailyQrViewModel: ((SignedInAccount) -> DailyQrViewModel)? = null,
         screenBrightness: ScreenBrightness = remember { FakeScreenBrightness() },
         coachAttendanceViewModel: ((SignedInAccount) -> CoachAttendanceViewModel)? = null,
+        attendViewModel: ((SignedInAccount) -> AttendViewModel)? = null,
+        studentSessionsViewModel: ((SignedInAccount) -> StudentSessionsViewModel)? = null,
+        qrScanner: QrScanner? = null,
+        cameraPermission: CameraPermission? = null,
+        scanHaptics: ScanHaptics? = null,
         onNavController: (NavHostController) -> Unit,
     ) {
         if (navController == null) {
@@ -145,6 +155,11 @@ object Flow1Compose {
                 dailyQrViewModel = dailyQrViewModel,
                 screenBrightness = screenBrightness,
                 coachAttendanceViewModel = coachAttendanceViewModel,
+                attendViewModel = attendViewModel,
+                studentSessionsViewModel = studentSessionsViewModel,
+                qrScanner = qrScanner,
+                cameraPermission = cameraPermission,
+                scanHaptics = scanHaptics,
             )
         } else {
             AppNavHost(
@@ -163,6 +178,11 @@ object Flow1Compose {
                 dailyQrViewModel = dailyQrViewModel,
                 screenBrightness = screenBrightness,
                 coachAttendanceViewModel = coachAttendanceViewModel,
+                attendViewModel = attendViewModel,
+                studentSessionsViewModel = studentSessionsViewModel,
+                qrScanner = qrScanner,
+                cameraPermission = cameraPermission,
+                scanHaptics = scanHaptics,
             )
         }
     }
