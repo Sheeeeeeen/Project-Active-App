@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -222,12 +223,18 @@ private fun RecordCard(onChooseClass: () -> Unit, modifier: Modifier = Modifier)
             .background(colors.surfaceInverse)
             .padding(TrxSpacing.s16),
     ) {
-        Icon(
-            painter = painterResource(Res.drawable.qr_code),
-            contentDescription = null,
-            tint = colors.accentDefault,
-            modifier = Modifier.size(TrxSpacing.s32),
-        )
+        // The icon sits on a yellow tile so it keeps 12:1 contrast in dark mode, where surfaceInverse is white.
+        Box(
+            Modifier.size(56.dp).background(colors.accentDefault, RoundedCornerShape(TrxSpacing.radiusLg)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.qr_code),
+                contentDescription = null,
+                tint = colors.textOnAccent,
+                modifier = Modifier.size(TrxSpacing.s32),
+            )
+        }
         Text(
             text = UiCopy.recordAttendanceTitle(),
             color = colors.textInverse,

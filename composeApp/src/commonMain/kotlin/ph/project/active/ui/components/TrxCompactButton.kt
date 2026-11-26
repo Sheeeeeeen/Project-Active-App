@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -38,26 +39,32 @@ fun TrxCompactButton(
     val shape = RoundedCornerShape(TrxSpacing.radiusSm)
     Box(
         modifier
+            .heightIn(min = TrxSpacing.touchTarget)
             .minimumInteractiveComponentSize()
-            .height(TrxSpacing.s40)
-            .clip(shape)
-            .background(buttonColors.background)
-            .border(width = 1.dp, color = buttonColors.border, shape = shape)
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .testTag(tag)
             .semantics(mergeDescendants = true) {
                 text = AnnotatedString(label)
                 if (!enabled) disabled()
-            }
-            .padding(horizontal = TrxSpacing.s16),
+            },
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = label,
-            color = buttonColors.content,
-            style = TrxTypography.subheadStrong,
-            maxLines = 1,
-            modifier = Modifier.clearAndSetSemantics {},
-        )
+        Box(
+            Modifier
+                .height(TrxSpacing.s40)
+                .clip(shape)
+                .background(buttonColors.background)
+                .border(width = 1.dp, color = buttonColors.border, shape = shape)
+                .padding(horizontal = TrxSpacing.s16),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = label,
+                color = buttonColors.content,
+                style = TrxTypography.subheadStrong,
+                maxLines = 1,
+                modifier = Modifier.clearAndSetSemantics {},
+            )
+        }
     }
 }

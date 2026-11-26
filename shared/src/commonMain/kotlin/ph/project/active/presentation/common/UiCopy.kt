@@ -605,6 +605,8 @@ object UiCopy {
 
     fun close(): String = "Close"
 
+    fun torch(): String = "Torch"
+
     fun invalidCode(): String = "This isn\u2019t a valid attendance code."
 
     fun noSessionToday(): String = "This class has no session today."

@@ -1,5 +1,10 @@
 package ph.project.active.ui.attend
 
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -54,9 +59,11 @@ fun ClassSheet(
     val colors = LocalTrxColors.current
     val denied = cameraAccess == CameraAccess.DENIED_FOR_GOOD && selectedSessionId != null
     val shape = RoundedCornerShape(topStart = TrxSpacing.radiusLg, topEnd = TrxSpacing.radiusLg)
+    BoxWithConstraints(modifier.fillMaxWidth()) {
     Column(
-        modifier
+        Modifier
             .fillMaxWidth()
+            .heightIn(max = maxHeight * 0.9f)
             .clip(shape)
             .background(colors.surface)
             .testTag(AttendTestTags.sheet)
@@ -69,7 +76,7 @@ fun ClassSheet(
                 style = TrxTypography.sectionTitle,
                 modifier = Modifier.weight(1f),
             )
-            IconButton(onClick = onClose, modifier = Modifier.testTag(AttendTestTags.sheetClose)) {
+            IconButton(onClick = onClose, modifier = Modifier.size(TrxSpacing.touchTarget).testTag(AttendTestTags.sheetClose)) {
                 Icon(
                     painter = painterResource(Res.drawable.x),
                     contentDescription = UiCopy.close(),
@@ -83,6 +90,7 @@ fun ClassSheet(
             style = TrxTypography.subhead,
             modifier = Modifier.padding(bottom = TrxSpacing.s16),
         )
+        Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {
         if (choices.isEmpty()) {
             Column(Modifier.testTag(AttendTestTags.sheetEmpty).padding(vertical = TrxSpacing.s16)) {
                 Text(UiCopy.noClassesToday(), color = colors.textPrimary, style = TrxTypography.headline)
@@ -101,6 +109,7 @@ fun ClassSheet(
                     onChoose = { onChoose(choice.sessionId) },
                 )
             }
+        }
         }
         if (denied) {
             InfoCallout(
@@ -128,13 +137,16 @@ fun ClassSheet(
                 enabled = canScan,
                 modifier = Modifier.padding(top = TrxSpacing.s16),
             )
-            Text(
-                text = UiCopy.choiceFootnote(),
-                color = colors.textTertiary,
-                style = TrxTypography.footnote,
-                modifier = Modifier.padding(top = TrxSpacing.s12),
-            )
+            if (choices.isNotEmpty()) {
+                Text(
+                    text = UiCopy.choiceFootnote(),
+                    color = colors.textTertiary,
+                    style = TrxTypography.footnote,
+                    modifier = Modifier.padding(top = TrxSpacing.s12),
+                )
+            }
         }
+    }
     }
 }
 
@@ -148,7 +160,7 @@ private fun ChoiceRow(choice: AttendChoice, selected: Boolean, onChoose: () -> U
             .padding(bottom = TrxSpacing.s8)
             .clip(shape)
             .background(if (selected) colors.accentSubtle else colors.surfaceAlt)
-            .border(if (selected) 2.dp else 1.dp, if (selected) colors.accentDefault else colors.borderDefault, shape)
+            .border(if (selected) 2.dp else 1.dp, if (selected) colors.textPrimary else colors.borderDefault, shape)
             .selectable(selected = selected, onClick = onChoose, role = Role.RadioButton)
             .testTag(AttendTestTags.choice(choice.sessionId))
             .padding(TrxSpacing.s16),
@@ -167,12 +179,19 @@ private fun ChoiceRow(choice: AttendChoice, selected: Boolean, onChoose: () -> U
             Icon(
                 painter = painterResource(Res.drawable.check),
                 contentDescription = null,
-                tint = colors.textOnAccent,
+                tint = colors.canvas,
                 modifier = Modifier
                     .padding(start = TrxSpacing.s12)
                     .size(TrxSpacing.iconMedium)
-                    .background(colors.accentDefault, CircleShape)
+                    .background(colors.textPrimary, CircleShape)
                     .padding(TrxSpacing.s4),
+            )
+        } else {
+            Box(
+                Modifier
+                    .padding(start = TrxSpacing.s12)
+                    .size(TrxSpacing.iconMedium)
+                    .border(2.dp, colors.borderStrong, CircleShape),
             )
         }
     }
