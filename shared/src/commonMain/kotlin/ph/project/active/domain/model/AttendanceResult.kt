@@ -14,6 +14,8 @@ sealed interface AttendanceResult {
     data object NotOnRoster : AttendanceResult
     data object InvalidCode : AttendanceResult
     data object WrongCoach : AttendanceResult
-    /** The code is for another date, or the chosen session is not today. */
+    /** The code's date is not today. */
     data object WrongDate : AttendanceResult
+    /** The chosen session is not on today's date. */
+    data object NoSessionToday : AttendanceResult
 }

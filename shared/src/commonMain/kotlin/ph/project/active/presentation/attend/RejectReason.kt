@@ -10,4 +10,6 @@ sealed interface RejectReason {
     data object ClassCancelled : RejectReason
     data object InvalidCode : RejectReason
     data object SessionUnknown : RejectReason
+    /** The chosen session is not on today's date. */
+    data object NoSessionToday : RejectReason
 }

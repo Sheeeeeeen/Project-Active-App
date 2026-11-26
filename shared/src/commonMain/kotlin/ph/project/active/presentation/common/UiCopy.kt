@@ -512,4 +512,135 @@ object UiCopy {
     fun cancelClassBody(): String =
         "All remaining dates are cancelled and the class stops repeating. It leaves the public class list. " +
             "Past sessions and their attendance stay as recorded."
+
+    fun recordAttendanceTitle(): String = "Record attendance"
+
+    fun recordAttendanceBody(): String =
+        "First choose the class you\u2019re attending. Then scan the QR code on your coach\u2019s phone."
+
+    fun chooseClass(): String = "Choose class"
+
+    fun recordedToday(): String = "Recorded today"
+
+    fun recordedTodayLine(sessionNumber: Int, time: LocalTime): String =
+        "Session $sessionNumber \u00B7 scanned ${formatTime(time)}"
+
+    fun chooseClassTitle(): String = "Which class are you attending?"
+
+    fun chooseClassSubtitle(date: LocalDate): String = "Today \u00B7 ${formatDate(date)} \u00B7 choose one"
+
+    fun choiceLine(slot: TimeSlot, coachName: String): String = "${formatSlot(slot)} \u00B7 Coach $coachName"
+
+    fun scanCoachCode(): String = "Scan coach\u2019s code"
+
+    fun choiceFootnote(): String = "Your choice is saved with the scan. The time of the scan doesn\u2019t change it."
+
+    fun noClassesToday(): String = "No classes today."
+
+    fun noClassesTodayBody(): String = "Your scheduled classes for today show up here."
+
+    fun cameraOffTitle(): String = "Camera access is off"
+
+    fun cameraOffBody(): String = "Allow camera access in Settings to scan your coach\u2019s code."
+
+    fun openSettings(): String = "Open Settings"
+
+    fun recordingFor(): String = "RECORDING FOR"
+
+    fun recordingForLine(className: String, start: LocalTime): String = "$className \u00B7 ${formatTime(start)}"
+
+    fun change(): String = "Change"
+
+    fun scannerHint(): String = "Point at the QR code on your coach\u2019s phone"
+
+    fun scannerHintDetail(): String = "It scans automatically."
+
+    fun scannerHintOffline(): String = "No connection needed. The scan is kept on this phone."
+
+    fun allowCameraTitle(): String = "Allow camera to scan"
+
+    fun allowCameraBody(): String =
+        "The camera is only used to read your coach\u2019s QR code. Nothing is recorded until a valid code is scanned."
+
+    fun allowCamera(): String = "Allow camera"
+
+    fun cameraUsageDescription(): String = "The camera is only used to read your coach\u2019s QR code."
+
+    fun scanPresentBody(): String = "Your coach will see you on this session."
+
+    fun scanSavedOfflineBody(): String =
+        "Your attendance is stored now and uploads automatically when you\u2019re back online. The recorded time is the scan time."
+
+    fun resultClass(): String = "Class"
+
+    fun resultSession(): String = "Session"
+
+    fun resultTime(): String = "Time"
+
+    fun resultScanned(): String = "Scanned"
+
+    fun resultUpload(): String = "Upload"
+
+    fun resultFirstScan(): String = "First scan"
+
+    fun resultSessionLine(sessionNumber: Int, date: LocalDate): String = "Session $sessionNumber \u00B7 ${formatDate(date)}"
+
+    fun recordedTimeLine(time: LocalTime): String = "${formatTime(time)} (recorded time)"
+
+    fun waitingForConnection(): String = "Waiting for connection"
+
+    fun done(): String = "Done"
+
+    fun recordAnotherClass(): String = "Record another class"
+
+    fun chooseDifferentClass(): String = "Choose a different class"
+
+    fun resultYouChose(): String = "You chose"
+
+    fun resultToday(): String = "Today"
+
+    fun resultCodeDate(): String = "Code date"
+
+    fun scanAgain(): String = "Scan again"
+
+    fun close(): String = "Close"
+
+    fun invalidCode(): String = "This isn\u2019t a valid attendance code."
+
+    fun noSessionToday(): String = "This class has no session today."
+
+    fun sessionNotOnPhone(): String = "This class date isn\u2019t on this phone yet."
+
+    fun rejectLine(reason: ph.project.active.presentation.attend.RejectReason): String = when (reason) {
+        is ph.project.active.presentation.attend.RejectReason.WrongDate -> wrongDate()
+        ph.project.active.presentation.attend.RejectReason.WrongCoach -> wrongCoach()
+        ph.project.active.presentation.attend.RejectReason.NotOnRoster -> notOnRoster()
+        ph.project.active.presentation.attend.RejectReason.SessionCancelled -> sessionCancelled()
+        ph.project.active.presentation.attend.RejectReason.ClassCancelled -> classCancelledBody()
+        ph.project.active.presentation.attend.RejectReason.InvalidCode -> invalidCode()
+        ph.project.active.presentation.attend.RejectReason.SessionUnknown -> sessionNotOnPhone()
+        ph.project.active.presentation.attend.RejectReason.NoSessionToday -> noSessionToday()
+    }
+
+    fun sessionsSubtitle(): String = "Your dates for joined classes"
+
+    fun sessionsTodayHeader(date: LocalDate): String = "Today \u00B7 ${formatShortDate(date)}"
+
+    fun earlier(): String = "Earlier"
+
+    fun sessionRowLine(sessionNumber: Int, start: LocalTime): String = "Session $sessionNumber \u00B7 ${formatTime(start)}"
+
+    fun dateTileWeekday(date: LocalDate): String = DATE_TILE_WEEKDAYS[date.dayOfWeek.ordinal]
+
+    fun dateTileMonth(date: LocalDate): String = DATE_TILE_MONTHS[date.month.ordinal]
+
+    fun noSessionsYetTitle(): String = "No sessions yet"
+
+    fun noSessionsYetBody(): String = "When you join a class, its dates show up here."
 }
+
+private val DATE_TILE_WEEKDAYS = listOf("MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN")
+
+private val DATE_TILE_MONTHS = listOf(
+    "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
+)

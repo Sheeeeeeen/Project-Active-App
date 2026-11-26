@@ -60,6 +60,9 @@ CREATE TABLE IF NOT EXISTS attendance (
   scanned_at TEXT NOT NULL,
   status TEXT NOT NULL,
   upload_state TEXT NOT NULL,
+  code_coach TEXT NOT NULL DEFAULT '',
+  code_date TEXT NOT NULL DEFAULT '',
+  code_sig TEXT NOT NULL DEFAULT '',
   UNIQUE (session_id, student_id)
 );
 
@@ -213,7 +216,10 @@ SELECT
   student_id AS studentId,
   scanned_at AS scannedAt,
   status,
-  upload_state AS uploadState
+  upload_state AS uploadState,
+  code_coach AS codeCoach,
+  code_date AS codeDate,
+  code_sig AS codeSig
 FROM attendance;
 
 selectAttendanceByPair:
@@ -224,17 +230,20 @@ SELECT
   student_id AS studentId,
   scanned_at AS scannedAt,
   status,
-  upload_state AS uploadState
+  upload_state AS uploadState,
+  code_coach AS codeCoach,
+  code_date AS codeDate,
+  code_sig AS codeSig
 FROM attendance
 WHERE session_id = ? AND student_id = ?;
 
 insertAttendance:
-INSERT INTO attendance(id, session_id, class_id, student_id, scanned_at, status, upload_state)
-VALUES (?, ?, ?, ?, ?, ?, ?);
+INSERT INTO attendance(id, session_id, class_id, student_id, scanned_at, status, upload_state, code_coach, code_date, code_sig)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 updateAttendance:
 UPDATE attendance
-SET session_id = ?, class_id = ?, student_id = ?, scanned_at = ?, status = ?, upload_state = ?
+SET session_id = ?, class_id = ?, student_id = ?, scanned_at = ?, status = ?, upload_state = ?, code_coach = ?, code_date = ?, code_sig = ?
 WHERE id = ?;
 
 selectPublicKey:
