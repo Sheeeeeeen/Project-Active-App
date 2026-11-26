@@ -42,4 +42,7 @@ android {
     buildFeatures {
         compose = true
     }
+    sourceSets.named("debug") {
+        kotlin.directories.add(rootProject.file("composeApp/src/debugSeed/kotlin").path)
+    }
 }

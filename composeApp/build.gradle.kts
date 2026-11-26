@@ -56,8 +56,8 @@ kotlin {
     }
 
     sourceSets {
-        // Same seed file for Android and iOS. The file path stays out of the *Main folders the structure scans.
-        androidMain.configure { kotlin.srcDir("src/debugSeed/kotlin") }
+        // iOS debug calls installDebugSeed() from this file. It stays off androidMain so the release APK does not ship it.
+        // Android debug compiles the same directory from androidApp.
         iosMain.configure { kotlin.srcDir("src/debugSeed/kotlin") }
         commonMain.dependencies {
             implementation(project(":shared"))

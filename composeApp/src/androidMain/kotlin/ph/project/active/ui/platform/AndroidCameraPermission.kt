@@ -11,6 +11,7 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -29,6 +30,9 @@ actual fun rememberCameraPermission(): CameraPermission {
     SideEffect {
         permission.activity = context.findActivity()
         permission.launch = { launcher.launch(Manifest.permission.CAMERA) }
+    }
+    DisposableEffect(permission) {
+        onDispose { permission.activity = null }
     }
     return permission
 }
