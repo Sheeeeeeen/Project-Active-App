@@ -1,7 +1,7 @@
 # TRX Class Attendance — Phase 3, Flow 6 Spec (coach Attendance tab)
 
 ## 1. Status
-**Draft for Sheen’s approval — Thu 26 Nov 2026, Asia/Manila.** Sheen accepted all 8 default answers in `/workspace/flow6-questions.md`, and its section 2 fold-ins, on 26 Nov 2026. This spec turns those answers, Figma, and the code on `main` into a build plan. After approval, Tester writes the failing tests on a branch from `main`, with this spec as the first commit. Builder never pushes to `main` and never merges; Sheen merges.
+**Approved by Sheen — Thu 26 Nov 2026, 11:06 AM Asia/Manila.** Sheen accepted all 8 default answers in `/workspace/flow6-questions.md`, and its section 2 fold-ins, on 26 Nov 2026. This spec turns those answers, Figma, and the code on `main` into a build plan. After approval, Tester writes the failing tests on a branch from `main`, with this spec as the first commit. Builder never pushes to `main` and never merges; Sheen merges.
 
 - Baseline: `main` at `ba71d1a` (PR #14, flow 5, merged 26 Nov 2026). The QR tab is the real Daily QR screen. The Attendance tab is still `CoachTabPlaceholder` (D24).
 - Design: Figma `qbHRsTH5EHXslAnGr7tV3o`, page "02 Screens", section D `25:4904`: D21 `22:9992` (notes `22:10221`), D22 `22:10428` (notes `22:10610`). Flow 6 replaces the D24 placeholder `108:6478`. Screenshots re-checked 26 Nov 2026 (saved in `/workspace/flow6-figma/`).
@@ -147,7 +147,8 @@ App / UI work (`composeApp`, covered by the ACs below):
   - assertions that the Attendance tab is a placeholder (`placeholder_tag` under `coach_attendance` or `coach_attendance_account`, in the F4 and F5 tab tests);
   - Phase 2 AC79–81 tests that compare whole `CoachAttendanceSection` or `CoachAttendanceStudentRow` objects, which may add the new fields (behaviour asserts unchanged);
   - test doubles that implement `AttendanceRepository`, which may add `changes`;
-  - flow 3 tests that read the greeting from the `student_home` node itself, which move to `student_classes_greeting`.
+  - the F1-AC37 and F1-AC38 greeting tests that read the greeting from the `student_home` node itself, which move to `student_classes_greeting`;
+  - the two F5StructureTest checks replaced by this flow: the FakeDataModule `InMemorySecretKeyStore` binding (replaced by F6-AC18) and the iOS restore setting `idleTimerDisabled` to `false` (replaced by F6-AC21).
 
 ## 8. Test plan
 
@@ -165,7 +166,7 @@ App / UI work (`composeApp`, covered by the ACs below):
 - **P1.** On Android and on iOS: sign in as Mara, open QR, note the code (or scan it). Force-quit the app, reopen, open QR again: the code is the same. Sign in on a fresh install: a new key is created and the QR still shows.
 - **P2.** On iOS: open QR, then go to Attendance, and wait. The phone auto-locks again on its normal timer. Brightness returns to what it was.
 - **P3.** With TalkBack (Android) and VoiceOver (iOS): the QR image is read as "Today’s attendance code, valid {date} only". On the student home, the greeting is read once. The date chevrons are read as "Previous day" / "Next day".
-- **P4.** The Attendance tab matches D21 and D22 in light mode and looks right in dark mode. A long "Chose … · scanned …" line wraps cleanly (design QA; Designer may ask for a layout tweak, not a copy change).
+- **P4.** Each row's avatar shows the student's initials (ruling 5). The Attendance tab matches D21 and D22 in light mode and looks right in dark mode. A long "Chose … · scanned …" line wraps cleanly (design QA; Designer may ask for a layout tweak, not a copy change).
 - **P5.** In light mode, selecting text in a field (for example Create class → Class name) shows dark-gold handles and highlight, not yellow on white.
 
 **Test tags** (snake_case; new tags live in `CoachAttendanceTestTags`; existing tags keep their current objects):
@@ -241,3 +242,12 @@ New `UiCopy` functions:
 | `noSessionsOnDate()` | "No sessions on this date." |
 | `previousDay()` / `nextDay()` | "Previous day" / "Next day" |
 | `qrCodeDescription(date)` | "Today’s attendance code, valid {formatDate(date)} only" (example: "Today’s attendance code, valid Mon 28 Sep 2026 only") |
+
+
+## Rulings after approval (26 Nov 2026, Planner, on PR #15)
+1. The two dropped F5StructureTest checks are replaced by F6-AC18 and F6-AC21 and are now listed in F6-AC24.
+2. F6-AC24 now names the greeting tests correctly: F1-AC37 and F1-AC38, not "flow 3 tests".
+3. The header now says the spec is approved (26 Nov 2026, 11:06 AM Asia/Manila).
+4. A section's tag (`coach_attendance_section_{sessionId}`) wraps the whole section: the heading, the slot line and every card or row in it.
+5. The F6-AC5 initials are not automated, because the avatar hides its text from tests. Manual check P4 covers them: each row's avatar shows the right initials.
+6. The summary chips get no test tags. Checking that each count sits on the same line as its "Present" or "Absent" label is enough.
