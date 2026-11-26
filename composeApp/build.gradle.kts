@@ -65,6 +65,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.navigation.compose)
+            implementation(libs.navigationevent.compose)
             implementation(libs.kotlinx.serialization.core)
             implementation(libs.kotlinx.datetime)
             implementation(libs.koin.core)
@@ -76,6 +77,11 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.sqldelight.android.driver)
             implementation(libs.androidx.core.ktx)
+            implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.camera.camera2)
+            implementation(libs.androidx.camera.lifecycle)
+            implementation(libs.androidx.camera.view)
+            implementation(libs.mlkit.barcode.scanning)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
@@ -103,6 +109,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.navigation.compose)
+            implementation(libs.navigationevent.compose)
             implementation(libs.kotlinx.serialization.core)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
@@ -111,9 +118,7 @@ kotlin {
             implementation(libs.sqldelight.sqlite.driver)
             // Flow 5 (F5-AC3, Planner ruling 2): test-only QR reader that decodes the encoder's matrix.
             implementation(libs.zxing.core)
-            // Flow 7 (F7-AC25): test-only access to the window's back dispatcher, because the desktop test scene does
-            // not turn Escape into a system back. Already on the app's classpath through navigation-compose.
-            implementation(libs.navigationevent.compose)
+            // Flow 7 (F7-AC25): the desktop test scene does not turn Escape into a system back.
         }
         getByName("jvmTest") {
             kotlin.srcDir("src/commonTest/kotlin")

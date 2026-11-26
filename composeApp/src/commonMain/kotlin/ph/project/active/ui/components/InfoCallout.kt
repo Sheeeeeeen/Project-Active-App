@@ -36,11 +36,13 @@ fun InfoCallout(
         InfoCalloutStyle.Info -> colors.infoBg
         InfoCalloutStyle.Neutral -> colors.surfaceAlt
         InfoCalloutStyle.Accent -> colors.accentSubtle
+        InfoCalloutStyle.Warning -> colors.warningBg
     }
     val iconTint = when (style) {
         InfoCalloutStyle.Info -> colors.infoFg
         InfoCalloutStyle.Neutral -> colors.textSecondary
         InfoCalloutStyle.Accent -> colors.accentText
+        InfoCalloutStyle.Warning -> colors.warningFg
     }
     Row(
         modifier
