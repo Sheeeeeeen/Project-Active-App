@@ -30,8 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.semantics.text
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -98,7 +102,7 @@ fun CoachAttendanceScreen(
                     EmptyLine(Modifier.padding(top = TrxSpacing.s20))
                 } else {
                     state.sections.forEach { section ->
-                        SectionBlock(section, Modifier.padding(top = TrxSpacing.s20))
+                        SectionBlock(section, Modifier.padding(top = TrxSpacing.s12))
                     }
                 }
             }
@@ -132,8 +136,8 @@ private fun Header() {
 private fun DateCard(state: CoachAttendanceUiState, onPreviousDay: () -> Unit, onNextDay: () -> Unit) {
     val colors = LocalTrxColors.current
     val dayLine = if (state.dayState == DayState.IN_PROGRESS) UiCopy.inProgress() else UiCopy.dayEnded()
-    TrxCard(Modifier.padding(top = TrxSpacing.s16)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+    TrxCard(Modifier.padding(top = 14.dp), contentPadding = TrxSpacing.s0) {
+        Row(Modifier.padding(horizontal = TrxSpacing.s4, vertical = 1.dp), verticalAlignment = Alignment.CenterVertically) {
             DayChevron(Res.drawable.chevron_left, UiCopy.previousDay(), CoachAttendanceTestTags.prevDay, true, onPreviousDay)
             Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
@@ -145,7 +149,7 @@ private fun DateCard(state: CoachAttendanceUiState, onPreviousDay: () -> Unit, o
                 Text(
                     text = dayLine,
                     color = colors.textSecondary,
-                    style = TrxTypography.subhead,
+                    style = TrxTypography.footnote,
                     modifier = Modifier.testTag(CoachAttendanceTestTags.dayState),
                 )
             }
@@ -187,14 +191,22 @@ private fun Summary(state: CoachAttendanceUiState, modifier: Modifier = Modifier
     Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Count(UiCopy.present(), Res.drawable.circle_check, colors.successBg, colors.successFg, state.presentCount, CoachAttendanceTestTags.presentCount)
         if (inProgress) {
-            Text(
-                text = UiCopy.absentSetAfterDayEnds(),
-                color = colors.textTertiary,
-                style = TrxTypography.footnote,
-                modifier = Modifier
+            val footnote = UiCopy.absentSetAfterDayEnds()
+            Box(
+                Modifier
                     .padding(start = TrxSpacing.s8)
-                    .testTag(CoachAttendanceTestTags.footnote),
-            )
+                    .semantics {
+                        this.text = AnnotatedString(footnote)
+                        this.testTag = CoachAttendanceTestTags.footnote
+                    },
+            ) {
+                Text(
+                    text = footnote.keepLastWordTogether(),
+                    color = colors.textTertiary,
+                    style = TrxTypography.footnote,
+                    modifier = Modifier.clearAndSetSemantics {},
+                )
+            }
         } else {
             Count(
                 UiCopy.absent(),
@@ -203,7 +215,7 @@ private fun Summary(state: CoachAttendanceUiState, modifier: Modifier = Modifier
                 colors.dangerFg,
                 state.absentCount,
                 CoachAttendanceTestTags.absentCount,
-                Modifier.padding(start = TrxSpacing.s16),
+                Modifier.padding(start = TrxSpacing.s8),
             )
         }
     }
@@ -224,8 +236,8 @@ private fun Count(
         StatusChip(label, icon, background, content)
         Text(
             text = count.toString(),
-            color = colors.textPrimary,
-            style = TrxTypography.headline,
+            color = colors.textSecondary,
+            style = TrxTypography.footnote,
             modifier = Modifier
                 .padding(start = TrxSpacing.s8)
                 .testTag(tag),
@@ -258,12 +270,12 @@ private fun SectionBlock(section: CoachAttendanceSection, modifier: Modifier = M
 @Composable
 private fun SectionHeading(className: String, line: String) {
     val colors = LocalTrxColors.current
-    Text(text = className, color = colors.textPrimary, style = TrxTypography.sectionTitle)
+    Text(text = className, color = colors.textPrimary, style = TrxTypography.headline)
     Text(
         text = line,
         color = colors.textSecondary,
-        style = TrxTypography.subhead,
-        modifier = Modifier.padding(top = TrxSpacing.s4),
+        style = TrxTypography.footnote,
+        modifier = Modifier.padding(top = TrxSpacing.s0),
     )
 }
 
@@ -271,27 +283,28 @@ private fun SectionHeading(className: String, line: String) {
 private fun CancelledCard(section: CoachAttendanceSection) {
     val colors = LocalTrxColors.current
     val shape = RoundedCornerShape(TrxSpacing.radiusLg)
-    Column(
+    Row(
         Modifier
-            .padding(top = TrxSpacing.s12)
             .fillMaxWidth()
             .background(colors.surfaceAlt, shape)
             .border(1.dp, colors.borderDefault, shape)
-            .padding(TrxSpacing.s16),
+            .padding(horizontal = TrxSpacing.s16, vertical = TrxSpacing.s12),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = section.className, color = colors.textPrimary, style = TrxTypography.sectionTitle)
-        Text(
-            text = UiCopy.cancelledSlotLine(section.slot),
-            color = colors.textSecondary,
-            style = TrxTypography.subhead,
-            modifier = Modifier.padding(top = TrxSpacing.s4),
-        )
+        Column(Modifier.weight(1f)) {
+            Text(text = section.className, color = colors.textPrimary, style = TrxTypography.headline)
+            Text(
+                text = UiCopy.cancelledSlotLine(section.slot),
+                color = colors.textSecondary,
+                style = TrxTypography.footnote,
+            )
+        }
         StatusChip(
             UiCopy.cancelled(),
             Res.drawable.ban,
             colors.surface,
             colors.textSecondary,
-            Modifier.padding(top = TrxSpacing.s12),
+            Modifier.padding(start = TrxSpacing.s12),
         )
     }
 }
@@ -299,7 +312,7 @@ private fun CancelledCard(section: CoachAttendanceSection) {
 @Composable
 private fun StudentCard(section: CoachAttendanceSection) {
     val colors = LocalTrxColors.current
-    TrxCard(Modifier.padding(top = TrxSpacing.s12), contentPadding = TrxSpacing.s0) {
+    TrxCard(Modifier.padding(top = TrxSpacing.s8), contentPadding = TrxSpacing.s0) {
         section.students.forEachIndexed { index, student ->
             if (index > 0) HorizontalDivider(color = colors.borderDefault)
             StudentRow(section, student)
@@ -313,7 +326,7 @@ private fun StudentRow(section: CoachAttendanceSection, student: CoachAttendance
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = TrxSpacing.s16, vertical = TrxSpacing.s12)
+            .padding(start = TrxSpacing.s16, top = TrxSpacing.s12, end = TrxSpacing.s12, bottom = TrxSpacing.s12)
             .testTag(CoachAttendanceTestTags.row(section.sessionId, student.studentId)),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(TrxSpacing.s12),
@@ -360,4 +373,11 @@ private fun RowEnd(student: CoachAttendanceStudentRow) {
         CoachAttendanceStatus.NOT_SCANNED ->
             Text(text = UiCopy.notScannedYet(), color = colors.textTertiary, style = TrxTypography.footnote)
     }
+}
+
+/** A non-breaking space before the last word, so "ends" is not left alone on the next line. */
+private fun String.keepLastWordTogether(): String {
+    val space = lastIndexOf(' ')
+    if (space < 0) return this
+    return substring(0, space) + "\u00A0" + substring(space + 1)
 }
